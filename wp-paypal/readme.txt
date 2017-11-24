@@ -3,7 +3,7 @@ Contributors: naa986
 Donate link: https://wphowto.net/
 Tags: paypal, button, e-commerce, ecommerce, commerce, sell, sales, shipping, shop, shopping, store, tax, wordpress ecommerce, cart, checkout, donation, donations, payment, subscription, subscriptions 
 Requires at least: 3.0
-Tested up to: 4.8
+Tested up to: 4.9
 Stable tag: 1.0.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
