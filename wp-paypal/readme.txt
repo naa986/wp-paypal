@@ -18,6 +18,11 @@ Your customers will be able to pay for your products using PayPal or Credit Card
 
 WP PayPal supports PayPal Sandbox. PayPal Sandbox is a simulation environment which allows you to do test purchases between a test buyer and a seller account. This is to make sure that your store can process PayPal transactions without any issues. It also helps you get prepared before selling to real customers.
 
+= Requirements =
+
+* A PayPal account
+* A self-hosted website running on [WordPress hosting](https://wphowto.net/best-cheap-wordpress-hosting-1689)
+
 = Features =
 
 * Sell products or services using PayPal

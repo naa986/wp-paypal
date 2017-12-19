@@ -2,9 +2,9 @@
 /*
   Plugin Name: WP PayPal
   Version: 1.0.9
-  Plugin URI: http://wphowto.net/
+  Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
-  Author URI: http://wphowto.net/
+  Author URI: https://wphowto.net/
   Description: Easily accept PayPal payments in WordPress
   Text Domain: wp-paypal
   Domain Path: /languages
@@ -145,7 +145,7 @@ class WP_PAYPAL {
             'wp-paypal-settings' => __('General', 'wp-paypal')
         );
         echo '<div class="wrap">' . screen_icon() . '<h2>'.__('WP PayPal', 'wp-paypal').' v' . WP_PAYPAL_VERSION . '</h2>';
-        $url = 'http://wphowto.net/wordpress-paypal-plugin-732';
+        $url = 'https://wphowto.net/wordpress-paypal-plugin-732';
         $link_msg = sprintf( wp_kses( __( 'Please visit the <a target="_blank" href="%s">WP PayPal</a> documentation page for usage instructions.', 'wp-paypal' ), array(  'a' => array( 'href' => array(), 'target' => array() ) ) ), esc_url( $url ) );
         echo '<div class="update-nag">'.$link_msg.'</div>';
         echo '<div id="poststuff"><div id="post-body">';
