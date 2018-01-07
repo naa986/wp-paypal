@@ -30,7 +30,7 @@ WP PayPal supports PayPal Sandbox. PayPal Sandbox is a simulation environment wh
 * Accept once off payments or recurring payments
 * Accept donations from users
 * Allow users to add multiple items to the shopping cart and checkout
-* View or Manage orders received via PayPal buttons from your WordPrss admin dashboard
+* View or Manage orders received via PayPal buttons from your WordPress admin dashboard
 * Quick settings configurations
 * Enable debug to troubleshoot various issues (e.g. orders not getting updated)
 * Accept subscriptions on a daily, weekly, monthly or yearly basis
