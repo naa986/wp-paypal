@@ -1,10 +1,10 @@
 === WordPress PayPal ===
 Contributors: naa986
 Donate link: https://wphowto.net/
-Tags: paypal, button, e-commerce, ecommerce, commerce, sell, sales, shipping, shop, shopping, store, tax, wordpress ecommerce, cart, checkout, donation, donations, payment, subscription, subscriptions 
+Tags: paypal, cart, checkout, donation, subscription, shop, e-commerce
 Requires at least: 3.0
 Tested up to: 4.9
-Stable tag: 1.0.9
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -135,6 +135,12 @@ Yes.
 none
 
 == Changelog ==
+
+= 1.1.0 =
+* Fixed this admin notice: screen_icon is deprecated since version 3.8.0 with no alternative available.
+* Made some improvements to the add to cart functionality.
+* Fixed a PayPal error that occurred when an item was added to the shopping cart: Things don't appear to be working at the moment. Please try again later.
+
 
 = 1.0.9 =
 * Added an option to open a PayPal button in a new window or tab.
