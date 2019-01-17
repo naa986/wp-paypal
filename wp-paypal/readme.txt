@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, subscription, shop, e-commerce
 Requires at least: 3.0
 Tested up to: 5.0
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -135,6 +135,9 @@ Yes.
 none
 
 == Changelog ==
+
+= 1.1.1 =
+* Made some improvements to the PayPal Buy Now button.
 
 = 1.1.0 =
 * Fixed this admin notice: screen_icon is deprecated since version 3.8.0 with no alternative available.
