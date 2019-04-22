@@ -20,15 +20,16 @@ function wp_paypal_order_page() {
 
     $args = array(
         'labels' => $labels,
-        'public' => true,
+        'public' => false,
         'exclude_from_search' => true,
  	'publicly_queryable' => false,
         'show_ui' => true,
-        'show_in_menu' => true,
-        'query_var' => true,
+        'show_in_nav_menus' => false,
+        'show_in_menu' => current_user_can('manage_options') ? true : false,
+        'query_var' => false,
         'rewrite' => false,
         'capability_type' => 'post',
-        'has_archive' => true,
+        'has_archive' => false,
         'hierarchical' => false,
         'menu_position' => null,
         'supports' => 'editor'
