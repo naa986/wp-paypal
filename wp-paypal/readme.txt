@@ -46,6 +46,8 @@ WP PayPal supports PayPal Sandbox. PayPal Sandbox is a simulation environment wh
 
 = Usage =
 
+https://www.youtube.com/watch?v=lYVRUDp8c9s&rel=0
+
 Once you have installed this plugin you need to go to the settings menu to configure some default options (WP PayPal -> Settings).
 
 * PayPal Email: Your PayPal email address
