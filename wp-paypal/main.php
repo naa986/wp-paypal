@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.1.2
+  Version: 1.1.3
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.1.2';
+    var $plugin_version = '1.1.3';
     var $plugin_url;
     var $plugin_path;
     
@@ -301,25 +301,26 @@ function wp_paypal_button_handler($atts) {
     } else {
         $atts['currency'] = $currency;
     }
+    /* only for subscription and donation button */
+    $js_atts = $atts;
     $target = '';
-    if(isset($atts['target']) && !empty($atts['target'])) {
-        $target = $atts['target'];
-        unset($atts['target']);
+    if(isset($js_atts['target']) && !empty($js_atts['target'])) {
+        $target = $js_atts['target'];
+        unset($js_atts['target']);
     }
     $id = uniqid();
     $button_code = '<div id="'.$id.'">';
     $button_code .= '<script async src="' . WP_PAYPAL_URL . '/lib/paypal-button.min.js?merchant=' . $paypal_email . '"';
-    foreach ($atts as $key => $value) {
+    foreach ($js_atts as $key => $value) {
         if($key=='button_image'){
             continue;
         }
         $button_code .= ' data-' . $key . '="' . $value . '"';
     }
-    //$button_code .= 'async';
     $button_code .= '></script>';
     $button_code .= '</div>';
-    if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
-        $button_image_url = esc_url($atts['button_image']);
+    if(isset($js_atts['button_image']) && filter_var($js_atts['button_image'], FILTER_VALIDATE_URL)){
+        $button_image_url = esc_url($js_atts['button_image']);
         $output = <<<EOT
         <script>
         /* <![CDATA[ */
@@ -347,7 +348,8 @@ EOT;
 EOT;
         $button_code .= $output;
     }
-    //generate add to cart button code manually to avoid this error: Things don't appear to be working at the moment. Please try again later.
+    /* end of block for subscription and donation button */
+    /* generate add to cart button code manually to avoid this error: Things don't appear to be working at the moment. Please try again later. */
     if(isset($atts['button']) && $atts['button']=="cart"){ 
         $button_code = wp_paypal_get_add_to_cart_button($atts);
     }
@@ -469,9 +471,9 @@ function wp_paypal_get_buy_now_button($atts){
     }
     $target = '';
     if(isset($atts['target']) && !empty($atts['target'])) {
-        $target = $atts['target'];
+        $target = 'target="'.$atts['target'].'" ';
     }
-    $button_code .= '<form target="'.$target.'" action="'.$action_url.'" method="post" >';
+    $button_code .= '<form '.$target.'action="'.$action_url.'" method="post" >';
     $button_code .= '<input type="hidden" name="cmd" value="_xclick">';
     $paypal_email = get_option('wp_paypal_email');
     if(isset($paypal_email) && !empty($paypal_email)) {
