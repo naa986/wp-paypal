@@ -2,9 +2,9 @@
 Contributors: naa986
 Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce
-Requires at least: 3.0
+Requires at least: 5.3
 Tested up to: 5.3
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -137,6 +137,9 @@ Yes.
 none
 
 == Changelog ==
+
+= 1.1.4 =
+* Fixed a warning notice in the orders menu.
 
 = 1.1.3 =
 * Fixed a bug where the target attribute was not working.

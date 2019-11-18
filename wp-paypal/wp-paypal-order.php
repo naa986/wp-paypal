@@ -32,7 +32,7 @@ function wp_paypal_order_page() {
         'has_archive' => false,
         'hierarchical' => false,
         'menu_position' => null,
-        'supports' => 'editor'
+        'supports' => array('editor')
     );
 
     register_post_type('wp_paypal_order', $args);
