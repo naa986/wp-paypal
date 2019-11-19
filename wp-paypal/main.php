@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.1.4
+  Version: 1.1.5
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.1.4';
+    var $plugin_version = '1.1.5';
     var $plugin_url;
     var $plugin_path;
     

@@ -136,6 +136,8 @@ function wp_paypal_process_ipn() {
             update_post_meta($post_id, '_payment_status', $payment_status);
             wp_paypal_debug_log("Order information updated", true);
             do_action('wp_paypal_order_processed', $post_id);
+            $ipn_response['order_id'] = $post_id;
+            do_action('wp_paypal_ipn_processed', $ipn_response);
         } else {
             wp_paypal_debug_log("Order information could not be updated", false);
             return;
