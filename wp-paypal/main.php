@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.1.5
+  Version: 1.1.6
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.1.5';
+    var $plugin_version = '1.1.6';
     var $plugin_url;
     var $plugin_path;
     
@@ -453,6 +453,10 @@ function wp_paypal_get_add_to_cart_button($atts){
         $notify_url = $atts['callback'];
         $button_code .= '<input type="hidden" name="notify_url" value="'.$notify_url.'">';
     }
+    if(isset($atts['custom']) && !empty($atts['custom'])) {
+        $custom = $atts['custom'];
+        $button_code .= '<input type="hidden" name="custom" value="'.$custom.'">';
+    }
     $button_code .= '<input type="hidden" name="bn" value="WPPayPal_AddToCart_WPS_US">';
     $button_image_url = WP_PAYPAL_URL.'/images/add-to-cart.png';
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
@@ -559,6 +563,10 @@ function wp_paypal_get_buy_now_button($atts){
     if(isset($atts['callback']) && !empty($atts['callback'])) {
         $notify_url = $atts['callback'];
         $button_code .= '<input type="hidden" name="notify_url" value="'.$notify_url.'">';
+    }
+    if(isset($atts['custom']) && !empty($atts['custom'])) {
+        $custom = $atts['custom'];
+        $button_code .= '<input type="hidden" name="custom" value="'.$custom.'">';
     }
     $button_code .= '<input type="hidden" name="bn" value="WPPayPal_BuyNow_WPS_US">';
     $button_image_url = WP_PAYPAL_URL.'/images/buy-now.png';

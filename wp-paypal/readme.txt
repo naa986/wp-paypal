@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce
 Requires at least: 5.3
 Tested up to: 5.3
-Stable tag: 1.1.5
+Stable tag: 1.1.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -137,6 +137,9 @@ Yes.
 none
 
 == Changelog ==
+
+= 1.1.6 =
+* Added support for custom field in the shortcode.
 
 = 1.1.5 =
 * An action is now triggered after processing the PayPal ipn.
