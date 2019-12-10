@@ -17,7 +17,26 @@ function wp_paypal_order_page() {
         'not_found' => __('No Orders found.', 'wp-paypal'),
         'not_found_in_trash' => __('No orders found in Trash.', 'wp-paypal')
     );
-
+    
+    $capability = 'manage_options';
+    $capabilities = array(
+        'edit_post' => $capability,
+        'read_post' => $capability,
+        'delete_post' => $capability,
+        'create_posts' => $capability,
+        'edit_posts' => $capability,
+        'edit_others_posts' => $capability,
+        'publish_posts' => $capability,
+        'read_private_posts' => $capability,
+        'read' => $capability,
+        'delete_posts' => $capability,
+        'delete_private_posts' => $capability,
+        'delete_published_posts' => $capability,
+        'delete_others_posts' => $capability,
+        'edit_private_posts' => $capability,
+        'edit_published_posts' => $capability
+    );
+    
     $args = array(
         'labels' => $labels,
         'public' => false,
@@ -28,7 +47,7 @@ function wp_paypal_order_page() {
         'show_in_menu' => current_user_can('manage_options') ? true : false,
         'query_var' => false,
         'rewrite' => false,
-        'capability_type' => 'post',
+        'capabilities' => $capabilities,
         'has_archive' => false,
         'hierarchical' => false,
         'menu_position' => null,
