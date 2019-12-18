@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.1.7
+  Version: 1.1.8
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.1.7';
+    var $plugin_version = '1.1.8';
     var $plugin_url;
     var $plugin_path;
     
@@ -356,6 +356,9 @@ EOT;
     else if(isset($atts['button']) && $atts['button']=="buynow"){ 
         $button_code = wp_paypal_get_buy_now_button($atts);
     }
+    else if(isset($atts['button']) && $atts['button']=="donate"){
+        $button_code = wp_paypal_get_donate_button($atts);
+    }
     return $button_code;
 }
 
@@ -570,6 +573,64 @@ function wp_paypal_get_buy_now_button($atts){
     }
     $button_code .= '<input type="hidden" name="bn" value="WPPayPal_BuyNow_WPS_US">';
     $button_image_url = WP_PAYPAL_URL.'/images/buy-now.png';
+    if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
+        $button_image_url = esc_url($atts['button_image']);
+    }
+    $button_code .= '<input type="image" src="'.$button_image_url.'" border="0" name="submit">';
+    $button_code .= '</form>';
+    return $button_code;        
+}
+
+function wp_paypal_get_donate_button($atts){
+    $button_code = '';
+    $action_url = 'https://www.paypal.com/cgi-bin/webscr';
+    if(isset($atts['env']) && $atts['env'] == "sandbox"){
+        $action_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
+    }
+    $target = '';
+    if(isset($atts['target']) && !empty($atts['target'])) {
+        $target = 'target="'.$atts['target'].'" ';
+    }
+    $button_code .= '<form '.$target.'action="'.$action_url.'" method="post" >';
+    $button_code .= '<input type="hidden" name="cmd" value="_donations">';
+    $paypal_email = get_option('wp_paypal_email');
+    if(isset($paypal_email) && !empty($paypal_email)) {
+        $button_code .= '<input type="hidden" name="business" value="'.$paypal_email.'">';
+    }
+    if(isset($atts['lc']) && !empty($atts['lc'])) {
+        $lc = $atts['lc'];
+        $button_code .= '<input type="hidden" name="lc" value="'.$lc.'">';
+    }
+    if(isset($atts['name']) && !empty($atts['name'])) {
+        $name = $atts['name'];
+        $button_code .= '<input type="hidden" name="item_name" value="'.$name.'">';
+    }
+    if(isset($atts['item_number']) && !empty($atts['item_number'])) {
+        $item_number = $atts['item_number'];
+        $button_code .= '<input type="hidden" name="item_number" value="'.$item_number.'">';
+    }
+    if(isset($atts['currency']) && !empty($atts['currency'])) {
+        $currency = $atts['currency'];
+        $button_code .= '<input type="hidden" name="currency_code" value="'.$currency.'">';
+    }
+    if(isset($atts['return']) && filter_var($atts['return'], FILTER_VALIDATE_URL)){
+        $return = esc_url($atts['return']);
+        $button_code .= '<input type="hidden" name="return" value="'.$return.'">';
+    }
+    if(isset($atts['cancel_return']) && filter_var($atts['cancel_return'], FILTER_VALIDATE_URL)){
+        $cancel_return = esc_url($atts['cancel_return']);
+        $button_code .= '<input type="hidden" name="cancel_return" value="'.$cancel_return.'">';
+    }
+    if(isset($atts['callback']) && !empty($atts['callback'])) {
+        $notify_url = $atts['callback'];
+        $button_code .= '<input type="hidden" name="notify_url" value="'.$notify_url.'">';
+    }
+    if(isset($atts['custom']) && !empty($atts['custom'])) {
+        $custom = $atts['custom'];
+        $button_code .= '<input type="hidden" name="custom" value="'.$custom.'">';
+    }
+    $button_code .= '<input type="hidden" name="bn" value="WPPayPal_Donate_WPS_US">';
+    $button_image_url = WP_PAYPAL_URL.'/images/donate.png';
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
         $button_image_url = esc_url($atts['button_image']);
     }
