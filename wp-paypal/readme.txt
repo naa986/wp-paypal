@@ -39,7 +39,6 @@ WP PayPal supports PayPal Sandbox. PayPal Sandbox is a simulation environment wh
 * Compatible with the latest version of WordPress
 * Compatible with any WordPress theme
 * Sell in any currency supported by PayPal
-* Coupon/discount functionality
 * Accept recurring payments/subscriptions
 * Charge shipping on your products or services
 * Charge tax on your products or services
