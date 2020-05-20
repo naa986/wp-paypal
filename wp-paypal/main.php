@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.1.8
+  Version: 1.1.9
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.1.8';
+    var $plugin_version = '1.1.9';
     var $plugin_url;
     var $plugin_path;
     
@@ -612,6 +612,11 @@ function wp_paypal_get_donate_button($atts){
     if(isset($atts['currency']) && !empty($atts['currency'])) {
         $currency = $atts['currency'];
         $button_code .= '<input type="hidden" name="currency_code" value="'.$currency.'">';
+    }
+    $no_shipping = 0; //default
+    if(isset($atts['no_shipping']) && is_numeric($atts['no_shipping'])) {
+        $no_shipping = $atts['no_shipping'];
+        $button_code .= '<input type="hidden" name="no_shipping" value="'.$no_shipping.'">';
     }
     if(isset($atts['return']) && filter_var($atts['return'], FILTER_VALIDATE_URL)){
         $return = esc_url($atts['return']);
