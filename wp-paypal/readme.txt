@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce
 Requires at least: 5.3
 Tested up to: 5.4
-Stable tag: 1.1.9
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -76,7 +76,7 @@ Donation buttons let you accept donations from your users.
 
 Subscribe buttons let you set up payment subscriptions. 
 
-`[wp_paypal button="subscribe" name="My product" amount="1.00" recurrence="1" period="M" src="1"]`
+`[wp_paypal button="subscribe" name="My product" a3="1.00" p3="1" t3="M" src="1"]`
 
 = Button Parameters =
 
@@ -136,6 +136,9 @@ Yes.
 none
 
 == Changelog ==
+
+= 1.2.0 =
+* Updated the parameters in the subscribe button. This should fix the button image rendering issue on some websites.
 
 = 1.1.9 =
 * Donate buttons now support the no_shipping parameter.

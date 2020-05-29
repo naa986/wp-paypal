@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.1.9
+  Version: 1.2.0
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.1.9';
+    var $plugin_version = '1.2.0';
     var $plugin_url;
     var $plugin_path;
     
@@ -301,55 +301,64 @@ function wp_paypal_button_handler($atts) {
     } else {
         $atts['currency'] = $currency;
     }
-    /* only for subscription and donation button */
-    $js_atts = $atts;
-    $target = '';
-    if(isset($js_atts['target']) && !empty($js_atts['target'])) {
-        $target = $js_atts['target'];
-        unset($js_atts['target']);
-    }
-    $id = uniqid();
-    $button_code = '<div id="'.$id.'">';
-    $button_code .= '<script async src="' . WP_PAYPAL_URL . '/lib/paypal-button.min.js?merchant=' . $paypal_email . '"';
-    foreach ($js_atts as $key => $value) {
-        if($key=='button_image'){
-            continue;
+    /* only for old subscription button */
+    $old_subscription_button = 0;
+    if(isset($atts['button']) && $atts['button']=="subscribe"){
+        if(isset($atts['recurrence']) || isset($atts['period'])){
+            $old_subscription_button = 1;
         }
-        $button_code .= ' data-' . $key . '="' . $value . '"';
     }
-    $button_code .= '></script>';
-    $button_code .= '</div>';
-    if(isset($js_atts['button_image']) && filter_var($js_atts['button_image'], FILTER_VALIDATE_URL)){
-        $button_image_url = esc_url($js_atts['button_image']);
-        $output = <<<EOT
-        <script>
-        /* <![CDATA[ */
-            jQuery(document).ready(function($){
-                $(function(){
-                    $('div#$id button').replaceWith('<input type="image" src="$button_image_url">');
+    if($old_subscription_button){   //remove this in a future release
+        $js_atts = $atts;
+        $target = '';
+        if(isset($js_atts['target']) && !empty($js_atts['target'])) {
+            $target = $js_atts['target'];
+            unset($js_atts['target']);
+        }
+        $id = uniqid();
+        $button_code = '<div id="'.$id.'">';
+        $button_code .= '<script async src="' . WP_PAYPAL_URL . '/lib/paypal-button.min.js?merchant=' . $paypal_email . '"';
+        foreach ($js_atts as $key => $value) {
+            if($key=='button_image'){
+                continue;
+            }
+            $button_code .= ' data-' . $key . '="' . $value . '"';
+        }
+        $button_code .= '></script>';
+        $button_code .= '</div>';
+        if(isset($js_atts['button_image']) && filter_var($js_atts['button_image'], FILTER_VALIDATE_URL)){
+            $button_image_url = esc_url($js_atts['button_image']);
+            $output = <<<EOT
+            <script>
+            /* <![CDATA[ */
+                jQuery(document).ready(function($){
+                    $(function(){
+                        $('div#$id button').replaceWith('<input type="image" src="$button_image_url">');
+                    });
                 });
-            });
-            /* ]]> */    
-        </script>       
+                /* ]]> */    
+            </script>       
 EOT;
-        $button_code .= $output;
-    }
-    if(!empty($target)){
-        $output = <<<EOT
-        <script>
-        /* <![CDATA[ */
-            jQuery(document).ready(function($){
-                $(function(){
-                    $('div#$id form').prop('target', '$target');
+            $button_code .= $output;
+        }
+        if(!empty($target)){
+            $output = <<<EOT
+            <script>
+            /* <![CDATA[ */
+                jQuery(document).ready(function($){
+                    $(function(){
+                        $('div#$id form').prop('target', '$target');
+                    });
                 });
-            });
-            /* ]]> */    
-        </script>       
+                /* ]]> */    
+            </script>       
 EOT;
-        $button_code .= $output;
+            $button_code .= $output;
+        }       
+        return $button_code;
     }
-    /* end of block for subscription and donation button */
-    /* generate add to cart button code manually to avoid this error: Things don't appear to be working at the moment. Please try again later. */
+    /* end of block for old subscription button */
+
     if(isset($atts['button']) && $atts['button']=="cart"){ 
         $button_code = wp_paypal_get_add_to_cart_button($atts);
     }
@@ -358,6 +367,12 @@ EOT;
     }
     else if(isset($atts['button']) && $atts['button']=="donate"){
         $button_code = wp_paypal_get_donate_button($atts);
+    }
+    else if(isset($atts['button']) && $atts['button']=="subscribe"){
+        $button_code = wp_paypal_get_subscribe_button($atts);
+    }
+    else{
+        $button_code = __('Please enter a correct button type', 'wp-paypal');
     }
     return $button_code;
 }
@@ -636,6 +651,128 @@ function wp_paypal_get_donate_button($atts){
     }
     $button_code .= '<input type="hidden" name="bn" value="WPPayPal_Donate_WPS_US">';
     $button_image_url = WP_PAYPAL_URL.'/images/donate.png';
+    if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
+        $button_image_url = esc_url($atts['button_image']);
+    }
+    $button_code .= '<input type="image" src="'.$button_image_url.'" border="0" name="submit">';
+    $button_code .= '</form>';
+    return $button_code;        
+}
+
+function wp_paypal_get_subscribe_button($atts){
+    $button_code = '';
+    $action_url = 'https://www.paypal.com/cgi-bin/webscr';
+    if(isset($atts['env']) && $atts['env'] == "sandbox"){
+        $action_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
+    }
+    $target = '';
+    if(isset($atts['target']) && !empty($atts['target'])) {
+        $target = 'target="'.$atts['target'].'" ';
+    }
+    $button_code .= '<form '.$target.'action="'.$action_url.'" method="post" >';
+    $button_code .= '<input type="hidden" name="cmd" value="_xclick-subscriptions">';
+    $paypal_email = get_option('wp_paypal_email');
+    if(isset($paypal_email) && !empty($paypal_email)) {
+        $button_code .= '<input type="hidden" name="business" value="'.$paypal_email.'">';
+    }
+    if(isset($atts['lc']) && !empty($atts['lc'])) {
+        $lc = $atts['lc'];
+        $button_code .= '<input type="hidden" name="lc" value="'.$lc.'">';
+    }
+    if(isset($atts['name']) && !empty($atts['name'])) {
+        $name = $atts['name'];
+        $button_code .= '<input type="hidden" name="item_name" value="'.$name.'">';
+    }
+    if(isset($atts['item_number']) && !empty($atts['item_number'])) {
+        $item_number = $atts['item_number'];
+        $button_code .= '<input type="hidden" name="item_number" value="'.$item_number.'">';
+    }
+    if(isset($atts['a1']) && is_numeric($atts['a1'])) {
+        $a1 = $atts['a1'];
+        $button_code .= '<input type="hidden" name="a1" value="'.$a1.'">';
+        if(isset($atts['p1']) && is_numeric($atts['p1'])) {
+            $p1 = $atts['p1'];
+            $button_code .= '<input type="hidden" name="p1" value="'.$p1.'">';
+        }
+        else{
+            $button_code = __('Please enter a trial period duration p1', 'wp-paypal');
+            return $button_code;
+        }
+        if(isset($atts['t1']) && !empty($atts['t1'])) {
+            $t1 = $atts['t1'];
+            $button_code .= '<input type="hidden" name="t1" value="'.$t1.'">';
+        }
+        else{
+            $button_code = __('Please enter a trial period units of duration t1', 'wp-paypal');
+            return $button_code;
+        }
+    }
+    if(isset($atts['a3']) && is_numeric($atts['a3'])) {
+        $a3 = $atts['a3'];
+        $button_code .= '<input type="hidden" name="a3" value="'.$a3.'">';
+    }
+    else{
+        $button_code = __('Please enter a regular subscription price a3', 'wp-paypal');
+        return $button_code;
+    }
+    if(isset($atts['p3']) && is_numeric($atts['p3'])) {
+        $p3 = $atts['p3'];
+        $button_code .= '<input type="hidden" name="p3" value="'.$p3.'">';
+    }
+    else{
+        $button_code = __('Please enter a subscription duration p3', 'wp-paypal');
+        return $button_code;
+    }
+    if(isset($atts['t3']) && !empty($atts['t3'])) {
+        $t3 = $atts['t3'];
+        $button_code .= '<input type="hidden" name="t3" value="'.$t3.'">';
+    }
+    else{
+        $button_code = __('Please enter a subscription units of duration t3', 'wp-paypal');
+        return $button_code;
+    }
+    if(isset($atts['src']) && is_numeric($atts['src'])) {
+        $src = $atts['src'];
+        $button_code .= '<input type="hidden" name="src" value="'.$src.'">';
+        if($src == '1'){
+            if(isset($atts['srt']) && is_numeric($atts['srt'])) {
+                $srt = $atts['srt'];
+                $button_code .= '<input type="hidden" name="srt" value="'.$srt.'">';
+            }
+        }
+    }
+    if(isset($atts['sra']) && is_numeric($atts['sra'])) {
+        $sra = $atts['sra'];
+        $button_code .= '<input type="hidden" name="sra" value="'.$sra.'">';
+    }
+    if(isset($atts['currency']) && !empty($atts['currency'])) {
+        $currency = $atts['currency'];
+        $button_code .= '<input type="hidden" name="currency_code" value="'.$currency.'">';
+    }
+    $button_code .= '<input type="hidden" name="no_note" value="1">'; //For Subscribe buttons, always set no_note to 1
+    $no_shipping = 0; //default
+    if(isset($atts['no_shipping']) && is_numeric($atts['no_shipping'])) {
+        $no_shipping = $atts['no_shipping'];
+        $button_code .= '<input type="hidden" name="no_shipping" value="'.$no_shipping.'">';
+    }
+    if(isset($atts['return']) && filter_var($atts['return'], FILTER_VALIDATE_URL)){
+        $return = esc_url($atts['return']);
+        $button_code .= '<input type="hidden" name="return" value="'.$return.'">';
+    }
+    if(isset($atts['cancel_return']) && filter_var($atts['cancel_return'], FILTER_VALIDATE_URL)){
+        $cancel_return = esc_url($atts['cancel_return']);
+        $button_code .= '<input type="hidden" name="cancel_return" value="'.$cancel_return.'">';
+    }
+    if(isset($atts['callback']) && !empty($atts['callback'])) {
+        $notify_url = $atts['callback'];
+        $button_code .= '<input type="hidden" name="notify_url" value="'.$notify_url.'">';
+    }
+    if(isset($atts['custom']) && !empty($atts['custom'])) {
+        $custom = $atts['custom'];
+        $button_code .= '<input type="hidden" name="custom" value="'.$custom.'">';
+    }
+    $button_code .= '<input type="hidden" name="bn" value="WPPayPal_Subscribe_WPS_US">';
+    $button_image_url = WP_PAYPAL_URL.'/images/subscribe.png';
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
         $button_image_url = esc_url($atts['button_image']);
     }
