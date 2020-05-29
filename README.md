@@ -2,7 +2,7 @@
 
 ## Description
 
-[WordPress PayPal](https://wphowto.net/wordpress-paypal-plugin-732) plugin allows you to easily create a PayPal Buy Now, Add to Cart, Donation or Subscription type button. It generates the button dynamically using a shortcode that enables PayPal checkout on your WordPress site. It was developed by [wphowto](https://wphowto.net/) and is currently being used on over 3,000 websites.
+[WordPress PayPal](https://wphowto.net/wordpress-paypal-plugin-732) plugin allows you to easily create a PayPal Buy Now, Add to Cart, Donation or Subscription type button. It generates the button dynamically using a shortcode that enables PayPal checkout on your WordPress site. It was developed by [wphowto](https://wphowto.net/) and is currently being used on over 10,000 websites.
 
 Your customers will be able to pay for your products using PayPal or Credit Card. This plugin makes it easy for you to set up your online e-commerce store. You do not need to spend days configuring products and settings. All you need to do is insert a shortcode into one of your web pages and your website will be ready to go live.
 
@@ -60,7 +60,7 @@ Donation buttons let you accept donations from your users.
 
 Subscribe buttons let you set up payment subscriptions. 
 ```
-[wp_paypal button="subscribe" name="My product" amount="1.00" recurrence="1" period="M" src="1"]
+[wp_paypal button="subscribe" name="My product" a3="1.00" p3="1" t3="M" src="1"]
 ```
 ## PayPal Button Parameters
 
