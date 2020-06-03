@@ -105,6 +105,19 @@ function wp_paypal_process_ipn() {
                 return;
             }
         }
+        $ship_to = '';
+        if (isset($ipn_response['address_street'])) {
+            $address_street = sanitize_text_field($ipn_response['address_street']);
+            $ship_to .= !empty($address_street) ? $address_street.'<br />' : '';
+            $address_city = isset($ipn_response['address_city']) ? sanitize_text_field($ipn_response['address_city']) : '';
+            $ship_to .= !empty($address_city) ? $address_city.', ' : '';
+            $address_state = isset($ipn_response['address_state']) ? sanitize_text_field($ipn_response['address_state']) : '';
+            $ship_to .= !empty($address_state) ? $address_state.' ' : '';
+            $address_zip = isset($ipn_response['address_zip']) ? sanitize_text_field($ipn_response['address_zip']) : '';
+            $ship_to .= !empty($address_zip) ? $address_zip.'<br />' : '';
+            $address_country = isset($ipn_response['address_country']) ? sanitize_text_field($ipn_response['address_country']) : '';
+            $ship_to .= !empty($address_country) ? $address_country : '';
+        }
         $wp_paypal_order = array(
             'post_title' => 'order',
             'post_type' => 'wp_paypal_order',
@@ -115,7 +128,13 @@ function wp_paypal_process_ipn() {
         $post_id = wp_insert_post($wp_paypal_order);  //insert a new order
         $post_updated = false;
         if ($post_id > 0) {
-            $post_content = print_r($ipn_response, true);
+            $post_content = '';
+            if(!empty($ship_to)){
+                $ship_to = '<h2>'.__('Ship To', 'wp-paypal').'</h2><br />'.$first_name.' '.$last_name.'<br />'.$ship_to.'<br />';
+            }
+            $post_content .= $ship_to;
+            $post_content .= '<h2>'.__('Payment Data', 'wp-paypal').'</h2><br />';
+            $post_content .= print_r($ipn_response, true);
             $updated_post = array(
                 'ID' => $post_id,
                 'post_title' => $post_id,
