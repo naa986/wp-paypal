@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.2
+  Version: 1.2.2.1
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.2';
+    var $plugin_version = '1.2.2.1';
     var $plugin_url;
     var $plugin_path;
     
@@ -388,6 +388,7 @@ function wp_paypal_get_add_to_cart_button($atts){
         $target = 'target="'.$atts['target'].'" ';
     }
     $button_code .= '<form '.$target.'action="'.$action_url.'" method="post" >';
+    $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_cart">';
     $button_code .= '<input type="hidden" name="add" value="1">';
     $paypal_email = get_option('wp_paypal_email');
@@ -494,6 +495,7 @@ function wp_paypal_get_buy_now_button($atts){
         $target = 'target="'.$atts['target'].'" ';
     }
     $button_code .= '<form '.$target.'action="'.$action_url.'" method="post" >';
+    $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_xclick">';
     $paypal_email = get_option('wp_paypal_email');
     if(isset($paypal_email) && !empty($paypal_email)) {
@@ -605,6 +607,7 @@ function wp_paypal_get_donate_button($atts){
         $target = 'target="'.$atts['target'].'" ';
     }
     $button_code .= '<form '.$target.'action="'.$action_url.'" method="post" >';
+    $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_donations">';
     $paypal_email = get_option('wp_paypal_email');
     if(isset($paypal_email) && !empty($paypal_email)) {
@@ -668,6 +671,7 @@ function wp_paypal_get_subscribe_button($atts){
         $target = 'target="'.$atts['target'].'" ';
     }
     $button_code .= '<form '.$target.'action="'.$action_url.'" method="post" >';
+    $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_xclick-subscriptions">';
     $paypal_email = get_option('wp_paypal_email');
     if(isset($paypal_email) && !empty($paypal_email)) {
