@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.1
+  Version: 1.2.2
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.1';
+    var $plugin_version = '1.2.2';
     var $plugin_url;
     var $plugin_path;
     
@@ -383,13 +383,11 @@ function wp_paypal_get_add_to_cart_button($atts){
     if(isset($atts['env']) && $atts['env'] == "sandbox"){
         $action_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
     }
-    $target = 'paypal'; //let PayPal do its thing for shopping cart functionality
-    /*
+    $target = '';
     if(isset($atts['target']) && !empty($atts['target'])) {
-        $target = $atts['target'];
+        $target = 'target="'.$atts['target'].'" ';
     }
-    */
-    $button_code .= '<form target="'.$target.'" action="'.$action_url.'" method="post" >';
+    $button_code .= '<form '.$target.'action="'.$action_url.'" method="post" >';
     $button_code .= '<input type="hidden" name="cmd" value="_cart">';
     $button_code .= '<input type="hidden" name="add" value="1">';
     $paypal_email = get_option('wp_paypal_email');

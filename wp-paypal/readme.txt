@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce
 Requires at least: 5.3
 Tested up to: 5.4
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -136,6 +136,9 @@ Yes.
 none
 
 == Changelog ==
+
+= 1.2.2 =
+* Fixed an issue where the add to cart button would open a new tab.
 
 = 1.2.1 =
 * Shipping address is now displayed on a separate row in the order content area.
