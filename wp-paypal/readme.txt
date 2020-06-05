@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce
 Requires at least: 5.3
 Tested up to: 5.4
-Stable tag: 1.2.2.1
+Stable tag: 1.2.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -65,6 +65,12 @@ Buy Now buttons are for single item purchases. In order to create a buy button y
 Add To Cart buttons let users add multiple items to their PayPal shopping cart and checkout.
 
 `[wp_paypal button="cart" name="My product" amount="1.00"]`
+
+= PayPal View Cart =
+
+View Cart buttons let users view items that were added to their PayPal shopping cart.
+
+`[wp_paypal button="viewcart"]`
 
 = PayPal Donation =
 
@@ -136,6 +142,9 @@ Yes.
 none
 
 == Changelog ==
+
+= 1.2.2.2 =
+* Added a view cart button for the PayPal shopping cart.
 
 = 1.2.2.1 =
 * Charset is now set to utf-8 for all the buttons.

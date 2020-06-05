@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.2.1
+  Version: 1.2.2.2
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.2.1';
+    var $plugin_version = '1.2.2.2';
     var $plugin_url;
     var $plugin_path;
     
@@ -362,6 +362,9 @@ EOT;
     if(isset($atts['button']) && $atts['button']=="cart"){ 
         $button_code = wp_paypal_get_add_to_cart_button($atts);
     }
+    else if(isset($atts['button']) && $atts['button']=="viewcart"){
+        $button_code = wp_paypal_get_view_cart_button($atts);
+    }
     else if(isset($atts['button']) && $atts['button']=="buynow"){ 
         $button_code = wp_paypal_get_buy_now_button($atts);
     }
@@ -476,6 +479,33 @@ function wp_paypal_get_add_to_cart_button($atts){
     }
     $button_code .= '<input type="hidden" name="bn" value="WPPayPal_AddToCart_WPS_US">';
     $button_image_url = WP_PAYPAL_URL.'/images/add-to-cart.png';
+    if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
+        $button_image_url = esc_url($atts['button_image']);
+    }
+    $button_code .= '<input type="image" src="'.$button_image_url.'" border="0" name="submit">';
+    $button_code .= '</form>';
+    return $button_code;        
+}
+
+function wp_paypal_get_view_cart_button($atts){
+    $button_code = '';
+    $action_url = 'https://www.paypal.com/cgi-bin/webscr';
+    if(isset($atts['env']) && $atts['env'] == "sandbox"){
+        $action_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
+    }
+    $target = '';
+    if(isset($atts['target']) && !empty($atts['target'])) {
+        $target = 'target="'.$atts['target'].'" ';
+    }
+    $button_code .= '<form '.$target.'action="'.$action_url.'" method="post" >';
+    $button_code .= '<input type="hidden" name="charset" value="utf-8">';
+    $button_code .= '<input type="hidden" name="cmd" value="_cart">';
+    $button_code .= '<input type="hidden" name="display" value="1">';
+    $paypal_email = get_option('wp_paypal_email');
+    if(isset($paypal_email) && !empty($paypal_email)) {
+        $button_code .= '<input type="hidden" name="business" value="'.$paypal_email.'">';
+    }
+    $button_image_url = WP_PAYPAL_URL.'/images/view-cart.png';
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
         $button_image_url = esc_url($atts['button_image']);
     }
