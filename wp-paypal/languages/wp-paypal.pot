@@ -2,14 +2,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WP PayPal\n"
-"POT-Creation-Date: 2019-01-17 10:51+0600\n"
+"POT-Creation-Date: 2020-06-27 12:10+0600\n"
 "PO-Revision-Date: 2015-11-26 16:17+1000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.13\n"
+"X-Generator: Poedit 2.2.3\n"
 "X-Poedit-KeywordsList: _e;__\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -45,75 +45,115 @@ msgid ""
 "documentation page for usage instructions."
 msgstr ""
 
-#: main.php:188 main.php:242
+#: main.php:189 main.php:249
 msgid "Settings Saved"
 msgstr ""
 
-#: main.php:201
+#: main.php:202
 msgid "Enable Test Mode"
 msgstr ""
 
-#: main.php:204
+#: main.php:205
 msgid "Check this option if you want to enable PayPal sandbox for testing"
 msgstr ""
 
-#: main.php:209
+#: main.php:210
+msgid "PayPal Merchant ID"
+msgstr ""
+
+#: main.php:212
+msgid "Your PayPal Merchant ID"
+msgstr ""
+
+#: main.php:216
 msgid "PayPal Email"
 msgstr ""
 
-#: main.php:211
+#: main.php:218
 msgid "Your PayPal email address"
 msgstr ""
 
-#: main.php:215
+#: main.php:222
 msgid "Currency Code"
 msgstr ""
 
-#: main.php:217
+#: main.php:224
 msgid "The currency of the payment"
 msgstr ""
 
-#: main.php:217
+#: main.php:224
 msgid "example"
 msgstr ""
 
-#: main.php:224 main.php:275
+#: main.php:231 main.php:282
 msgid "Save Changes"
 msgstr ""
 
-#: main.php:232
+#: main.php:239
 msgid "WP PayPal Debug Log"
 msgstr ""
 
-#: main.php:250
+#: main.php:257
 msgid "Debug log file has been reset"
 msgstr ""
 
-#: main.php:252
+#: main.php:259
 msgid "Debug log file could not be reset"
 msgstr ""
 
-#: main.php:265
+#: main.php:272
 msgid "Enable Debug"
 msgstr ""
 
-#: main.php:268
+#: main.php:275
 msgid "Check this option if you want to enable debug"
 msgstr ""
 
-#: main.php:279
+#: main.php:286
 msgid "Reset Log"
 msgstr ""
 
-#: main.php:503
+#: main.php:385
+msgid "Please enter a correct button type"
+msgstr ""
+
+#: main.php:591
 msgid "Amount cannot be empty"
+msgstr ""
+
+#: main.php:782
+msgid "Please enter a trial period duration p1"
+msgstr ""
+
+#: main.php:790
+msgid "Please enter a trial period units of duration t1"
+msgstr ""
+
+#: main.php:799
+msgid "Please enter a regular subscription price a3"
+msgstr ""
+
+#: main.php:807
+msgid "Please enter a subscription duration p3"
+msgstr ""
+
+#: main.php:815
+msgid "Please enter a subscription units of duration t3"
+msgstr ""
+
+#: paypal-ipn.php:132
+msgid "Ship To"
+msgstr ""
+
+#: paypal-ipn.php:135
+msgid "Payment Data"
 msgstr ""
 
 #: wp-paypal-order.php:5
 msgid "Orders"
 msgstr ""
 
-#: wp-paypal-order.php:6 wp-paypal-order.php:8 wp-paypal-order.php:44
+#: wp-paypal-order.php:6 wp-paypal-order.php:8 wp-paypal-order.php:64
 msgid "Order"
 msgstr ""
 
@@ -157,30 +197,30 @@ msgstr ""
 msgid "No orders found in Trash."
 msgstr ""
 
-#: wp-paypal-order.php:45 wp-paypal-order.php:76
+#: wp-paypal-order.php:65 wp-paypal-order.php:96
 msgid "Transaction ID"
 msgstr ""
 
-#: wp-paypal-order.php:46
+#: wp-paypal-order.php:66
 msgid "First Name"
 msgstr ""
 
-#: wp-paypal-order.php:47
+#: wp-paypal-order.php:67
 msgid "Last Name"
 msgstr ""
 
-#: wp-paypal-order.php:48
+#: wp-paypal-order.php:68
 msgid "Total"
 msgstr ""
 
-#: wp-paypal-order.php:49 wp-paypal-order.php:66
+#: wp-paypal-order.php:69 wp-paypal-order.php:86
 msgid "Payment Status"
 msgstr ""
 
-#: wp-paypal-order.php:50
+#: wp-paypal-order.php:70
 msgid "Date"
 msgstr ""
 
-#: wp-paypal-order.php:71
+#: wp-paypal-order.php:91
 msgid "Payment Type"
 msgstr ""

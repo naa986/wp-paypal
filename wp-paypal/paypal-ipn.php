@@ -96,12 +96,11 @@ function wp_paypal_process_ipn() {
         if (isset($ipn_response['mc_gross'])) {
             $mc_gross = sanitize_text_field($ipn_response['mc_gross']);
         }
-        $receiver_email = '';
-        if (isset($ipn_response['receiver_email'])) {
-            $receiver_email = sanitize_text_field($ipn_response['receiver_email']);
-            $seller_email = get_option('wp_paypal_email');
-            if ($seller_email != $receiver_email) {
-                wp_paypal_debug_log("Seller PayPal email (".$seller_email.") and Receiver PayPal email (".$receiver_email.") do not match. This payment cannot be processed.", false);
+        $seller_id = get_option('wp_paypal_merchant_id');
+        if (isset($seller_id) && !empty($seller_id) && isset($ipn_response['receiver_id'])) {
+            $receiver_id = sanitize_text_field($ipn_response['receiver_id']);
+            if ($seller_id != $receiver_id) {
+                wp_paypal_debug_log("Seller PayPal ID (".$seller_id.") and Receiver PayPal ID (".$receiver_id.") do not match. This payment cannot be processed.", false);
                 return;
             }
         }

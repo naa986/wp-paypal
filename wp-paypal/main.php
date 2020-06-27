@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.2.2
+  Version: 1.2.2.3
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.2.2';
+    var $plugin_version = '1.2.2.3';
     var $plugin_url;
     var $plugin_path;
     
@@ -182,8 +182,9 @@ class WP_PAYPAL {
                 wp_die('Error! Nonce Security Check Failed! please save the settings again.');
             }
             update_option('wp_paypal_enable_testmode', (isset($_POST["enable_testmode"]) && $_POST["enable_testmode"] == '1') ? '1' : '');
-            update_option('wp_paypal_email', trim($_POST["paypal_email"]));
-            update_option('wp_paypal_currency_code', trim($_POST["currency_code"]));
+            update_option('wp_paypal_merchant_id', sanitize_text_field($_POST["paypal_merchant_id"]));
+            update_option('wp_paypal_email', sanitize_text_field($_POST["paypal_email"]));
+            update_option('wp_paypal_currency_code', sanitize_text_field($_POST["currency_code"]));
             echo '<div id="message" class="updated fade"><p><strong>';
             echo __('Settings Saved', 'wp-paypal').'!';
             echo '</strong></p></div>';
@@ -203,6 +204,12 @@ class WP_PAYPAL {
                                     <input name="enable_testmode" type="checkbox" id="enable_testmode" <?php if (get_option('wp_paypal_enable_testmode') == '1') echo ' checked="checked"'; ?> value="1">
                                     <?Php _e('Check this option if you want to enable PayPal sandbox for testing', 'wp-paypal');?></label>
                             </fieldset></td>
+                    </tr>
+                    
+                    <tr valign="top">
+                        <th scope="row"><label for="paypal_merchant_id"><?Php _e('PayPal Merchant ID', 'wp-paypal');?></label></th>
+                        <td><input name="paypal_merchant_id" type="text" id="paypal_merchant_id" value="<?php echo get_option('wp_paypal_merchant_id'); ?>" class="regular-text">
+                            <p class="description"><?Php _e('Your PayPal Merchant ID', 'wp-paypal');?></p></td>
                     </tr>
 
                     <tr valign="top">
@@ -394,9 +401,18 @@ function wp_paypal_get_add_to_cart_button($atts){
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_cart">';
     $button_code .= '<input type="hidden" name="add" value="1">';
+    $business = '';
+    $paypal_merchant_id = get_option('wp_paypal_merchant_id');
     $paypal_email = get_option('wp_paypal_email');
-    if(isset($paypal_email) && !empty($paypal_email)) {
-        $button_code .= '<input type="hidden" name="business" value="'.$paypal_email.'">';
+    if(isset($paypal_merchant_id) && !empty($paypal_merchant_id)) {
+        $business = $paypal_merchant_id;
+    }
+    else if(isset($paypal_email) && !empty($paypal_email)) {
+        $business = $paypal_email;
+    }
+    
+    if(isset($business) && !empty($business)) {
+        $button_code .= '<input type="hidden" name="business" value="'.$business.'">';
     }
     if(isset($atts['lc']) && !empty($atts['lc'])) {
         $lc = $atts['lc'];
@@ -501,9 +517,18 @@ function wp_paypal_get_view_cart_button($atts){
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_cart">';
     $button_code .= '<input type="hidden" name="display" value="1">';
+    $business = '';
+    $paypal_merchant_id = get_option('wp_paypal_merchant_id');
     $paypal_email = get_option('wp_paypal_email');
-    if(isset($paypal_email) && !empty($paypal_email)) {
-        $button_code .= '<input type="hidden" name="business" value="'.$paypal_email.'">';
+    if(isset($paypal_merchant_id) && !empty($paypal_merchant_id)) {
+        $business = $paypal_merchant_id;
+    }
+    else if(isset($paypal_email) && !empty($paypal_email)) {
+        $business = $paypal_email;
+    }
+    
+    if(isset($business) && !empty($business)) {
+        $button_code .= '<input type="hidden" name="business" value="'.$business.'">';
     }
     $button_image_url = WP_PAYPAL_URL.'/images/view-cart.png';
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
@@ -527,9 +552,18 @@ function wp_paypal_get_buy_now_button($atts){
     $button_code .= '<form '.$target.'action="'.$action_url.'" method="post" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_xclick">';
+    $business = '';
+    $paypal_merchant_id = get_option('wp_paypal_merchant_id');
     $paypal_email = get_option('wp_paypal_email');
-    if(isset($paypal_email) && !empty($paypal_email)) {
-        $button_code .= '<input type="hidden" name="business" value="'.$paypal_email.'">';
+    if(isset($paypal_merchant_id) && !empty($paypal_merchant_id)) {
+        $business = $paypal_merchant_id;
+    }
+    else if(isset($paypal_email) && !empty($paypal_email)) {
+        $business = $paypal_email;
+    }
+    
+    if(isset($business) && !empty($business)) {
+        $button_code .= '<input type="hidden" name="business" value="'.$business.'">';
     }
     if(isset($atts['lc']) && !empty($atts['lc'])) {
         $lc = $atts['lc'];
@@ -639,9 +673,18 @@ function wp_paypal_get_donate_button($atts){
     $button_code .= '<form '.$target.'action="'.$action_url.'" method="post" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_donations">';
+    $business = '';
+    $paypal_merchant_id = get_option('wp_paypal_merchant_id');
     $paypal_email = get_option('wp_paypal_email');
-    if(isset($paypal_email) && !empty($paypal_email)) {
-        $button_code .= '<input type="hidden" name="business" value="'.$paypal_email.'">';
+    if(isset($paypal_merchant_id) && !empty($paypal_merchant_id)) {
+        $business = $paypal_merchant_id;
+    }
+    else if(isset($paypal_email) && !empty($paypal_email)) {
+        $business = $paypal_email;
+    }
+    
+    if(isset($business) && !empty($business)) {
+        $button_code .= '<input type="hidden" name="business" value="'.$business.'">';
     }
     if(isset($atts['lc']) && !empty($atts['lc'])) {
         $lc = $atts['lc'];
@@ -703,9 +746,18 @@ function wp_paypal_get_subscribe_button($atts){
     $button_code .= '<form '.$target.'action="'.$action_url.'" method="post" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_xclick-subscriptions">';
+    $business = '';
+    $paypal_merchant_id = get_option('wp_paypal_merchant_id');
     $paypal_email = get_option('wp_paypal_email');
-    if(isset($paypal_email) && !empty($paypal_email)) {
-        $button_code .= '<input type="hidden" name="business" value="'.$paypal_email.'">';
+    if(isset($paypal_merchant_id) && !empty($paypal_merchant_id)) {
+        $business = $paypal_merchant_id;
+    }
+    else if(isset($paypal_email) && !empty($paypal_email)) {
+        $business = $paypal_email;
+    }
+    
+    if(isset($business) && !empty($business)) {
+        $button_code .= '<input type="hidden" name="business" value="'.$business.'">';
     }
     if(isset($atts['lc']) && !empty($atts['lc'])) {
         $lc = $atts['lc'];
