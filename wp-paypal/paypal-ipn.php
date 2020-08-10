@@ -123,8 +123,16 @@ function wp_paypal_process_ipn() {
             'post_content' => '',
             'post_status' => 'publish',
         );
-        wp_paypal_debug_log("Updating order information", true);
-        $post_id = wp_insert_post($wp_paypal_order);  //insert a new order
+        wp_paypal_debug_log("Inserting order information", true);
+        $post_id = wp_insert_post($wp_paypal_order, true);  //insert a new order
+        if (is_wp_error($post_id)) {
+            wp_paypal_debug_log("Error inserting order information: ".$post_id->get_error_message(), false);
+            return;
+        }
+        if (!$post_id) {
+            wp_paypal_debug_log("Order information could not be inserted", false);
+            return;
+        }
         $post_updated = false;
         if ($post_id > 0) {
             $post_content = '';
@@ -140,7 +148,15 @@ function wp_paypal_process_ipn() {
                 'post_type' => 'wp_paypal_order',
                 'post_content' => $post_content
             );
-            $updated_post_id = wp_update_post($updated_post);  //update the order
+            $updated_post_id = wp_update_post($updated_post, true);  //update the order
+            if (is_wp_error($updated_post_id)) {
+                wp_paypal_debug_log("Error updating order information: ".$updated_post_id->get_error_message(), false);
+                return;
+            }
+            if (!$updated_post_id) {
+                wp_paypal_debug_log("Order information could not be updated", false);
+                return;
+            }
             if ($updated_post_id > 0) {  //successfully updated
                 $post_updated = true;
             }
