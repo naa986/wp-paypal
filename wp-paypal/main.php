@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.2.4
+  Version: 1.2.2.5
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.2.4';
+    var $plugin_version = '1.2.2.5';
     var $plugin_url;
     var $plugin_path;
     
@@ -296,6 +296,7 @@ class WP_PAYPAL {
 $GLOBALS['wp_paypal'] = new WP_PAYPAL();
 
 function wp_paypal_button_handler($atts) {
+    $atts = array_map('sanitize_text_field', $atts);
     $testmode = get_option('wp_paypal_enable_testmode');
     if (isset($testmode) && !empty($testmode)) {
         $atts['env'] = "sandbox";
