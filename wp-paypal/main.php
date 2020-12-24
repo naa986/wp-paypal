@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.2.5
+  Version: 1.2.2.6
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.2.5';
+    var $plugin_version = '1.2.2.6';
     var $plugin_url;
     var $plugin_path;
     
@@ -477,6 +477,10 @@ function wp_paypal_get_add_to_cart_button($atts){
     if(isset($atts['weight_unit']) && !empty($atts['weight_unit'])) {
         $weight_unit = $atts['weight_unit'];
         $button_code .= '<input type="hidden" name="weight_unit" value="'.$weight_unit.'">';
+    }
+    if(isset($atts['shopping_url']) && filter_var($atts['shopping_url'], FILTER_VALIDATE_URL)){
+        $shopping_url = esc_url($atts['shopping_url']);
+        $button_code .= '<input type="hidden" name="shopping_url" value="'.$shopping_url.'">';
     }
     if(isset($atts['return']) && filter_var($atts['return'], FILTER_VALIDATE_URL)){
         $return = esc_url($atts['return']);
