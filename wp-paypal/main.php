@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.2.6
+  Version: 1.2.2.7
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.2.6';
+    var $plugin_version = '1.2.2.7';
     var $plugin_url;
     var $plugin_path;
     
@@ -301,7 +301,10 @@ function wp_paypal_button_handler($atts) {
     if (isset($testmode) && !empty($testmode)) {
         $atts['env'] = "sandbox";
     }
-    $atts['callback'] = home_url() . '/?wp_paypal_ipn=1';
+    $notify_url = home_url() . '/?wp_paypal_ipn=1';
+    if(!isset($atts['notify_url']) || empty($atts['notify_url'])){
+        $atts['notify_url'] = $notify_url;
+    }
     $paypal_email = get_option('wp_paypal_email');
     $currency = get_option('wp_paypal_currency_code');
     if (isset($atts['currency']) && !empty($atts['currency'])) {
@@ -322,6 +325,13 @@ function wp_paypal_button_handler($atts) {
         if(isset($js_atts['target']) && !empty($js_atts['target'])) {
             $target = $js_atts['target'];
             unset($js_atts['target']);
+        }
+        $js_atts['callback'] = $notify_url;
+        if(isset($js_atts['notify_url'])) {
+            if(!empty($js_atts['notify_url'])){
+                $js_atts['callback'] = $js_atts['notify_url'];
+            }
+            unset($js_atts['notify_url']);
         }
         $id = uniqid();
         $button_code = '<div id="'.$id.'">';
@@ -490,8 +500,8 @@ function wp_paypal_get_add_to_cart_button($atts){
         $cancel_return = esc_url($atts['cancel_return']);
         $button_code .= '<input type="hidden" name="cancel_return" value="'.$cancel_return.'">';
     }
-    if(isset($atts['callback']) && !empty($atts['callback'])) {
-        $notify_url = $atts['callback'];
+    if(isset($atts['notify_url']) && !empty($atts['notify_url'])) {
+        $notify_url = $atts['notify_url'];
         $button_code .= '<input type="hidden" name="notify_url" value="'.$notify_url.'">';
     }
     if(isset($atts['custom']) && !empty($atts['custom'])) {
@@ -647,8 +657,8 @@ function wp_paypal_get_buy_now_button($atts){
         $cancel_return = esc_url($atts['cancel_return']);
         $button_code .= '<input type="hidden" name="cancel_return" value="'.$cancel_return.'">';
     }
-    if(isset($atts['callback']) && !empty($atts['callback'])) {
-        $notify_url = $atts['callback'];
+    if(isset($atts['notify_url']) && !empty($atts['notify_url'])) {
+        $notify_url = $atts['notify_url'];
         $button_code .= '<input type="hidden" name="notify_url" value="'.$notify_url.'">';
     }
     if(isset($atts['custom']) && !empty($atts['custom'])) {
@@ -720,8 +730,8 @@ function wp_paypal_get_donate_button($atts){
         $cancel_return = esc_url($atts['cancel_return']);
         $button_code .= '<input type="hidden" name="cancel_return" value="'.$cancel_return.'">';
     }
-    if(isset($atts['callback']) && !empty($atts['callback'])) {
-        $notify_url = $atts['callback'];
+    if(isset($atts['notify_url']) && !empty($atts['notify_url'])) {
+        $notify_url = $atts['notify_url'];
         $button_code .= '<input type="hidden" name="notify_url" value="'.$notify_url.'">';
     }
     if(isset($atts['custom']) && !empty($atts['custom'])) {
@@ -852,8 +862,8 @@ function wp_paypal_get_subscribe_button($atts){
         $cancel_return = esc_url($atts['cancel_return']);
         $button_code .= '<input type="hidden" name="cancel_return" value="'.$cancel_return.'">';
     }
-    if(isset($atts['callback']) && !empty($atts['callback'])) {
-        $notify_url = $atts['callback'];
+    if(isset($atts['notify_url']) && !empty($atts['notify_url'])) {
+        $notify_url = $atts['notify_url'];
         $button_code .= '<input type="hidden" name="notify_url" value="'.$notify_url.'">';
     }
     if(isset($atts['custom']) && !empty($atts['custom'])) {
