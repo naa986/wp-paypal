@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 1.2.2.7
+Stable tag: 1.2.2.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,16 +14,13 @@ Easily accept payment in WordPress by adding a PayPal button to your website. Ad
 
 [WordPress PayPal](https://wphowto.net/wordpress-paypal-plugin-732) plugin allows you to easily create PayPal Buy Now, Add to Cart, Donation or Subscription type buttons. It generates dynamic buttons using shortcodes that enable PayPal checkout on your WordPress site.
 
+https://www.youtube.com/watch?v=lYVRUDp8c9s&rel=0
+
 Your customers will be able to pay for your products using PayPal or Credit Card. This plugin makes it easy for you to set up your online e-commerce store. You do not need to spend days configuring products and settings. All you need to do is insert a shortcode into one of your web pages and your website will be ready to go live.
 
 WP PayPal supports PayPal Sandbox. PayPal Sandbox is a simulation environment which allows you to do test purchases between a test buyer and a seller account. This is to make sure that your store can process PayPal transactions without any issues. It also helps you get prepared before selling to real customers.
 
-= Requirements =
-
-* A PayPal account
-* A self-hosted website running on [WordPress hosting](https://wphowto.net/best-cheap-wordpress-hosting-1689)
-
-= Features =
+=== WP PayPal Features ===
 
 * Sell products or services using PayPal
 * Create PayPal buttons on the fly in a post/page using shortcodes
@@ -43,15 +40,13 @@ WP PayPal supports PayPal Sandbox. PayPal Sandbox is a simulation environment wh
 * Charge shipping on your products or services
 * Charge tax on your products or services
 
-= Usage =
-
-https://www.youtube.com/watch?v=lYVRUDp8c9s&rel=0
+=== How to Use WP PayPal ===
 
 Once you have installed this plugin you need to go to the settings menu to configure some default options (WP PayPal -> Settings).
 
-* PayPal Merchant ID: Your PayPal Merchant ID
-* PayPal Email: Your PayPal email address
-* Currency Code: The default currency code
+* **PayPal Merchant ID**: Your PayPal Merchant ID
+* **PayPal Email**: Your PayPal email address
+* **Currency Code**: The default currency code
 
 In order to create a button insert the shortcode like the following:
 
@@ -85,7 +80,7 @@ Subscribe buttons let you set up payment subscriptions.
 
 `[wp_paypal button="subscribe" name="My product" a3="1.00" p3="1" t3="M" src="1"]`
 
-= Button Parameters =
+=== PayPal Button Parameters ===
 
 You can use additional parameters to customize your PayPal buttons.
 
@@ -106,17 +101,17 @@ You can use additional parameters to customize your PayPal buttons.
 * **undefined_quantity** - Allow buyers to specify the quantity of the item on the payment page (e.g. undefined_quantity="1"). This option is only used with a Buy Now button.
 * **target** - This parameter allows you to open a PayPal button in a new window or tab (e.g. target="_blank").
 
-= Add to Cart Button/Shopping Cart Specific Parameters =
+= PayPal Add to Cart Button/Shopping Cart Specific Parameters =
 
 * **handling** - Handling charges. This parameter is not quantity-specific, which means the same handling cost applies, regardless of the number of items on the order. (e.g. handling="2.00").
 
 For detailed documentation please check out the [WordPress PayPal Plugin](https://wphowto.net/wordpress-paypal-plugin-732) page.
 
-= Translation =
+=== Translation ===
 
 If you are a non-English speaker please help [translate WP PayPal](https://translate.wordpress.org/projects/wp-plugins/wp-paypal) into your language.
 
-= Additional Documentation =
+=== Additional PayPal Documentation ===
 
 * [Add automatic discount to a buy button](https://wphowto.net/applying-discount-to-a-paypal-buy-button-in-wordpress-834)
 * [Subscriptions & Recurring Payments Setup](https://wphowto.net/how-to-create-a-paypal-subscription-button-in-wordpress-911)
@@ -143,6 +138,9 @@ Yes.
 none
 
 == Changelog ==
+
+= 1.2.2.8 =
+* Removed unused JS from the plugin.
 
 = 1.2.2.7 =
 * Added the notify_url parameter to send instant payment notification to a different URL.
