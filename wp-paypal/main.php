@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.2.8
+  Version: 1.2.2.9
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.2.8';
+    var $plugin_version = '1.2.2.9';
     var $plugin_url;
     var $plugin_path;
     
@@ -532,6 +532,10 @@ function wp_paypal_get_view_cart_button($atts){
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_cart">';
     $button_code .= '<input type="hidden" name="display" value="1">';
+    if(isset($atts['shopping_url']) && !empty($atts['shopping_url'])) {
+        $shopping_url = $atts['shopping_url'];
+        $button_code .= '<input type="hidden" name="shopping_url" value="'.$shopping_url.'">';
+    }
     $business = '';
     $paypal_merchant_id = get_option('wp_paypal_merchant_id');
     $paypal_email = get_option('wp_paypal_email');

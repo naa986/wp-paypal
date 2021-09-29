@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 1.2.2.8
+Stable tag: 1.2.2.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,7 +86,7 @@ You can use additional parameters to customize your PayPal buttons.
 
 * **type** - The type of button to render (e.g. "buynow", "cart", "donate" or "subscribe")
 * **name** - Description of the item.
-* **button_image** - Your custom button image URL (e.g. button_image="http://example.com/images/buy.png").
+* **button_image** - Your custom button image URL (e.g. button_image="https://example.com/images/buy.png").
 * **number** - The number of the item (Also known as SKU. e.g. number="16").
 * **amount**- The price of the item (e.g. amount="4.95").
 * **currency** - The currency of the item (e.g. currency="USD").
@@ -95,11 +95,12 @@ You can use additional parameters to customize your PayPal buttons.
 * **shipping2** - The cost of shipping each additional unit of this item (e.g. shipping2="1.25")
 * **tax** - Transaction-based tax override variable (e.g. tax="2.99").
 * **locale** - The desired locale of the PayPal site (e.g. locale="GB"). This feature is useful if you want to render the payment page in a specific language.
-* **return** - The URL to which the user will be redirected after the payment (e.g. return="http://example.com/thank-you").
-* **cancel_return** - The URL to which PayPal will redirect the buyer if they cancel checkout before completing the payment (e.g. cancel_return="http://example.com/payment-canceled").
+* **return** - The URL to which the user will be redirected after the payment (e.g. return="https://example.com/thank-you").
+* **cancel_return** - The URL to which PayPal will redirect the buyer if they cancel checkout before completing the payment (e.g. cancel_return="https://example.com/payment-canceled").
 * **no_shipping** - This parameter allows you to control whether or not to prompt buyers for a shipping address (e.g. no_shipping="1"). Allowable values: 0 - Prompt for an address, but do not require one (This is set by default), 1 - Do not prompt for an address, 2 - Prompt for an address, and require one.
 * **undefined_quantity** - Allow buyers to specify the quantity of the item on the payment page (e.g. undefined_quantity="1"). This option is only used with a Buy Now button.
 * **target** - This parameter allows you to open a PayPal button in a new window or tab (e.g. target="_blank").
+* **shopping_url** - This parameter allows you to customize the Continue Shopping URL for the View Cart button (e.g. shopping_url="https://example.com/shop").
 
 = PayPal Add to Cart Button/Shopping Cart Specific Parameters =
 
@@ -138,6 +139,9 @@ Yes.
 none
 
 == Changelog ==
+
+= 1.2.2.9 =
+* Added the shopping_url parameter for the View Cart button.
 
 = 1.2.2.8 =
 * Removed unused JS from the plugin.
