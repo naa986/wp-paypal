@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 1.2.2.9
+Stable tag: 1.2.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -139,6 +139,9 @@ Yes.
 none
 
 == Changelog ==
+
+= 1.2.3.0 =
+* Added support for trial period 2 in the PayPal subscription button.
 
 = 1.2.2.9 =
 * Added the shopping_url parameter for the View Cart button.

@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.2.9
+  Version: 1.2.3.0
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.2.9';
+    var $plugin_version = '1.2.3.0';
     var $plugin_url;
     var $plugin_path;
     
@@ -45,6 +45,9 @@ class WP_PAYPAL {
     function plugin_includes() {
         include_once('wp-paypal-order.php');
         include_once('paypal-ipn.php');
+        if(is_admin()){
+            include_once('extensions/wp-paypal-extensions-menu.php');
+        }
     }
 
     function loader_operations() {
@@ -137,6 +140,7 @@ class WP_PAYPAL {
         if (is_admin()) {
             add_submenu_page('edit.php?post_type=wp_paypal_order', __('Settings', 'wp-paypal'), __('Settings', 'wp-paypal'), 'manage_options', 'wp-paypal-settings', array($this, 'options_page'));
             add_submenu_page('edit.php?post_type=wp_paypal_order', __('Debug', 'wp-paypal'), __('Debug', 'wp-paypal'), 'manage_options', 'wp-paypal-debug', array($this, 'debug_page'));
+            add_submenu_page('edit.php?post_type=wp_paypal_order', __('Extensions', 'wp-paypal'), __('Extensions', 'wp-paypal'), 'manage_options', 'wp-paypal-extensions', 'wp_paypal_display_extensions_menu');
         }
     }
 
@@ -312,71 +316,7 @@ function wp_paypal_button_handler($atts) {
     } else {
         $atts['currency'] = $currency;
     }
-    /* only for old subscription button */
-    $old_subscription_button = 0;
-    if(isset($atts['button']) && $atts['button']=="subscribe"){
-        if(isset($atts['recurrence']) || isset($atts['period'])){
-            $old_subscription_button = 1;
-        }
-    }
-    if($old_subscription_button){   //remove this in a future release
-        $js_atts = $atts;
-        $target = '';
-        if(isset($js_atts['target']) && !empty($js_atts['target'])) {
-            $target = $js_atts['target'];
-            unset($js_atts['target']);
-        }
-        $js_atts['callback'] = $notify_url;
-        if(isset($js_atts['notify_url'])) {
-            if(!empty($js_atts['notify_url'])){
-                $js_atts['callback'] = $js_atts['notify_url'];
-            }
-            unset($js_atts['notify_url']);
-        }
-        $id = uniqid();
-        $button_code = '<div id="'.$id.'">';
-        $button_code .= '<script async src="' . WP_PAYPAL_URL . '/lib/paypal-button.min.js?merchant=' . $paypal_email . '"';
-        foreach ($js_atts as $key => $value) {
-            if($key=='button_image'){
-                continue;
-            }
-            $button_code .= ' data-' . $key . '="' . $value . '"';
-        }
-        $button_code .= '></script>';
-        $button_code .= '</div>';
-        if(isset($js_atts['button_image']) && filter_var($js_atts['button_image'], FILTER_VALIDATE_URL)){
-            $button_image_url = esc_url($js_atts['button_image']);
-            $output = <<<EOT
-            <script>
-            /* <![CDATA[ */
-                jQuery(document).ready(function($){
-                    $(function(){
-                        $('div#$id button').replaceWith('<input type="image" src="$button_image_url">');
-                    });
-                });
-                /* ]]> */    
-            </script>       
-EOT;
-            $button_code .= $output;
-        }
-        if(!empty($target)){
-            $output = <<<EOT
-            <script>
-            /* <![CDATA[ */
-                jQuery(document).ready(function($){
-                    $(function(){
-                        $('div#$id form').prop('target', '$target');
-                    });
-                });
-                /* ]]> */    
-            </script>       
-EOT;
-            $button_code .= $output;
-        }       
-        return $button_code;
-    }
-    /* end of block for old subscription button */
-
+    
     if(isset($atts['button']) && $atts['button']=="cart"){ 
         $button_code = wp_paypal_get_add_to_cart_button($atts);
     }
@@ -406,9 +346,9 @@ function wp_paypal_get_add_to_cart_button($atts){
     }
     $target = '';
     if(isset($atts['target']) && !empty($atts['target'])) {
-        $target = 'target="'.$atts['target'].'" ';
+        $target = 'target="'.esc_attr($atts['target']).'" ';
     }
-    $button_code .= '<form '.$target.'action="'.$action_url.'" method="post" >';
+    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="post" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_cart">';
     $button_code .= '<input type="hidden" name="add" value="1">';
@@ -423,97 +363,97 @@ function wp_paypal_get_add_to_cart_button($atts){
     }
     
     if(isset($business) && !empty($business)) {
-        $button_code .= '<input type="hidden" name="business" value="'.$business.'">';
+        $button_code .= '<input type="hidden" name="business" value="'.esc_attr($business).'">';
     }
     if(isset($atts['lc']) && !empty($atts['lc'])) {
         $lc = $atts['lc'];
-        $button_code .= '<input type="hidden" name="lc" value="'.$lc.'">';
+        $button_code .= '<input type="hidden" name="lc" value="'.esc_attr($lc).'">';
     }
     if(isset($atts['name']) && !empty($atts['name'])) {
         $name = $atts['name'];
-        $button_code .= '<input type="hidden" name="item_name" value="'.$name.'">';
+        $button_code .= '<input type="hidden" name="item_name" value="'.esc_attr($name).'">';
     }
     if(isset($atts['item_number']) && !empty($atts['item_number'])) {
         $item_number = $atts['item_number'];
-        $button_code .= '<input type="hidden" name="item_number" value="'.$item_number.'">';
+        $button_code .= '<input type="hidden" name="item_number" value="'.esc_attr($item_number).'">';
     }
     if(isset($atts['amount']) && is_numeric($atts['amount'])) {
         $amount = $atts['amount'];
-        $button_code .= '<input type="hidden" name="amount" value="'.$amount.'">';
+        $button_code .= '<input type="hidden" name="amount" value="'.esc_attr($amount).'">';
     }
     if(isset($atts['currency']) && !empty($atts['currency'])) {
         $currency = $atts['currency'];
-        $button_code .= '<input type="hidden" name="currency_code" value="'.$currency.'">';
+        $button_code .= '<input type="hidden" name="currency_code" value="'.esc_attr($currency).'">';
     }
     $button_code .= '<input type="hidden" name="button_subtype" value="products">';
     $no_note = 0; //default
     if(isset($atts['no_note']) && is_numeric($atts['no_note'])) {
         $no_note = $atts['no_note'];
-        $button_code .= '<input type="hidden" name="no_note" value="'.$no_note.'">';
+        $button_code .= '<input type="hidden" name="no_note" value="'.esc_attr($no_note).'">';
     }
     if(isset($atts['cn']) && !empty($atts['cn'])) {
         $cn = $atts['cn'];
-        $button_code .= '<input type="hidden" name="cn" value="'.$cn.'">';
+        $button_code .= '<input type="hidden" name="cn" value="'.esc_attr($cn).'">';
     }
     $no_shipping = 0; //default
     if(isset($atts['no_shipping']) && is_numeric($atts['no_shipping'])) {
         $no_shipping = $atts['no_shipping'];
-        $button_code .= '<input type="hidden" name="no_shipping" value="'.$no_shipping.'">';
+        $button_code .= '<input type="hidden" name="no_shipping" value="'.esc_attr($no_shipping).'">';
     }
     if(isset($atts['shipping']) && is_numeric($atts['shipping'])) {
         $shipping = $atts['shipping'];
-        $button_code .= '<input type="hidden" name="shipping" value="'.$shipping.'">';
+        $button_code .= '<input type="hidden" name="shipping" value="'.esc_attr($shipping).'">';
     }
     if(isset($atts['shipping2']) && is_numeric($atts['shipping2'])) {
         $shipping2 = $atts['shipping2'];
-        $button_code .= '<input type="hidden" name="shipping2" value="'.$shipping2.'">';
+        $button_code .= '<input type="hidden" name="shipping2" value="'.esc_attr($shipping2).'">';
     }
     if(isset($atts['tax']) && is_numeric($atts['tax'])) {
         $tax = $atts['tax'];
-        $button_code .= '<input type="hidden" name="tax" value="'.$tax.'">';
+        $button_code .= '<input type="hidden" name="tax" value="'.esc_attr($tax).'">';
     }
     if(isset($atts['tax_rate']) && is_numeric($atts['tax_rate'])) {
         $tax_rate = $atts['tax_rate'];
-        $button_code .= '<input type="hidden" name="tax_rate" value="'.$tax_rate.'">';
+        $button_code .= '<input type="hidden" name="tax_rate" value="'.esc_attr($tax_rate).'">';
     }
     if(isset($atts['handling']) && is_numeric($atts['handling'])) {
         $handling = $atts['handling'];
-        $button_code .= '<input type="hidden" name="handling" value="'.$handling.'">';
+        $button_code .= '<input type="hidden" name="handling" value="'.esc_attr($handling).'">';
     }
     if(isset($atts['weight']) && is_numeric($atts['weight'])) {
         $weight = $atts['weight'];
-        $button_code .= '<input type="hidden" name="weight" value="'.$weight.'">';
+        $button_code .= '<input type="hidden" name="weight" value="'.esc_attr($weight).'">';
     }
     if(isset($atts['weight_unit']) && !empty($atts['weight_unit'])) {
         $weight_unit = $atts['weight_unit'];
-        $button_code .= '<input type="hidden" name="weight_unit" value="'.$weight_unit.'">';
+        $button_code .= '<input type="hidden" name="weight_unit" value="'.esc_attr($weight_unit).'">';
     }
     if(isset($atts['shopping_url']) && filter_var($atts['shopping_url'], FILTER_VALIDATE_URL)){
-        $shopping_url = esc_url($atts['shopping_url']);
-        $button_code .= '<input type="hidden" name="shopping_url" value="'.$shopping_url.'">';
+        $shopping_url = $atts['shopping_url'];
+        $button_code .= '<input type="hidden" name="shopping_url" value="'.esc_attr($shopping_url).'">';
     }
     if(isset($atts['return']) && filter_var($atts['return'], FILTER_VALIDATE_URL)){
-        $return = esc_url($atts['return']);
-        $button_code .= '<input type="hidden" name="return" value="'.$return.'">';
+        $return = $atts['return'];
+        $button_code .= '<input type="hidden" name="return" value="'.esc_attr($return).'">';
     }
     if(isset($atts['cancel_return']) && filter_var($atts['cancel_return'], FILTER_VALIDATE_URL)){
-        $cancel_return = esc_url($atts['cancel_return']);
-        $button_code .= '<input type="hidden" name="cancel_return" value="'.$cancel_return.'">';
+        $cancel_return = $atts['cancel_return'];
+        $button_code .= '<input type="hidden" name="cancel_return" value="'.esc_attr($cancel_return).'">';
     }
     if(isset($atts['notify_url']) && !empty($atts['notify_url'])) {
         $notify_url = $atts['notify_url'];
-        $button_code .= '<input type="hidden" name="notify_url" value="'.$notify_url.'">';
+        $button_code .= '<input type="hidden" name="notify_url" value="'.esc_attr($notify_url).'">';
     }
     if(isset($atts['custom']) && !empty($atts['custom'])) {
         $custom = $atts['custom'];
-        $button_code .= '<input type="hidden" name="custom" value="'.$custom.'">';
+        $button_code .= '<input type="hidden" name="custom" value="'.esc_attr($custom).'">';
     }
     $button_code .= '<input type="hidden" name="bn" value="WPPayPal_AddToCart_WPS_US">';
     $button_image_url = WP_PAYPAL_URL.'/images/add-to-cart.png';
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
-        $button_image_url = esc_url($atts['button_image']);
+        $button_image_url = $atts['button_image'];
     }
-    $button_code .= '<input type="image" src="'.$button_image_url.'" border="0" name="submit">';
+    $button_code .= '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
     $button_code .= '</form>';
     return $button_code;        
 }
@@ -526,15 +466,15 @@ function wp_paypal_get_view_cart_button($atts){
     }
     $target = '';
     if(isset($atts['target']) && !empty($atts['target'])) {
-        $target = 'target="'.$atts['target'].'" ';
+        $target = 'target="'.esc_attr($atts['target']).'" ';
     }
-    $button_code .= '<form '.$target.'action="'.$action_url.'" method="post" >';
+    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="post" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_cart">';
     $button_code .= '<input type="hidden" name="display" value="1">';
     if(isset($atts['shopping_url']) && !empty($atts['shopping_url'])) {
         $shopping_url = $atts['shopping_url'];
-        $button_code .= '<input type="hidden" name="shopping_url" value="'.$shopping_url.'">';
+        $button_code .= '<input type="hidden" name="shopping_url" value="'.esc_attr($shopping_url).'">';
     }
     $business = '';
     $paypal_merchant_id = get_option('wp_paypal_merchant_id');
@@ -547,13 +487,13 @@ function wp_paypal_get_view_cart_button($atts){
     }
     
     if(isset($business) && !empty($business)) {
-        $button_code .= '<input type="hidden" name="business" value="'.$business.'">';
+        $button_code .= '<input type="hidden" name="business" value="'.esc_attr($business).'">';
     }
     $button_image_url = WP_PAYPAL_URL.'/images/view-cart.png';
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
-        $button_image_url = esc_url($atts['button_image']);
+        $button_image_url = $atts['button_image'];
     }
-    $button_code .= '<input type="image" src="'.$button_image_url.'" border="0" name="submit">';
+    $button_code .= '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
     $button_code .= '</form>';
     return $button_code;        
 }
@@ -566,9 +506,9 @@ function wp_paypal_get_buy_now_button($atts){
     }
     $target = '';
     if(isset($atts['target']) && !empty($atts['target'])) {
-        $target = 'target="'.$atts['target'].'" ';
+        $target = 'target="'.esc_attr($atts['target']).'" ';
     }
-    $button_code .= '<form '.$target.'action="'.$action_url.'" method="post" >';
+    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="post" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_xclick">';
     $business = '';
@@ -582,19 +522,19 @@ function wp_paypal_get_buy_now_button($atts){
     }
     
     if(isset($business) && !empty($business)) {
-        $button_code .= '<input type="hidden" name="business" value="'.$business.'">';
+        $button_code .= '<input type="hidden" name="business" value="'.esc_attr($business).'">';
     }
     if(isset($atts['lc']) && !empty($atts['lc'])) {
         $lc = $atts['lc'];
-        $button_code .= '<input type="hidden" name="lc" value="'.$lc.'">';
+        $button_code .= '<input type="hidden" name="lc" value="'.esc_attr($lc).'">';
     }
     if(isset($atts['name']) && !empty($atts['name'])) {
         $name = $atts['name'];
-        $button_code .= '<input type="hidden" name="item_name" value="'.$name.'">';
+        $button_code .= '<input type="hidden" name="item_name" value="'.esc_attr($name).'">';
     }
     if(isset($atts['item_number']) && !empty($atts['item_number'])) {
         $item_number = $atts['item_number'];
-        $button_code .= '<input type="hidden" name="item_number" value="'.$item_number.'">';
+        $button_code .= '<input type="hidden" name="item_number" value="'.esc_attr($item_number).'">';
     }
     $amount_input_code = '';
     $amount_input_code = apply_filters('wppaypal_buynow_custom_amount', $amount_input_code, $button_code, $atts);
@@ -604,7 +544,7 @@ function wp_paypal_get_buy_now_button($atts){
     else{
         if(isset($atts['amount']) && is_numeric($atts['amount']) && $atts['amount'] > 0) {
             $amount = $atts['amount'];
-            $button_code .= '<input type="hidden" name="amount" value="'.$amount.'">';
+            $button_code .= '<input type="hidden" name="amount" value="'.esc_attr($amount).'">';
         }
         else{
             $error = __('Amount cannot be empty', 'wp-paypal');
@@ -613,68 +553,68 @@ function wp_paypal_get_buy_now_button($atts){
     }
     if(isset($atts['currency']) && !empty($atts['currency'])) {
         $currency = $atts['currency'];
-        $button_code .= '<input type="hidden" name="currency_code" value="'.$currency.'">';
+        $button_code .= '<input type="hidden" name="currency_code" value="'.esc_attr($currency).'">';
     }
     $no_shipping = 0; //default
     if(isset($atts['no_shipping']) && is_numeric($atts['no_shipping'])) {
         $no_shipping = $atts['no_shipping'];
-        $button_code .= '<input type="hidden" name="no_shipping" value="'.$no_shipping.'">';
+        $button_code .= '<input type="hidden" name="no_shipping" value="'.esc_attr($no_shipping).'">';
     }
     if(isset($atts['shipping']) && is_numeric($atts['shipping'])) {
         $shipping = $atts['shipping'];
-        $button_code .= '<input type="hidden" name="shipping" value="'.$shipping.'">';
+        $button_code .= '<input type="hidden" name="shipping" value="'.esc_attr($shipping).'">';
     }
     if(isset($atts['shipping2']) && is_numeric($atts['shipping2'])) {
         $shipping2 = $atts['shipping2'];
-        $button_code .= '<input type="hidden" name="shipping2" value="'.$shipping2.'">';
+        $button_code .= '<input type="hidden" name="shipping2" value="'.esc_attr($shipping2).'">';
     }
     if(isset($atts['tax']) && is_numeric($atts['tax'])) {
         $tax = $atts['tax'];
-        $button_code .= '<input type="hidden" name="tax" value="'.$tax.'">';
+        $button_code .= '<input type="hidden" name="tax" value="'.esc_attr($tax).'">';
     }
     if(isset($atts['tax_rate']) && is_numeric($atts['tax_rate'])) {
         $tax_rate = $atts['tax_rate'];
-        $button_code .= '<input type="hidden" name="tax_rate" value="'.$tax_rate.'">';
+        $button_code .= '<input type="hidden" name="tax_rate" value="'.esc_attr($tax_rate).'">';
     }
     $button_code = apply_filters('wppaypal_enable_buynow_discount', $button_code, $atts);
     if(isset($atts['handling']) && is_numeric($atts['handling'])) {
         $handling = $atts['handling'];
-        $button_code .= '<input type="hidden" name="handling" value="'.$handling.'">';
+        $button_code .= '<input type="hidden" name="handling" value="'.esc_attr($handling).'">';
     }
     if(isset($atts['undefined_quantity']) && is_numeric($atts['undefined_quantity'])) {
         $undefined_quantity = $atts['undefined_quantity'];
-        $button_code .= '<input type="hidden" name="undefined_quantity" value="'.$undefined_quantity.'">';
+        $button_code .= '<input type="hidden" name="undefined_quantity" value="'.esc_attr($undefined_quantity).'">';
     }
     if(isset($atts['weight']) && is_numeric($atts['weight'])) {
         $weight = $atts['weight'];
-        $button_code .= '<input type="hidden" name="weight" value="'.$weight.'">';
+        $button_code .= '<input type="hidden" name="weight" value="'.esc_attr($weight).'">';
     }
     if(isset($atts['weight_unit']) && !empty($atts['weight_unit'])) {
         $weight_unit = $atts['weight_unit'];
-        $button_code .= '<input type="hidden" name="weight_unit" value="'.$weight_unit.'">';
+        $button_code .= '<input type="hidden" name="weight_unit" value="'.esc_attr($weight_unit).'">';
     }
     if(isset($atts['return']) && filter_var($atts['return'], FILTER_VALIDATE_URL)){
-        $return = esc_url($atts['return']);
-        $button_code .= '<input type="hidden" name="return" value="'.$return.'">';
+        $return = $atts['return'];
+        $button_code .= '<input type="hidden" name="return" value="'.esc_attr($return).'">';
     }
     if(isset($atts['cancel_return']) && filter_var($atts['cancel_return'], FILTER_VALIDATE_URL)){
-        $cancel_return = esc_url($atts['cancel_return']);
-        $button_code .= '<input type="hidden" name="cancel_return" value="'.$cancel_return.'">';
+        $cancel_return = $atts['cancel_return'];
+        $button_code .= '<input type="hidden" name="cancel_return" value="'.esc_attr($cancel_return).'">';
     }
     if(isset($atts['notify_url']) && !empty($atts['notify_url'])) {
         $notify_url = $atts['notify_url'];
-        $button_code .= '<input type="hidden" name="notify_url" value="'.$notify_url.'">';
+        $button_code .= '<input type="hidden" name="notify_url" value="'.esc_attr($notify_url).'">';
     }
     if(isset($atts['custom']) && !empty($atts['custom'])) {
         $custom = $atts['custom'];
-        $button_code .= '<input type="hidden" name="custom" value="'.$custom.'">';
+        $button_code .= '<input type="hidden" name="custom" value="'.esc_attr($custom).'">';
     }
     $button_code .= '<input type="hidden" name="bn" value="WPPayPal_BuyNow_WPS_US">';
     $button_image_url = WP_PAYPAL_URL.'/images/buy-now.png';
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
-        $button_image_url = esc_url($atts['button_image']);
+        $button_image_url = $atts['button_image'];
     }
-    $button_code .= '<input type="image" src="'.$button_image_url.'" border="0" name="submit">';
+    $button_code .= '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
     $button_code .= '</form>';
     return $button_code;        
 }
@@ -687,9 +627,9 @@ function wp_paypal_get_donate_button($atts){
     }
     $target = '';
     if(isset($atts['target']) && !empty($atts['target'])) {
-        $target = 'target="'.$atts['target'].'" ';
+        $target = 'target="'.esc_attr($atts['target']).'" ';
     }
-    $button_code .= '<form '.$target.'action="'.$action_url.'" method="post" >';
+    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="post" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_donations">';
     $business = '';
@@ -703,51 +643,51 @@ function wp_paypal_get_donate_button($atts){
     }
     
     if(isset($business) && !empty($business)) {
-        $button_code .= '<input type="hidden" name="business" value="'.$business.'">';
+        $button_code .= '<input type="hidden" name="business" value="'.esc_attr($business).'">';
     }
     if(isset($atts['lc']) && !empty($atts['lc'])) {
         $lc = $atts['lc'];
-        $button_code .= '<input type="hidden" name="lc" value="'.$lc.'">';
+        $button_code .= '<input type="hidden" name="lc" value="'.esc_attr($lc).'">';
     }
     if(isset($atts['name']) && !empty($atts['name'])) {
         $name = $atts['name'];
-        $button_code .= '<input type="hidden" name="item_name" value="'.$name.'">';
+        $button_code .= '<input type="hidden" name="item_name" value="'.esc_attr($name).'">';
     }
     if(isset($atts['item_number']) && !empty($atts['item_number'])) {
         $item_number = $atts['item_number'];
-        $button_code .= '<input type="hidden" name="item_number" value="'.$item_number.'">';
+        $button_code .= '<input type="hidden" name="item_number" value="'.esc_attr($item_number).'">';
     }
     if(isset($atts['currency']) && !empty($atts['currency'])) {
         $currency = $atts['currency'];
-        $button_code .= '<input type="hidden" name="currency_code" value="'.$currency.'">';
+        $button_code .= '<input type="hidden" name="currency_code" value="'.esc_attr($currency).'">';
     }
     $no_shipping = 0; //default
     if(isset($atts['no_shipping']) && is_numeric($atts['no_shipping'])) {
         $no_shipping = $atts['no_shipping'];
-        $button_code .= '<input type="hidden" name="no_shipping" value="'.$no_shipping.'">';
+        $button_code .= '<input type="hidden" name="no_shipping" value="'.esc_attr($no_shipping).'">';
     }
     if(isset($atts['return']) && filter_var($atts['return'], FILTER_VALIDATE_URL)){
-        $return = esc_url($atts['return']);
-        $button_code .= '<input type="hidden" name="return" value="'.$return.'">';
+        $return = $atts['return'];
+        $button_code .= '<input type="hidden" name="return" value="'.esc_attr($return).'">';
     }
     if(isset($atts['cancel_return']) && filter_var($atts['cancel_return'], FILTER_VALIDATE_URL)){
-        $cancel_return = esc_url($atts['cancel_return']);
-        $button_code .= '<input type="hidden" name="cancel_return" value="'.$cancel_return.'">';
+        $cancel_return = $atts['cancel_return'];
+        $button_code .= '<input type="hidden" name="cancel_return" value="'.esc_attr($cancel_return).'">';
     }
     if(isset($atts['notify_url']) && !empty($atts['notify_url'])) {
         $notify_url = $atts['notify_url'];
-        $button_code .= '<input type="hidden" name="notify_url" value="'.$notify_url.'">';
+        $button_code .= '<input type="hidden" name="notify_url" value="'.esc_attr($notify_url).'">';
     }
     if(isset($atts['custom']) && !empty($atts['custom'])) {
         $custom = $atts['custom'];
-        $button_code .= '<input type="hidden" name="custom" value="'.$custom.'">';
+        $button_code .= '<input type="hidden" name="custom" value="'.esc_attr($custom).'">';
     }
     $button_code .= '<input type="hidden" name="bn" value="WPPayPal_Donate_WPS_US">';
     $button_image_url = WP_PAYPAL_URL.'/images/donate.png';
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
-        $button_image_url = esc_url($atts['button_image']);
+        $button_image_url = $atts['button_image'];
     }
-    $button_code .= '<input type="image" src="'.$button_image_url.'" border="0" name="submit">';
+    $button_code .= '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
     $button_code .= '</form>';
     return $button_code;        
 }
@@ -760,9 +700,9 @@ function wp_paypal_get_subscribe_button($atts){
     }
     $target = '';
     if(isset($atts['target']) && !empty($atts['target'])) {
-        $target = 'target="'.$atts['target'].'" ';
+        $target = 'target="'.esc_attr($atts['target']).'" ';
     }
-    $button_code .= '<form '.$target.'action="'.$action_url.'" method="post" >';
+    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="post" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_xclick-subscriptions">';
     $business = '';
@@ -776,26 +716,26 @@ function wp_paypal_get_subscribe_button($atts){
     }
     
     if(isset($business) && !empty($business)) {
-        $button_code .= '<input type="hidden" name="business" value="'.$business.'">';
+        $button_code .= '<input type="hidden" name="business" value="'.esc_attr($business).'">';
     }
     if(isset($atts['lc']) && !empty($atts['lc'])) {
         $lc = $atts['lc'];
-        $button_code .= '<input type="hidden" name="lc" value="'.$lc.'">';
+        $button_code .= '<input type="hidden" name="lc" value="'.esc_attr($lc).'">';
     }
     if(isset($atts['name']) && !empty($atts['name'])) {
         $name = $atts['name'];
-        $button_code .= '<input type="hidden" name="item_name" value="'.$name.'">';
+        $button_code .= '<input type="hidden" name="item_name" value="'.esc_attr($name).'">';
     }
     if(isset($atts['item_number']) && !empty($atts['item_number'])) {
         $item_number = $atts['item_number'];
-        $button_code .= '<input type="hidden" name="item_number" value="'.$item_number.'">';
+        $button_code .= '<input type="hidden" name="item_number" value="'.esc_attr($item_number).'">';
     }
     if(isset($atts['a1']) && is_numeric($atts['a1'])) {
         $a1 = $atts['a1'];
-        $button_code .= '<input type="hidden" name="a1" value="'.$a1.'">';
+        $button_code .= '<input type="hidden" name="a1" value="'.esc_attr($a1).'">';
         if(isset($atts['p1']) && is_numeric($atts['p1'])) {
             $p1 = $atts['p1'];
-            $button_code .= '<input type="hidden" name="p1" value="'.$p1.'">';
+            $button_code .= '<input type="hidden" name="p1" value="'.esc_attr($p1).'">';
         }
         else{
             $button_code = __('Please enter a trial period duration p1', 'wp-paypal');
@@ -803,16 +743,36 @@ function wp_paypal_get_subscribe_button($atts){
         }
         if(isset($atts['t1']) && !empty($atts['t1'])) {
             $t1 = $atts['t1'];
-            $button_code .= '<input type="hidden" name="t1" value="'.$t1.'">';
+            $button_code .= '<input type="hidden" name="t1" value="'.esc_attr($t1).'">';
         }
         else{
             $button_code = __('Please enter a trial period units of duration t1', 'wp-paypal');
             return $button_code;
         }
     }
+    if(isset($atts['a2']) && is_numeric($atts['a2'])) {
+        $a2 = $atts['a2'];
+        $button_code .= '<input type="hidden" name="a2" value="'.esc_attr($a2).'">';
+        if(isset($atts['p2']) && is_numeric($atts['p2'])) {
+            $p2 = $atts['p2'];
+            $button_code .= '<input type="hidden" name="p2" value="'.esc_attr($p2).'">';
+        }
+        else{
+            $button_code = __('Please enter a trial period 2 duration p2', 'wp-paypal');
+            return $button_code;
+        }
+        if(isset($atts['t2']) && !empty($atts['t2'])) {
+            $t2 = $atts['t2'];
+            $button_code .= '<input type="hidden" name="t2" value="'.esc_attr($t2).'">';
+        }
+        else{
+            $button_code = __('Please enter a trial period 2 units of duration t1', 'wp-paypal');
+            return $button_code;
+        }
+    }
     if(isset($atts['a3']) && is_numeric($atts['a3'])) {
         $a3 = $atts['a3'];
-        $button_code .= '<input type="hidden" name="a3" value="'.$a3.'">';
+        $button_code .= '<input type="hidden" name="a3" value="'.esc_attr($a3).'">';
     }
     else{
         $button_code = __('Please enter a regular subscription price a3', 'wp-paypal');
@@ -820,7 +780,7 @@ function wp_paypal_get_subscribe_button($atts){
     }
     if(isset($atts['p3']) && is_numeric($atts['p3'])) {
         $p3 = $atts['p3'];
-        $button_code .= '<input type="hidden" name="p3" value="'.$p3.'">';
+        $button_code .= '<input type="hidden" name="p3" value="'.esc_attr($p3).'">';
     }
     else{
         $button_code = __('Please enter a subscription duration p3', 'wp-paypal');
@@ -828,7 +788,7 @@ function wp_paypal_get_subscribe_button($atts){
     }
     if(isset($atts['t3']) && !empty($atts['t3'])) {
         $t3 = $atts['t3'];
-        $button_code .= '<input type="hidden" name="t3" value="'.$t3.'">';
+        $button_code .= '<input type="hidden" name="t3" value="'.esc_attr($t3).'">';
     }
     else{
         $button_code = __('Please enter a subscription units of duration t3', 'wp-paypal');
@@ -836,50 +796,50 @@ function wp_paypal_get_subscribe_button($atts){
     }
     if(isset($atts['src']) && is_numeric($atts['src'])) {
         $src = $atts['src'];
-        $button_code .= '<input type="hidden" name="src" value="'.$src.'">';
+        $button_code .= '<input type="hidden" name="src" value="'.esc_attr($src).'">';
         if($src == '1'){
             if(isset($atts['srt']) && is_numeric($atts['srt'])) {
                 $srt = $atts['srt'];
-                $button_code .= '<input type="hidden" name="srt" value="'.$srt.'">';
+                $button_code .= '<input type="hidden" name="srt" value="'.esc_attr($srt).'">';
             }
         }
     }
     if(isset($atts['sra']) && is_numeric($atts['sra'])) {
         $sra = $atts['sra'];
-        $button_code .= '<input type="hidden" name="sra" value="'.$sra.'">';
+        $button_code .= '<input type="hidden" name="sra" value="'.esc_attr($sra).'">';
     }
     if(isset($atts['currency']) && !empty($atts['currency'])) {
         $currency = $atts['currency'];
-        $button_code .= '<input type="hidden" name="currency_code" value="'.$currency.'">';
+        $button_code .= '<input type="hidden" name="currency_code" value="'.esc_attr($currency).'">';
     }
     $button_code .= '<input type="hidden" name="no_note" value="1">'; //For Subscribe buttons, always set no_note to 1
     $no_shipping = 0; //default
     if(isset($atts['no_shipping']) && is_numeric($atts['no_shipping'])) {
         $no_shipping = $atts['no_shipping'];
-        $button_code .= '<input type="hidden" name="no_shipping" value="'.$no_shipping.'">';
+        $button_code .= '<input type="hidden" name="no_shipping" value="'.esc_attr($no_shipping).'">';
     }
     if(isset($atts['return']) && filter_var($atts['return'], FILTER_VALIDATE_URL)){
-        $return = esc_url($atts['return']);
-        $button_code .= '<input type="hidden" name="return" value="'.$return.'">';
+        $return = $atts['return'];
+        $button_code .= '<input type="hidden" name="return" value="'.esc_attr($return).'">';
     }
     if(isset($atts['cancel_return']) && filter_var($atts['cancel_return'], FILTER_VALIDATE_URL)){
-        $cancel_return = esc_url($atts['cancel_return']);
-        $button_code .= '<input type="hidden" name="cancel_return" value="'.$cancel_return.'">';
+        $cancel_return = $atts['cancel_return'];
+        $button_code .= '<input type="hidden" name="cancel_return" value="'.esc_attr($cancel_return).'">';
     }
     if(isset($atts['notify_url']) && !empty($atts['notify_url'])) {
         $notify_url = $atts['notify_url'];
-        $button_code .= '<input type="hidden" name="notify_url" value="'.$notify_url.'">';
+        $button_code .= '<input type="hidden" name="notify_url" value="'.esc_attr($notify_url).'">';
     }
     if(isset($atts['custom']) && !empty($atts['custom'])) {
         $custom = $atts['custom'];
-        $button_code .= '<input type="hidden" name="custom" value="'.$custom.'">';
+        $button_code .= '<input type="hidden" name="custom" value="'.esc_attr($custom).'">';
     }
     $button_code .= '<input type="hidden" name="bn" value="WPPayPal_Subscribe_WPS_US">';
     $button_image_url = WP_PAYPAL_URL.'/images/subscribe.png';
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
-        $button_image_url = esc_url($atts['button_image']);
+        $button_image_url = $atts['button_image'];
     }
-    $button_code .= '<input type="image" src="'.$button_image_url.'" border="0" name="submit">';
+    $button_code .= '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
     $button_code .= '</form>';
     return $button_code;        
 }
