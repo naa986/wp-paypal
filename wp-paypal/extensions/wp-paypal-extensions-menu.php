@@ -24,6 +24,14 @@ function wp_paypal_display_extensions_menu()
     );
     array_push($extensions_data, $extension_2);
     
+    $extension_3 = array(
+        'name' => 'Product Variations',
+        'thumbnail' => WP_PAYPAL_URL.'/extensions/images/wp-paypal-product-variations.png',
+        'description' => 'Set up variations for your WP PayPal buttons',
+        'page_url' => 'https://wphowto.net/how-to-configure-product-variations-in-wp-paypal-6413',
+    );
+    array_push($extensions_data, $extension_3);
+    
     //Display the list
     $output = '';
     foreach ($extensions_data as $extension) {

@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.0
+  Version: 1.2.3.1
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.0';
+    var $plugin_version = '1.2.3.1';
     var $plugin_url;
     var $plugin_path;
     
@@ -449,6 +449,10 @@ function wp_paypal_get_add_to_cart_button($atts){
         $button_code .= '<input type="hidden" name="custom" value="'.esc_attr($custom).'">';
     }
     $button_code .= '<input type="hidden" name="bn" value="WPPayPal_AddToCart_WPS_US">';
+    $button_code = apply_filters('wppaypal_variations', $button_code, $atts);
+    if(strpos($button_code, 'Error') !== false){
+        return $button_code;
+    }
     $button_image_url = WP_PAYPAL_URL.'/images/add-to-cart.png';
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
         $button_image_url = $atts['button_image'];
@@ -520,7 +524,10 @@ function wp_paypal_get_buy_now_button($atts){
     else if(isset($paypal_email) && !empty($paypal_email)) {
         $business = $paypal_email;
     }
-    
+    $price_variation = false;
+    if(isset($atts['os0_amount0']) && is_numeric($atts['os0_amount0'])) {
+        $price_variation = true;
+    }
     if(isset($business) && !empty($business)) {
         $button_code .= '<input type="hidden" name="business" value="'.esc_attr($business).'">';
     }
@@ -536,19 +543,21 @@ function wp_paypal_get_buy_now_button($atts){
         $item_number = $atts['item_number'];
         $button_code .= '<input type="hidden" name="item_number" value="'.esc_attr($item_number).'">';
     }
-    $amount_input_code = '';
-    $amount_input_code = apply_filters('wppaypal_buynow_custom_amount', $amount_input_code, $button_code, $atts);
-    if(!empty($amount_input_code)){
-        $button_code .= $amount_input_code;
-    }
-    else{
-        if(isset($atts['amount']) && is_numeric($atts['amount']) && $atts['amount'] > 0) {
-            $amount = $atts['amount'];
-            $button_code .= '<input type="hidden" name="amount" value="'.esc_attr($amount).'">';
+    if(!$price_variation){
+        $amount_input_code = '';
+        $amount_input_code = apply_filters('wppaypal_buynow_custom_amount', $amount_input_code, $button_code, $atts);
+        if(!empty($amount_input_code)){
+            $button_code .= $amount_input_code;
         }
         else{
-            $error = __('Amount cannot be empty', 'wp-paypal');
-            return $error;
+            if(isset($atts['amount']) && is_numeric($atts['amount']) && $atts['amount'] > 0) {
+                $amount = $atts['amount'];
+                $button_code .= '<input type="hidden" name="amount" value="'.esc_attr($amount).'">';
+            }
+            else{
+                $error = __('Amount cannot be empty', 'wp-paypal');
+                return $error;
+            }
         }
     }
     if(isset($atts['currency']) && !empty($atts['currency'])) {
@@ -610,6 +619,10 @@ function wp_paypal_get_buy_now_button($atts){
         $button_code .= '<input type="hidden" name="custom" value="'.esc_attr($custom).'">';
     }
     $button_code .= '<input type="hidden" name="bn" value="WPPayPal_BuyNow_WPS_US">';
+    $button_code = apply_filters('wppaypal_variations', $button_code, $atts);
+    if(strpos($button_code, 'Error') !== false){
+        return $button_code;
+    }
     $button_image_url = WP_PAYPAL_URL.'/images/buy-now.png';
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
         $button_image_url = $atts['button_image'];
