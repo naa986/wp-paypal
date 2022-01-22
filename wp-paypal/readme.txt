@@ -83,9 +83,9 @@ Donation buttons let you accept donations from your users.
 
 = PayPal Subscription =
 
-Subscribe buttons let you set up payment subscriptions. 
-
 `[wp_paypal button="subscribe" name="My product" a3="1.00" p3="1" t3="M" src="1"]`
+
+Subscribe buttons let you set up payment subscriptions.
 
 === PayPal Button Parameters ===
 
