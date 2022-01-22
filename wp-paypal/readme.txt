@@ -3,8 +3,8 @@ Contributors: naa986
 Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce
 Requires at least: 5.3
-Tested up to: 5.8
-Stable tag: 1.2.3.1
+Tested up to: 5.9
+Stable tag: 1.2.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -39,6 +39,13 @@ WP PayPal supports PayPal Sandbox. PayPal Sandbox is a simulation environment wh
 * Accept recurring payments/subscriptions
 * Charge shipping on your products or services
 * Charge tax on your products or services
+
+=== WP PayPal Extensions ===
+
+* [Buy Now Custom Amount](https://wphowto.net/wordpress-paypal-plugin-732)
+* [Buy Now Discount](https://wphowto.net/applying-discount-to-a-paypal-buy-button-in-wordpress-834)
+* [Product Variations](https://wphowto.net/how-to-configure-product-variations-in-wp-paypal-6413)
+* [Variable Quantity](https://wphowto.net/how-to-add-a-quantity-field-to-a-paypal-button-6428)
 
 === How to Use WP PayPal ===
 
@@ -130,6 +137,14 @@ If you are a non-English speaker please help [translate WP PayPal](https://trans
 
 Yes.
 
+= How much does it cost to use PayPal?
+
+If you are a merchant or business that uses PayPal to accept payments from your customers, PayPal takes 2.9 percent of the payment plus 30 cents per transaction before putting the money in your account.
+
+= Does PayPal have a monthly fee? =
+
+No.
+
 == Screenshots ==
 
 1. PayPal Button Demo
@@ -139,6 +154,9 @@ Yes.
 none
 
 == Changelog ==
+
+= 1.2.3.2 =
+* Added support for variable quantity.
 
 = 1.2.3.1 =
 * Added support for product variations extension.

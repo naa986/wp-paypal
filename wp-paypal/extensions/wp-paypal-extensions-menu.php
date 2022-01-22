@@ -32,6 +32,14 @@ function wp_paypal_display_extensions_menu()
     );
     array_push($extensions_data, $extension_3);
     
+    $extension_4 = array(
+        'name' => 'Variable Quantity',
+        'thumbnail' => WP_PAYPAL_URL.'/extensions/images/wp-paypal-variable-quantity.png',
+        'description' => 'Allow buyers to enter a quantity for your WP PayPal Buy Now buttons',
+        'page_url' => 'https://wphowto.net/how-to-add-a-quantity-field-to-a-paypal-button-6428',
+    );
+    array_push($extensions_data, $extension_4);
+    
     //Display the list
     $output = '';
     foreach ($extensions_data as $extension) {

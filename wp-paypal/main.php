@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.1
+  Version: 1.2.3.2
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.1';
+    var $plugin_version = '1.2.3.2';
     var $plugin_url;
     var $plugin_path;
     
@@ -194,46 +194,68 @@ class WP_PAYPAL {
             echo '</strong></p></div>';
         }
         ?>
+        <table class="wppaypal-general-settings-table">
+            <tbody>
+                <tr>
+                    <td valign="top">
+                        <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
+                            <?php wp_nonce_field('wp_paypal_general_settings'); ?>
 
-        <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
-            <?php wp_nonce_field('wp_paypal_general_settings'); ?>
+                            <table class="form-table">
 
-            <table class="form-table">
+                                <tbody>
 
-                <tbody>
+                                    <tr valign="top">
+                                        <th scope="row"><?Php _e('Enable Test Mode', 'wp-paypal');?></th>
+                                        <td> <fieldset><legend class="screen-reader-text"><span>Enable Test Mode</span></legend><label for="enable_testmode">
+                                                    <input name="enable_testmode" type="checkbox" id="enable_testmode" <?php if (get_option('wp_paypal_enable_testmode') == '1') echo ' checked="checked"'; ?> value="1">
+                                                    <?Php _e('Check this option if you want to enable PayPal sandbox for testing', 'wp-paypal');?></label>
+                                            </fieldset></td>
+                                    </tr>
 
-                    <tr valign="top">
-                        <th scope="row"><?Php _e('Enable Test Mode', 'wp-paypal');?></th>
-                        <td> <fieldset><legend class="screen-reader-text"><span>Enable Test Mode</span></legend><label for="enable_testmode">
-                                    <input name="enable_testmode" type="checkbox" id="enable_testmode" <?php if (get_option('wp_paypal_enable_testmode') == '1') echo ' checked="checked"'; ?> value="1">
-                                    <?Php _e('Check this option if you want to enable PayPal sandbox for testing', 'wp-paypal');?></label>
-                            </fieldset></td>
-                    </tr>
-                    
-                    <tr valign="top">
-                        <th scope="row"><label for="paypal_merchant_id"><?Php _e('PayPal Merchant ID', 'wp-paypal');?></label></th>
-                        <td><input name="paypal_merchant_id" type="text" id="paypal_merchant_id" value="<?php echo get_option('wp_paypal_merchant_id'); ?>" class="regular-text">
-                            <p class="description"><?Php _e('Your PayPal Merchant ID', 'wp-paypal');?></p></td>
-                    </tr>
+                                    <tr valign="top">
+                                        <th scope="row"><label for="paypal_merchant_id"><?Php _e('PayPal Merchant ID', 'wp-paypal');?></label></th>
+                                        <td><input name="paypal_merchant_id" type="text" id="paypal_merchant_id" value="<?php echo get_option('wp_paypal_merchant_id'); ?>" class="regular-text">
+                                            <p class="description"><?Php _e('Your PayPal Merchant ID', 'wp-paypal');?></p></td>
+                                    </tr>
 
-                    <tr valign="top">
-                        <th scope="row"><label for="paypal_email"><?Php _e('PayPal Email', 'wp-paypal');?></label></th>
-                        <td><input name="paypal_email" type="text" id="paypal_email" value="<?php echo get_option('wp_paypal_email'); ?>" class="regular-text">
-                            <p class="description"><?Php _e('Your PayPal email address', 'wp-paypal');?></p></td>
-                    </tr>
+                                    <tr valign="top">
+                                        <th scope="row"><label for="paypal_email"><?Php _e('PayPal Email', 'wp-paypal');?></label></th>
+                                        <td><input name="paypal_email" type="text" id="paypal_email" value="<?php echo get_option('wp_paypal_email'); ?>" class="regular-text">
+                                            <p class="description"><?Php _e('Your PayPal email address', 'wp-paypal');?></p></td>
+                                    </tr>
 
-                    <tr valign="top">
-                        <th scope="row"><label for="currency_code"><?Php _e('Currency Code', 'wp-paypal');?></label></th>
-                        <td><input name="currency_code" type="text" id="currency_code" value="<?php echo get_option('wp_paypal_currency_code'); ?>" class="regular-text">
-                            <p class="description"><?Php _e('The currency of the payment', 'wp-paypal');?> (<?Php _e('example', 'wp-paypal');?>: USD, CAD, GBP, EUR)</p></td>
-                    </tr>
+                                    <tr valign="top">
+                                        <th scope="row"><label for="currency_code"><?Php _e('Currency Code', 'wp-paypal');?></label></th>
+                                        <td><input name="currency_code" type="text" id="currency_code" value="<?php echo get_option('wp_paypal_currency_code'); ?>" class="regular-text">
+                                            <p class="description"><?Php _e('The currency of the payment', 'wp-paypal');?> (<?Php _e('example', 'wp-paypal');?>: USD, CAD, GBP, EUR)</p></td>
+                                    </tr>
 
-                </tbody>
+                                </tbody>
 
-            </table>
+                            </table>
 
-            <p class="submit"><input type="submit" name="wp_paypal_update_settings" id="wp_paypal_update_settings" class="button button-primary" value="<?Php _e('Save Changes', 'wp-paypal');?>"></p></form>
-
+                            <p class="submit"><input type="submit" name="wp_paypal_update_settings" id="wp_paypal_update_settings" class="button button-primary" value="<?Php _e('Save Changes', 'wp-paypal');?>"></p></form>
+                    </td>
+                    <td valign="top" style="width: 300px">
+                        <div style="background: #ffc; border: 1px solid #333; margin: 2px; padding: 3px 15px">
+                        <h3><?php _e('Need More Features?', 'wp-paypal')?></h3>
+                        <ol>
+                        <li><?php printf(__('Check out the <a href="%s">plugin extensions</a>.', 'wp-paypal'), 'edit.php?post_type=wp_paypal_order&page=wp-paypal-extensions');?></li>
+                        </ol>    
+                        <h3><?php _e('Need Help?', 'wp-paypal')?></h3>
+                        <ol>
+                        <li><?php printf(__('Use the <a href="%s">Debug</a> menu for diagnostics.', 'wp-paypal'), 'edit.php?post_type=wp_paypal_order&page=wp-paypal-debug');?></li>
+                        <li><?php printf(__('Check out the <a target="_blank" href="%s">support forum</a> and <a target="_blank" href="%s">FAQ</a>.', 'wp-paypal'), 'https://wordpress.org/support/plugin/wp-paypal/', 'https://wordpress.org/plugins/wp-paypal/#faq');?></li>
+                        <li><?php printf(__('Visit the <a target="_blank" href="%s">plugin homepage</a>.', 'wp-paypal'), 'https://wphowto.net/wordpress-paypal-plugin-732');?></li>
+                        </ol>
+                        <h3><?php _e('Rate This Plugin', 'wp-paypal')?></h3>
+                        <p><?php printf(__('Please <a target="_blank" href="%s">rate us</a> and give feedback.', 'wp-paypal'), 'https://wordpress.org/support/plugin/wp-paypal/reviews?rate=5#new-post');?></p>
+                        </div>
+                    </td>
+                </tr>
+            </tbody> 
+        </table>    
         <?php
     }
 
@@ -589,6 +611,13 @@ function wp_paypal_get_buy_now_button($atts){
     if(isset($atts['handling']) && is_numeric($atts['handling'])) {
         $handling = $atts['handling'];
         $button_code .= '<input type="hidden" name="handling" value="'.esc_attr($handling).'">';
+    }
+    if(isset($atts['quantity']) && empty($atts['quantity'])) {
+        $quantity_input_code = '';
+        $quantity_input_code = apply_filters('wppaypal_variable_quantity', $quantity_input_code, $button_code, $atts);
+        if(!empty($quantity_input_code)){
+            $button_code .= $quantity_input_code;
+        }
     }
     if(isset($atts['undefined_quantity']) && is_numeric($atts['undefined_quantity'])) {
         $undefined_quantity = $atts['undefined_quantity'];
