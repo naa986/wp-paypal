@@ -40,6 +40,14 @@ function wp_paypal_display_extensions_menu()
     );
     array_push($extensions_data, $extension_4);
     
+    $extension_5 = array(
+        'name' => 'Variable Subscription',
+        'thumbnail' => WP_PAYPAL_URL.'/extensions/images/wp-paypal-variable-subscription.png',
+        'description' => 'Let buyers set the amount they will pay for your PayPal Subscribe buttons',
+        'page_url' => 'https://wphowto.net/how-to-add-a-recurring-price-field-to-a-paypal-subscription-button-6450',
+    );
+    array_push($extensions_data, $extension_5);
+    
     //Display the list
     $output = '';
     foreach ($extensions_data as $extension) {

@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce
 Requires at least: 5.3
 Tested up to: 5.9
-Stable tag: 1.2.3.2
+Stable tag: 1.2.3.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,7 @@ WP PayPal supports PayPal Sandbox. PayPal Sandbox is a simulation environment wh
 * [Buy Now Discount](https://wphowto.net/applying-discount-to-a-paypal-buy-button-in-wordpress-834)
 * [Product Variations](https://wphowto.net/how-to-configure-product-variations-in-wp-paypal-6413)
 * [Variable Quantity](https://wphowto.net/how-to-add-a-quantity-field-to-a-paypal-button-6428)
+* [Variable Subscription](https://wphowto.net/how-to-add-a-recurring-price-field-to-a-paypal-subscription-button-6450)
 
 === How to Use WP PayPal ===
 
@@ -154,6 +155,9 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.3 =
+* Added support for variable subscription price.
 
 = 1.2.3.2 =
 * Added support for variable quantity.

@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.2
+  Version: 1.2.3.3
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.2';
+    var $plugin_version = '1.2.3.3';
     var $plugin_url;
     var $plugin_path;
     
@@ -812,13 +812,20 @@ function wp_paypal_get_subscribe_button($atts){
             return $button_code;
         }
     }
-    if(isset($atts['a3']) && is_numeric($atts['a3'])) {
-        $a3 = $atts['a3'];
-        $button_code .= '<input type="hidden" name="a3" value="'.esc_attr($a3).'">';
+    $a3_input_code = '';
+    $a3_input_code = apply_filters('wppaypal_subscribe_a3', $a3_input_code, $button_code, $atts);
+    if(!empty($a3_input_code)){
+        $button_code .= $a3_input_code;
     }
     else{
-        $button_code = __('Please enter a regular subscription price a3', 'wp-paypal');
-        return $button_code;
+        if(isset($atts['a3']) && is_numeric($atts['a3']) && $atts['a3'] > 0) {
+            $a3 = $atts['a3'];
+            $button_code .= '<input type="hidden" name="a3" value="'.esc_attr($a3).'">';
+        }
+        else{
+            $error = __('Please enter a regular subscription price a3', 'wp-paypal');
+            return $error;
+        }
     }
     if(isset($atts['p3']) && is_numeric($atts['p3'])) {
         $p3 = $atts['p3'];
