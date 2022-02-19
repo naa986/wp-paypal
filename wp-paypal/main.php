@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.3
+  Version: 1.2.3.4
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,12 +15,14 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.3';
+    var $plugin_version = '1.2.3.4';
+    var $db_version = '1.0.1';
     var $plugin_url;
     var $plugin_path;
     
     function __construct() {
         define('WP_PAYPAL_VERSION', $this->plugin_version);
+        define('WP_PAYPAL_DB_VERSION', $this->db_version);
         define('WP_PAYPAL_SITE_URL', site_url());
         define('WP_PAYPAL_HOME_URL', home_url());
         define('WP_PAYPAL_URL', $this->plugin_url());
@@ -84,6 +86,7 @@ class WP_PAYPAL {
         add_option('wp_paypal_plugin_version', $this->plugin_version);
         add_option('wp_paypal_email', get_bloginfo('admin_email'));
         add_option('wp_paypal_currency_code', 'USD');
+        wp_paypal_set_default_email_options();
     }
 
     function check_upgrade() {
@@ -146,18 +149,18 @@ class WP_PAYPAL {
 
     function options_page() {
         $plugin_tabs = array(
-            'wp-paypal-settings' => __('General', 'wp-paypal')
+            'wp-paypal-settings' => __('General', 'wp-paypal'),
+            'wp-paypal-settings&tab=emails' => __('Emails', 'wp-paypal')
         );
         echo '<div class="wrap"><h2>'.__('WP PayPal', 'wp-paypal').' v' . WP_PAYPAL_VERSION . '</h2>';
         $url = 'https://wphowto.net/wordpress-paypal-plugin-732';
         $link_msg = sprintf( wp_kses( __( 'Please visit the <a target="_blank" href="%s">WP PayPal</a> documentation page for usage instructions.', 'wp-paypal' ), array(  'a' => array( 'href' => array(), 'target' => array() ) ) ), esc_url( $url ) );
         echo '<div class="update-nag">'.$link_msg.'</div>';
-        echo '<div id="poststuff"><div id="post-body">';
 
         if (isset($_GET['page'])) {
             $current = $_GET['page'];
-            if (isset($_GET['action'])) {
-                $current .= "&action=" . $_GET['action'];
+            if (isset($_GET['tab'])) {
+                $current .= "&tab=" . $_GET['tab'];
             }
         }
         $content = '';
@@ -172,10 +175,21 @@ class WP_PAYPAL {
         }
         $content .= '</h2>';
         echo $content;
+        
+        if(isset($_GET['tab']))
+        { 
+            switch ($_GET['tab'])
+            {
+               case 'emails':
+                   $this->email_settings();
+                   break;
+            }
+        }
+        else
+        {
+            $this->general_settings();
+        }
 
-        $this->general_settings();
-
-        echo '</div></div>';
         echo '</div>';
     }
 
@@ -256,6 +270,194 @@ class WP_PAYPAL {
                 </tr>
             </tbody> 
         </table>    
+        <?php
+    }
+    
+    function email_settings() 
+    {
+        if (isset($_POST['wp_paypal_update_email_settings'])) 
+        {
+            $nonce = $_REQUEST['_wpnonce'];
+            if (!wp_verify_nonce($nonce, 'wp_paypal_email_settings_nonce')) {
+                wp_die(__('Error! Nonce Security Check Failed! please save the email settings again.', 'wp-paypal'));
+            }
+            $_POST = stripslashes_deep($_POST);
+            $email_from_name = '';
+            if(isset($_POST['email_from_name']) && !empty($_POST['email_from_name'])){
+                $email_from_name = sanitize_text_field($_POST['email_from_name']);
+            }
+            $email_from_address= '';
+            if(isset($_POST['email_from_address']) && !empty($_POST['email_from_address'])){
+                $email_from_address = sanitize_text_field($_POST['email_from_address']);
+            }
+            $purchase_email_enabled = (isset($_POST["purchase_email_enabled"]) && $_POST["purchase_email_enabled"] == '1') ? '1' : '';
+            $purchase_email_subject = '';
+            if(isset($_POST['purchase_email_subject']) && !empty($_POST['purchase_email_subject'])){
+                $purchase_email_subject = sanitize_text_field($_POST['purchase_email_subject']);
+            }
+            $purchase_email_type = '';
+            if(isset($_POST['purchase_email_type']) && !empty($_POST['purchase_email_type'])){
+                $purchase_email_type = sanitize_text_field($_POST['purchase_email_type']);
+            }
+            $purchase_email_body = '';
+            if(isset($_POST['purchase_email_body']) && !empty($_POST['purchase_email_body'])){
+                $purchase_email_body = trim($_POST['purchase_email_body']);
+            }
+            $sale_notification_email_enabled = (isset($_POST["sale_notification_email_enabled"]) && $_POST["sale_notification_email_enabled"] == '1') ? '1' : '';
+            $sale_notification_email_recipient = '';
+            if(isset($_POST['sale_notification_email_recipient']) && !empty($_POST['sale_notification_email_recipient'])){
+                $sale_notification_email_recipient = sanitize_email($_POST['sale_notification_email_recipient']);
+            }
+            $sale_notification_email_subject = '';
+            if(isset($_POST['sale_notification_email_subject']) && !empty($_POST['sale_notification_email_subject'])){
+                $sale_notification_email_subject = sanitize_text_field($_POST['sale_notification_email_subject']);
+            }
+            $sale_notification_email_type = '';
+            if(isset($_POST['sale_notification_email_type']) && !empty($_POST['sale_notification_email_type'])){
+                $sale_notification_email_type = sanitize_text_field($_POST['sale_notification_email_type']);
+            }
+            $sale_notification_email_body = '';
+            if(isset($_POST['sale_notification_email_body']) && !empty($_POST['sale_notification_email_body'])){
+                $sale_notification_email_body = trim($_POST['sale_notification_email_body']);
+            }
+            $paypal_options = array();
+            $paypal_options['email_from_name'] = $email_from_name;
+            $paypal_options['email_from_address'] = $email_from_address;
+            $paypal_options['purchase_email_enabled'] = $purchase_email_enabled;
+            $paypal_options['purchase_email_subject'] = $purchase_email_subject;
+            $paypal_options['purchase_email_type'] = $purchase_email_type;
+            $paypal_options['purchase_email_body'] = $purchase_email_body;
+            $paypal_options['sale_notification_email_enabled'] = $sale_notification_email_enabled;
+            $paypal_options['sale_notification_email_recipient'] = $sale_notification_email_recipient;
+            $paypal_options['sale_notification_email_subject'] = $sale_notification_email_subject;
+            $paypal_options['sale_notification_email_type'] = $sale_notification_email_type;
+            $paypal_options['sale_notification_email_body'] = $sale_notification_email_body;
+            wp_paypal_update_email_option($paypal_options);
+            echo '<div id="message" class="updated fade"><p><strong>';
+            echo __('Settings Saved', 'wp-paypal').'!';
+            echo '</strong></p></div>';
+        }
+        
+        $paypal_options = wp_paypal_get_email_option();
+        
+        $email_tags_url = "https://wphowto.net/wordpress-paypal-plugin-732";
+        $email_tags_link = sprintf(wp_kses(__('You can find the full list of available email tags <a target="_blank" href="%s">here</a>.', 'wp-paypal'), array('a' => array('href' => array(), 'target' => array()))), esc_url($email_tags_url));
+        ?>
+        <table class="wppaypal-email-settings-table">
+            <tbody>
+                <tr>
+                    <td valign="top">
+                        <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
+                            <?php wp_nonce_field('wp_paypal_email_settings_nonce'); ?>
+
+                            <h2><?Php _e('Email Sender Options', 'wp-paypal');?></h2>
+                            <table class="form-table">
+                                <tbody>                   
+                                    <tr valign="top">
+                                        <th scope="row"><label for="email_from_name"><?Php _e('From Name', 'wp-paypal');?></label></th>
+                                        <td><input name="email_from_name" type="text" id="email_from_name" value="<?php echo esc_attr($paypal_options['email_from_name']); ?>" class="regular-text">
+                                            <p class="description"><?Php _e('The sender name that appears in outgoing emails. Leave empty to use the default.', 'wp-paypal');?></p></td>
+                                    </tr>                
+                                    <tr valign="top">
+                                        <th scope="row"><label for="email_from_address"><?Php _e('From Email Address', 'wp-paypal');?></label></th>
+                                        <td><input name="email_from_address" type="text" id="email_from_address" value="<?php echo esc_attr($paypal_options['email_from_address']); ?>" class="regular-text">
+                                            <p class="description"><?Php _e('The sender email that appears in outgoing emails. Leave empty to use the default.', 'wp-paypal');?></p></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <h2><?Php _e('Purchase Receipt Email', 'wp-paypal');?></h2>
+                            <p><?Php _e('A purchase receipt email is sent to the customer after completion of a successful purchase', 'wp-paypal');?></p>
+                            <table class="form-table">
+                                <tbody>
+                                    <tr valign="top">
+                                        <th scope="row"><?Php _e('Enable/Disable', 'wp-paypal');?></th>
+                                        <td> <fieldset><legend class="screen-reader-text"><span>Enable/Disable</span></legend><label for="purchase_email_enabled">
+                                                    <input name="purchase_email_enabled" type="checkbox" id="purchase_email_enabled" <?php if ($paypal_options['purchase_email_enabled'] == '1') echo ' checked="checked"'; ?> value="1">
+                                                    <?Php _e('Enable this email notification', 'wp-paypal');?></label>
+                                            </fieldset></td>
+                                    </tr>                   
+                                    <tr valign="top">
+                                        <th scope="row"><label for="purchase_email_subject"><?Php _e('Subject', 'wp-paypal');?></label></th>
+                                        <td><input name="purchase_email_subject" type="text" id="purchase_email_subject" value="<?php echo esc_attr($paypal_options['purchase_email_subject']); ?>" class="regular-text">
+                                            <p class="description"><?Php _e('The subject line for the purchase receipt email.', 'wp-paypal');?></p></td>
+                                    </tr>
+                                    <tr valign="top">
+                                        <th scope="row"><label for="purchase_email_type"><?php _e('Email Type', 'wp-paypal');?></label></th>
+                                        <td>
+                                        <select name="purchase_email_type" id="purchase_email_type">
+                                            <option <?php echo ($paypal_options['purchase_email_type'] === 'plain')?'selected="selected"':'';?> value="plain"><?php _e('Plain Text', 'wp-paypal')?></option>
+                                            <option <?php echo ($paypal_options['purchase_email_type'] === 'html')?'selected="selected"':'';?> value="html"><?php _e('HTML', 'wp-paypal')?></option>
+                                        </select>
+                                        <p class="description"><?php _e('The content type of the purchase receipt email.', 'wp-paypal')?></p>
+                                        </td>
+                                    </tr>
+                                    <tr valign="top">
+                                        <th scope="row"><label for="purchase_email_body"><?Php _e('Email Body', 'wp-paypal');?></label></th>
+                                        <td><?php wp_editor($paypal_options['purchase_email_body'], 'purchase_email_body', array('textarea_name' => 'purchase_email_body'));?>
+                                            <p class="description"><?Php echo __('The main content of the purchase receipt email.', 'wp-paypal').' '.$email_tags_link;?></p></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <h2><?Php _e('Sale Notification Email', 'wp-paypal');?></h2>
+                            <p><?Php _e('A sale notification email is sent to the chosen recipient after completion of a successful purchase', 'wp-paypal');?></p>
+                            <table class="form-table">
+                                <tbody>
+                                    <tr valign="top">
+                                        <th scope="row"><?Php _e('Enable/Disable', 'wp-paypal');?></th>
+                                        <td> <fieldset><legend class="screen-reader-text"><span>Enable/Disable</span></legend><label for="sale_notification_email_enabled">
+                                                    <input name="sale_notification_email_enabled" type="checkbox" id="sale_notification_email_enabled" <?php if ($paypal_options['sale_notification_email_enabled'] == '1') echo ' checked="checked"'; ?> value="1">
+                                                    <?Php _e('Enable this email notification', 'wp-paypal');?></label>
+                                            </fieldset></td>
+                                    </tr>
+                                    <tr valign="top">
+                                        <th scope="row"><label for="sale_notification_email_recipient"><?Php _e('Recipient', 'wp-paypal');?></label></th>
+                                        <td><input name="sale_notification_email_recipient" type="text" id="sale_notification_email_recipient" value="<?php echo esc_attr($paypal_options['sale_notification_email_recipient']); ?>" class="regular-text">
+                                            <p class="description"><?Php _e('The email address that should receive a notification anytime a sale is made.', 'wp-paypal');?></p></td>
+                                    </tr>
+                                    <tr valign="top">
+                                        <th scope="row"><label for="sale_notification_email_subject"><?Php _e('Subject', 'wp-paypal');?></label></th>
+                                        <td><input name="sale_notification_email_subject" type="text" id="sale_notification_email_subject" value="<?php echo esc_attr($paypal_options['sale_notification_email_subject']); ?>" class="regular-text">
+                                            <p class="description"><?Php _e('The subject line for the sale notification email.', 'wp-paypal');?></p></td>
+                                    </tr>
+                                    <tr valign="top">
+                                        <th scope="row"><label for="sale_notification_email_type"><?php _e('Email Type', 'wp-paypal');?></label></th>
+                                        <td>
+                                        <select name="sale_notification_email_type" id="sale_notification_email_type">
+                                            <option <?php echo ($paypal_options['sale_notification_email_type'] === 'plain')?'selected="selected"':'';?> value="plain"><?php _e('Plain Text', 'wp-paypal')?></option>
+                                            <option <?php echo ($paypal_options['sale_notification_email_type'] === 'html')?'selected="selected"':'';?> value="html"><?php _e('HTML', 'wp-paypal')?></option>
+                                        </select>
+                                        <p class="description"><?php _e('The content type of the sale notification email.', 'wp-paypal')?></p>
+                                        </td>
+                                    </tr>
+                                    <tr valign="top">
+                                        <th scope="row"><label for="sale_notification_email_body"><?Php _e('Email Body', 'wp-paypal');?></label></th>
+                                        <td><?php wp_editor($paypal_options['sale_notification_email_body'], 'sale_notification_email_body', array('textarea_name' => 'sale_notification_email_body'));?>
+                                            <p class="description"><?Php echo __('The main content of the sale notification email.', 'wp-paypal').' '.$email_tags_link;?></p></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <p class="submit"><input type="submit" name="wp_paypal_update_email_settings" id="wp_paypal_update_email_settings" class="button button-primary" value="<?Php _e('Save Changes', 'wp-paypal');?>"></p></form>
+                    </td>
+                    <td valign="top" style="width: 300px">
+                        <div style="background: #ffc; border: 1px solid #333; margin: 2px; padding: 3px 15px">
+                        <h3><?php _e('Need More Features?', 'wp-paypal')?></h3>
+                        <ol>
+                        <li><?php printf(__('Check out the <a href="%s">plugin extensions</a>.', 'wp-paypal'), 'edit.php?post_type=wp_paypal_order&page=wp-paypal-extensions');?></li>
+                        </ol>    
+                        <h3><?php _e('Need Help?', 'wp-paypal')?></h3>
+                        <ol>
+                        <li><?php printf(__('Use the <a href="%s">Debug</a> menu for diagnostics.', 'wp-paypal'), 'edit.php?post_type=wp_paypal_order&page=wp-paypal-debug');?></li>
+                        <li><?php printf(__('Check out the <a target="_blank" href="%s">support forum</a> and <a target="_blank" href="%s">FAQ</a>.', 'wp-paypal'), 'https://wordpress.org/support/plugin/wp-paypal/', 'https://wordpress.org/plugins/wp-paypal/#faq');?></li>
+                        <li><?php printf(__('Visit the <a target="_blank" href="%s">plugin homepage</a>.', 'wp-paypal'), 'https://wphowto.net/wordpress-paypal-plugin-732');?></li>
+                        </ol>
+                        <h3><?php _e('Rate This Plugin', 'wp-paypal')?></h3>
+                        <p><?php printf(__('Please <a target="_blank" href="%s">rate us</a> and give feedback.', 'wp-paypal'), 'https://wordpress.org/support/plugin/wp-paypal/reviews?rate=5#new-post');?></p>
+                        </div>
+                    </td>
+                </tr>
+            </tbody> 
+        </table>
         <?php
     }
 
@@ -892,6 +1094,68 @@ function wp_paypal_get_subscribe_button($atts){
     $button_code .= '</form>';
     return $button_code;        
 }
+
+function wp_paypal_get_email_option(){
+    $options = get_option('wp_paypal_email_options');
+    if(!is_array($options)){
+        $options = wp_paypal_get_empty_email_options_array();
+    }
+    return $options;
+}
+
+function wp_paypal_update_email_option($new_options){
+    $empty_options = wp_paypal_get_empty_email_options_array();
+    $options = wp_paypal_get_email_option();
+    if(is_array($options)){
+        $current_options = array_merge($empty_options, $options);
+        $updated_options = array_merge($current_options, $new_options);
+        update_option('wp_paypal_email_options', $updated_options);
+    }
+    else{
+        $updated_options = array_merge($empty_options, $new_options);
+        update_option('wp_paypal_email_options', $updated_options);
+    }
+}
+
+function wp_paypal_get_empty_email_options_array(){
+    $options = array();
+    $options['email_from_name'] = '';
+    $options['email_from_address'] = '';
+    $options['purchase_email_enabled'] = '';
+    $options['purchase_email_subject'] = '';
+    $options['purchase_email_type'] = '';
+    $options['purchase_email_body'] = '';
+    $options['sale_notification_email_enabled'] = '';
+    $options['sale_notification_email_recipient'] = '';
+    $options['sale_notification_email_subject'] = '';
+    $options['sale_notification_email_type'] = '';
+    $options['sale_notification_email_body'] = '';
+    return $options;
+}
+
+function wp_paypal_set_default_email_options(){
+    $options = wp_paypal_get_email_option();
+    $options['purchase_email_type'] = 'plain';
+    $options['purchase_email_subject'] = __("Purchase Receipt", "wp-paypal");
+    $purchage_email_body = __("Dear", "wp-paypal")." {first_name},\n\n";
+    $purchage_email_body .= __("Thank you for your purchase. Your purchase details are shown below for your reference:", "wp-paypal")."\n\n";
+    $purchage_email_body .= __("Transaction ID:", "wp-paypal")." {txn_id}\n";
+    $purchage_email_body .= __("Product(s):", "wp-paypal")." {item_names}\n";
+    $purchage_email_body .= __("Total:", "wp-paypal")." {mc_currency} {mc_gross}";
+    $options['purchase_email_body'] = $purchage_email_body;
+    $options['sale_notification_email_recipient'] = get_bloginfo('admin_email');
+    $options['sale_notification_email_subject'] = __("New Customer Order", "wp-paypal");
+    $options['sale_notification_email_type'] = 'plain';
+    $sale_notification_email_body = __("Hello", "wp-paypal")."\n\n";
+    $sale_notification_email_body .= __("A purchase has been made.", "wp-paypal")."\n\n";
+    $sale_notification_email_body .= __("Purchased by:", "wp-paypal")." {first_name} {last_name}\n";
+    $sale_notification_email_body .= __("Product(s) sold:", "wp-paypal")." {item_names}\n";
+    $sale_notification_email_body .= __("Total:", "wp-paypal")." {mc_currency} {mc_gross}\n\n";
+    $sale_notification_email_body .= __("Thank you", "wp-paypal");       
+    $options['sale_notification_email_body'] = $sale_notification_email_body;
+    add_option('wp_paypal_email_options', $options);
+}
+
 
 function wp_paypal_debug_log($msg, $success, $end = false) {
     if (!WP_PAYPAL_DEBUG) {

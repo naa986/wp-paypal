@@ -65,6 +65,7 @@ function wp_paypal_order_columns($columns) {
         'txn_id' => __('Transaction ID', 'wp-paypal'),
         'first_name' => __('First Name', 'wp-paypal'),
         'last_name' => __('Last Name', 'wp-paypal'),
+        'payer_email' => __('Email', 'wp-paypal'),
         'mc_gross' => __('Total', 'wp-paypal'),
         'payment_status' => __('Payment Status', 'wp-paypal'),
         'date' => __('Date', 'wp-paypal')
@@ -117,6 +118,9 @@ function wp_paypal_custom_column($column, $post_id) {
             break;
         case 'last_name' :
             echo get_post_meta($post_id, '_last_name', true);
+            break;
+        case 'payer_email' :
+            echo get_post_meta($post_id, '_payer_email', true);
             break;
         case 'mc_gross' :
             echo get_post_meta($post_id, '_mc_gross', true);
