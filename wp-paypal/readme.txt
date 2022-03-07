@@ -56,6 +56,34 @@ Once you have installed this plugin you need to go to the settings menu to confi
 * **PayPal Email**: Your PayPal email address
 * **Currency Code**: The default currency code
 
+=== WP PayPal Emails ===
+
+WP PayPal plugin comes with an "Emails" tab where you will be able to configure some email related settings.
+
+**Email Sender Options**
+
+In this section you can choose to customize the default From Name and From Email Address that will be used when sending an email.
+
+**Purchase Receipt Email**
+
+When this feature is enabled an email sent to the customer after completion of a successful purchase. Options you can customize here:
+
+* The subject of the purchase receipt email
+* The content type of the purchase receipt email. The default is "Plain Text". But you can also set it to "HTML"
+* The body of the purchase receipt email.
+
+**Sale Notification Email**
+
+When this feature is enabled an email is sent to your chosen recipient after completion of a successful purchase. Options you can customize here:
+
+* The subject of the sale notification email
+* The content type of the sale notification email. The default is "Plain Text". But you can also set it to "HTML"
+* The body of the sale notification email.
+
+You can use various email tags in the body of an email to dynamically change its content. You can find the full list of available email tags in the [PayPal](https://wphowto.net/wordpress-paypal-plugin-732) plugin page.
+
+=== How to Create a PayPal Button ===
+
 In order to create a button insert the shortcode like the following:
 
 = PayPal Buy Now =
@@ -150,6 +178,9 @@ No.
 
 1. PayPal Button Demo
 2. PayPal Orders
+3. PayPal Email Sender Options
+4. PayPal Purchase Receipt Email Settings
+5. PayPal Sale Notification Email Settings
 
 == Upgrade Notice ==
 none

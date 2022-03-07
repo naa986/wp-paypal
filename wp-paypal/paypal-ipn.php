@@ -31,8 +31,8 @@ function wp_paypal_process_ipn() {
         wp_paypal_debug_log_array($params, true);
         // Post back to get a response
         $response = wp_remote_post($paypal_adr, $params);
-        wp_paypal_debug_log("IPN Response: ", true);
-        wp_paypal_debug_log_array($response, true);
+        //wp_paypal_debug_log("IPN Response: ", true);
+        //wp_paypal_debug_log_array($response, true);
         // check to see if the request was valid
         $ipn_verified = false;
         if (!is_wp_error($response) && $response['response']['code'] >= 200 && $response['response']['code'] < 300 && strstr($response['body'], 'VERIFIED')) {
@@ -170,7 +170,7 @@ function wp_paypal_process_ipn() {
         if (isset($ipn_response['payer_email']) && !empty($ipn_response['payer_email'])) {
             $payment_data['payer_email'] = sanitize_text_field($ipn_response['payer_email']);
         }
-        $payment_data['payer_email'] = 'wpblogtuts@gmail.com';
+        //$payment_data['payer_email'] = '';
         $ship_to = '';
         if (isset($ipn_response['address_street'])) {
             $address_street = sanitize_text_field($ipn_response['address_street']);
