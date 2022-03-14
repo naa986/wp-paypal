@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.4
+  Version: 1.2.3.5
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.4';
+    var $plugin_version = '1.2.3.5';
     var $db_version = '1.0.1';
     var $plugin_url;
     var $plugin_path;
@@ -306,7 +306,7 @@ class WP_PAYPAL {
             $sale_notification_email_enabled = (isset($_POST["sale_notification_email_enabled"]) && $_POST["sale_notification_email_enabled"] == '1') ? '1' : '';
             $sale_notification_email_recipient = '';
             if(isset($_POST['sale_notification_email_recipient']) && !empty($_POST['sale_notification_email_recipient'])){
-                $sale_notification_email_recipient = sanitize_email($_POST['sale_notification_email_recipient']);
+                $sale_notification_email_recipient = sanitize_text_field($_POST['sale_notification_email_recipient']);
             }
             $sale_notification_email_subject = '';
             if(isset($_POST['sale_notification_email_subject']) && !empty($_POST['sale_notification_email_subject'])){
@@ -412,7 +412,7 @@ class WP_PAYPAL {
                                     <tr valign="top">
                                         <th scope="row"><label for="sale_notification_email_recipient"><?Php _e('Recipient', 'wp-paypal');?></label></th>
                                         <td><input name="sale_notification_email_recipient" type="text" id="sale_notification_email_recipient" value="<?php echo esc_attr($paypal_options['sale_notification_email_recipient']); ?>" class="regular-text">
-                                            <p class="description"><?Php _e('The email address that should receive a notification anytime a sale is made.', 'wp-paypal');?></p></td>
+                                            <p class="description"><?Php _e('The email address that should receive a notification anytime a sale is made. Multiple recipients can be specified by separating the addresses with a comma.', 'wp-paypal');?></p></td>
                                     </tr>
                                     <tr valign="top">
                                         <th scope="row"><label for="sale_notification_email_subject"><?Php _e('Subject', 'wp-paypal');?></label></th>

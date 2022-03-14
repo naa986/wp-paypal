@@ -1,10 +1,10 @@
 === WordPress PayPal ===
 Contributors: naa986
 Donate link: https://wphowto.net/
-Tags: paypal, cart, checkout, donation, e-commerce
+Tags: paypal, cart, checkout, donation, e-commerce, subscription, payment
 Requires at least: 5.3
 Tested up to: 5.9
-Stable tag: 1.2.3.4
+Stable tag: 1.2.3.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,21 +24,29 @@ WP PayPal supports PayPal Sandbox. PayPal Sandbox is a simulation environment wh
 
 * Sell products or services using PayPal
 * Create PayPal buttons on the fly in a post/page using shortcodes
-* Accept once off payments or recurring payments
+* Accept once off payments
+* Accept recurring subscription payments
 * Accept donations from users
 * Allow users to add multiple items to the shopping cart and checkout
 * View or Manage orders received via PayPal buttons from your WordPress admin dashboard
 * Quick settings configurations
 * Enable debug to troubleshoot various issues (e.g. orders not getting updated)
-* Accept subscriptions on a daily, weekly, monthly or yearly basis
+* Open PayPal log to see how IPN (Instant Payment Notification) is being received from PayPal
+* Accept debit or credit card payments
+* Pay with PayPal balance
+* Pay with a bank account
+* Pay with PayPal Credit (Pay later, Pay over time)
+* Pay with PayPal credit or debit cards
+* Accept recurring subscription payments on a daily, weekly, monthly or yearly basis
 * Sell items with different variation options (e.g. size, color, price)
 * Switch your store to PayPal sandbox mode for testing
 * Compatible with the latest version of WordPress
 * Compatible with any WordPress theme
 * Sell in any currency supported by PayPal
-* Accept recurring payments/subscriptions
 * Charge shipping on your products or services
 * Charge tax on your products or services
+* Send a purchase confirmation email to your customer after a transaction
+* Send a sale notification email to one or more recipients (e.g. the seller) after a transaction
 
 === WP PayPal Extensions ===
 
@@ -50,7 +58,7 @@ WP PayPal supports PayPal Sandbox. PayPal Sandbox is a simulation environment wh
 
 === How to Use WP PayPal ===
 
-Once you have installed this plugin you need to go to the settings menu to configure some default options (WP PayPal -> Settings).
+Once you have installed this plugin you need to go to the settings menu to configure some PayPal settings (WP PayPal -> Settings).
 
 * **PayPal Merchant ID**: Your PayPal Merchant ID
 * **PayPal Email**: Your PayPal email address
@@ -74,7 +82,7 @@ When this feature is enabled an email sent to the customer after completion of a
 
 **Sale Notification Email**
 
-When this feature is enabled an email is sent to your chosen recipient after completion of a successful purchase. Options you can customize here:
+When this feature is enabled an email is sent to your chosen recipient(s) after completion of a successful purchase. Options you can customize here:
 
 * The subject of the sale notification email
 * The content type of the sale notification email. The default is "Plain Text". But you can also set it to "HTML"
@@ -142,7 +150,7 @@ You can use additional parameters to customize your PayPal buttons.
 
 * **handling** - Handling charges. This parameter is not quantity-specific, which means the same handling cost applies, regardless of the number of items on the order. (e.g. handling="2.00").
 
-For detailed documentation please check out the [WordPress PayPal Plugin](https://wphowto.net/wordpress-paypal-plugin-732) page.
+For detailed documentation please check out the [PayPal](https://wphowto.net/wordpress-paypal-plugin-732) plugin page.
 
 === Translation ===
 
@@ -166,11 +174,47 @@ If you are a non-English speaker please help [translate WP PayPal](https://trans
 
 Yes.
 
+= Can I accept one-time PayPal payments using this plugin? =
+
+Yes.
+
+= Can I accept PayPal recurring subscription payments using this plugin? =
+
+Yes.
+
+= Can I accept PayPal donation payments using this plugin? =
+
+Yes.
+
+= Does this plugin support PayPal shopping cart checkout? =
+
+Yes.
+
+= Can I accept WooCommerce PayPal payments using this plugin? =
+
+No. This is not a WooCommerce plugin.
+
 = How much does it cost to use PayPal?
 
 If you are a merchant or business that uses PayPal to accept payments from your customers, PayPal takes 2.9 percent of the payment plus 30 cents per transaction before putting the money in your account.
 
 = Does PayPal have a monthly fee? =
+
+No.
+
+= My PayPal button is not working. What can I do? =
+
+You can post your issue on the PayPal plugin page: https://wphowto.net/wordpress-paypal-plugin-732. 
+
+= Can I create a PayPal account using this plugin? =
+
+No.
+
+= Can I set up a PayPal account for my client using this plugin? =
+
+No.
+
+= Can I log in to my PayPal account using this plugin? =
 
 No.
 
@@ -186,6 +230,9 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.5 =
+* Sale notification email can be sent to multiple recipients.
 
 = 1.2.3.4 =
 * Added support for email options.

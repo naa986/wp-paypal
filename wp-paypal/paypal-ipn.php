@@ -271,16 +271,22 @@ function wp_paypal_process_ipn() {
                     add_filter('wp_mail_content_type', 'wp_paypal_set_html_email_content_type');
                     $body = apply_filters('wp_paypal_email_body_wpautop', true) ? wpautop($body) : $body;
                 }
-                wp_paypal_debug_log("Sending a sale notification email to ".$email_options['sale_notification_email_recipient'], true);
-                $mail_sent = wp_mail($email_options['sale_notification_email_recipient'], $subject, $body);
+                $email_recipients = explode(",", $email_options['sale_notification_email_recipient']);
+                foreach($email_recipients as $email_recipient){
+                    $to = sanitize_email($email_recipient);
+                    if(is_email($to)){
+                        wp_paypal_debug_log("Sending a sale notification email to ".$to, true);
+                        $mail_sent = wp_mail($to, $subject, $body);
+                        if($mail_sent == true){
+                            wp_paypal_debug_log("Email was sent successfully by WordPress", true);
+                        }
+                        else{
+                            wp_paypal_debug_log("Email could not be sent by WordPress", false);
+                        }
+                    }
+                }
                 if($type == "html"){
                     remove_filter('wp_mail_content_type', 'wp_paypal_set_html_email_content_type');
-                }
-                if($mail_sent == true){
-                    wp_paypal_debug_log("Email was sent successfully by WordPress", true);
-                }
-                else{
-                    wp_paypal_debug_log("Email could not be sent by WordPress", false);
                 }
             }
             remove_filter('wp_mail_from', 'wp_paypal_set_email_from');
