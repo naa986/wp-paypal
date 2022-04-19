@@ -203,6 +203,9 @@ function wp_paypal_process_ipn() {
         $post_updated = false;
         if ($post_id > 0) {
             $post_content = '';
+            if(!empty($payment_data['item_names'])){
+                $post_content .= '<strong>Product(s):</strong> '.$payment_data['item_names'].'<br />';
+            }
             if(!empty($ship_to)){
                 $ship_to = '<h2>'.__('Ship To', 'wp-paypal').'</h2><br />'.$payment_data['first_name'].' '.$payment_data['last_name'].'<br />'.$ship_to.'<br />';
             }
