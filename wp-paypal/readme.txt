@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce, subscription, payment
 Requires at least: 5.3
 Tested up to: 5.9
-Stable tag: 1.2.3.6
+Stable tag: 1.2.3.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,7 @@ WP PayPal supports PayPal Sandbox. PayPal Sandbox is a simulation environment wh
 
 * [Buy Now Custom Amount](https://wphowto.net/wordpress-paypal-plugin-732)
 * [Buy Now Discount](https://wphowto.net/applying-discount-to-a-paypal-buy-button-in-wordpress-834)
+* [Custom Input](https://wphowto.net/how-to-show-a-text-box-at-wp-paypal-checkout-to-collect-custom-data-from-buyers-6517)
 * [Product Variations](https://wphowto.net/how-to-configure-product-variations-in-wp-paypal-6413)
 * [Variable Quantity](https://wphowto.net/how-to-add-a-quantity-field-to-a-paypal-button-6428)
 * [Variable Subscription](https://wphowto.net/how-to-add-a-recurring-price-field-to-a-paypal-subscription-button-6450)
@@ -230,6 +231,9 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.7 =
+* Added support for custom input. This can be used to show a custom text box at checkout where buyers can enter any data.
 
 = 1.2.3.6 =
 * Product names are shown in the edit order interface.

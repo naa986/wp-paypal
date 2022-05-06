@@ -170,7 +170,10 @@ function wp_paypal_process_ipn() {
         if (isset($ipn_response['payer_email']) && !empty($ipn_response['payer_email'])) {
             $payment_data['payer_email'] = sanitize_text_field($ipn_response['payer_email']);
         }
-        //$payment_data['payer_email'] = '';
+        $payment_data['custom'] = '';
+        if (isset($ipn_response['custom']) && !empty($ipn_response['custom'])) {
+            $payment_data['custom'] = sanitize_text_field($ipn_response['custom']);
+        }
         $ship_to = '';
         if (isset($ipn_response['address_street'])) {
             $address_street = sanitize_text_field($ipn_response['address_street']);
@@ -205,6 +208,9 @@ function wp_paypal_process_ipn() {
             $post_content = '';
             if(!empty($payment_data['item_names'])){
                 $post_content .= '<strong>Product(s):</strong> '.$payment_data['item_names'].'<br />';
+            }
+            if(isset($payment_data['custom']) && !empty($payment_data['custom'])){
+                $post_content .= '<strong>Custom:</strong> '.$payment_data['custom'].'<br />';
             }
             if(!empty($ship_to)){
                 $ship_to = '<h2>'.__('Ship To', 'wp-paypal').'</h2><br />'.$payment_data['first_name'].' '.$payment_data['last_name'].'<br />'.$ship_to.'<br />';
@@ -314,7 +320,8 @@ function wp_paypal_do_email_tags($payment_data, $content){
         '{item_names}',
         '{mc_currency}',
         '{mc_gross}',
-        '{payer_email}'
+        '{payer_email}',
+        '{custom}'
     );
     $replace = array(
         $payment_data['first_name'], 
@@ -323,7 +330,8 @@ function wp_paypal_do_email_tags($payment_data, $content){
         $payment_data['item_names'],
         $payment_data['mc_currency'],
         $payment_data['mc_gross'],
-        $payment_data['payer_email']
+        $payment_data['payer_email'],
+        $payment_data['custom']
     );
     $content = str_replace($search, $replace, $content);
     return $content;

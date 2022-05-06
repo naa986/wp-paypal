@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.6
+  Version: 1.2.3.7
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.6';
+    var $plugin_version = '1.2.3.7';
     var $db_version = '1.0.1';
     var $plugin_url;
     var $plugin_path;
@@ -668,7 +668,12 @@ function wp_paypal_get_add_to_cart_button($atts){
         $notify_url = $atts['notify_url'];
         $button_code .= '<input type="hidden" name="notify_url" value="'.esc_attr($notify_url).'">';
     }
-    if(isset($atts['custom']) && !empty($atts['custom'])) {
+    $custom_input_code = '';
+    $custom_input_code = apply_filters('wppaypal_custom_input', $custom_input_code, $button_code, $atts);
+    if(!empty($custom_input_code)){
+        $button_code .= $custom_input_code;
+    }
+    else if(isset($atts['custom']) && !empty($atts['custom'])) {
         $custom = $atts['custom'];
         $button_code .= '<input type="hidden" name="custom" value="'.esc_attr($custom).'">';
     }
@@ -845,7 +850,12 @@ function wp_paypal_get_buy_now_button($atts){
         $notify_url = $atts['notify_url'];
         $button_code .= '<input type="hidden" name="notify_url" value="'.esc_attr($notify_url).'">';
     }
-    if(isset($atts['custom']) && !empty($atts['custom'])) {
+    $custom_input_code = '';
+    $custom_input_code = apply_filters('wppaypal_custom_input', $custom_input_code, $button_code, $atts);
+    if(!empty($custom_input_code)){
+        $button_code .= $custom_input_code;
+    }
+    else if(isset($atts['custom']) && !empty($atts['custom'])) {
         $custom = $atts['custom'];
         $button_code .= '<input type="hidden" name="custom" value="'.esc_attr($custom).'">';
     }
@@ -922,7 +932,12 @@ function wp_paypal_get_donate_button($atts){
         $notify_url = $atts['notify_url'];
         $button_code .= '<input type="hidden" name="notify_url" value="'.esc_attr($notify_url).'">';
     }
-    if(isset($atts['custom']) && !empty($atts['custom'])) {
+    $custom_input_code = '';
+    $custom_input_code = apply_filters('wppaypal_custom_input', $custom_input_code, $button_code, $atts);
+    if(!empty($custom_input_code)){
+        $button_code .= $custom_input_code;
+    }
+    else if(isset($atts['custom']) && !empty($atts['custom'])) {
         $custom = $atts['custom'];
         $button_code .= '<input type="hidden" name="custom" value="'.esc_attr($custom).'">';
     }
@@ -1081,7 +1096,12 @@ function wp_paypal_get_subscribe_button($atts){
         $notify_url = $atts['notify_url'];
         $button_code .= '<input type="hidden" name="notify_url" value="'.esc_attr($notify_url).'">';
     }
-    if(isset($atts['custom']) && !empty($atts['custom'])) {
+    $custom_input_code = '';
+    $custom_input_code = apply_filters('wppaypal_custom_input', $custom_input_code, $button_code, $atts);
+    if(!empty($custom_input_code)){
+        $button_code .= $custom_input_code;
+    }
+    else if(isset($atts['custom']) && !empty($atts['custom'])) {
         $custom = $atts['custom'];
         $button_code .= '<input type="hidden" name="custom" value="'.esc_attr($custom).'">';
     }

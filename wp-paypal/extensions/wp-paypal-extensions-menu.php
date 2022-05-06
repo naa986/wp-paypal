@@ -48,6 +48,14 @@ function wp_paypal_display_extensions_menu()
     );
     array_push($extensions_data, $extension_5);
     
+    $extension_6 = array(
+        'name' => 'Custom Input',
+        'thumbnail' => WP_PAYPAL_URL.'/extensions/images/wp-paypal-custom-input.png',
+        'description' => 'Show a text box at checkout to collect custom data from buyers',
+        'page_url' => 'https://wphowto.net/how-to-show-a-text-box-at-wp-paypal-checkout-to-collect-custom-data-from-buyers-6517',
+    );
+    array_push($extensions_data, $extension_6);
+    
     //Display the list
     $output = '';
     foreach ($extensions_data as $extension) {
