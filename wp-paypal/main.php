@@ -59,6 +59,7 @@ class WP_PAYPAL {
             add_filter('plugin_action_links', array($this, 'add_plugin_action_links'), 10, 2);
         }
         add_action('admin_notices', array($this, 'admin_notice'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
         add_action('wp_enqueue_scripts', array($this, 'plugin_scripts'));
         add_action('admin_menu', array($this, 'add_options_menu'));
         add_action('init', array($this, 'plugin_init'));
@@ -110,6 +111,14 @@ class WP_PAYPAL {
         //add_meta_box('wp-paypal-order-box', __('Edit PayPal Order', 'wp-paypal'), 'wp_paypal_order_meta_box', 'wp_paypal_order', 'normal', 'high');
     }
 
+    function enqueue_admin_scripts($hook) {
+        if('wp_paypal_order_page_wp-paypal-extensions' != $hook) {
+            return;
+        }
+        wp_register_style('wp-paypal-extension-menu', WP_PAYPAL_URL.'/extensions/wp-paypal-extensions-menu.css');
+        wp_enqueue_style('wp-paypal-extension-menu');
+    }
+    
     function plugin_scripts() {
         if (!is_admin()) {
             
@@ -156,11 +165,13 @@ class WP_PAYPAL {
         $url = 'https://wphowto.net/wordpress-paypal-plugin-732';
         $link_msg = sprintf( wp_kses( __( 'Please visit the <a target="_blank" href="%s">WP PayPal</a> documentation page for usage instructions.', 'wp-paypal' ), array(  'a' => array( 'href' => array(), 'target' => array() ) ) ), esc_url( $url ) );
         echo '<div class="update-nag">'.$link_msg.'</div>';
-
+        $current = '';
+        $tab = '';
         if (isset($_GET['page'])) {
-            $current = $_GET['page'];
+            $current = sanitize_text_field($_GET['page']);
             if (isset($_GET['tab'])) {
-                $current .= "&tab=" . $_GET['tab'];
+                $tab = sanitize_text_field($_GET['tab']);
+                $current .= "&tab=" . $tab;
             }
         }
         $content = '';
@@ -176,9 +187,9 @@ class WP_PAYPAL {
         $content .= '</h2>';
         echo $content;
         
-        if(isset($_GET['tab']))
+        if(!empty($tab))
         { 
-            switch ($_GET['tab'])
+            switch ($tab)
             {
                case 'emails':
                    $this->email_settings();
@@ -201,7 +212,7 @@ class WP_PAYPAL {
             }
             update_option('wp_paypal_enable_testmode', (isset($_POST["enable_testmode"]) && $_POST["enable_testmode"] == '1') ? '1' : '');
             update_option('wp_paypal_merchant_id', sanitize_text_field($_POST["paypal_merchant_id"]));
-            update_option('wp_paypal_email', sanitize_text_field($_POST["paypal_email"]));
+            update_option('wp_paypal_email', sanitize_email($_POST["paypal_email"]));
             update_option('wp_paypal_currency_code', sanitize_text_field($_POST["currency_code"]));
             echo '<div id="message" class="updated fade"><p><strong>';
             echo __('Settings Saved', 'wp-paypal').'!';
@@ -212,7 +223,7 @@ class WP_PAYPAL {
             <tbody>
                 <tr>
                     <td valign="top">
-                        <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
+                        <form method="post" action="">
                             <?php wp_nonce_field('wp_paypal_general_settings'); ?>
 
                             <table class="form-table">
@@ -229,19 +240,19 @@ class WP_PAYPAL {
 
                                     <tr valign="top">
                                         <th scope="row"><label for="paypal_merchant_id"><?Php _e('PayPal Merchant ID', 'wp-paypal');?></label></th>
-                                        <td><input name="paypal_merchant_id" type="text" id="paypal_merchant_id" value="<?php echo get_option('wp_paypal_merchant_id'); ?>" class="regular-text">
+                                        <td><input name="paypal_merchant_id" type="text" id="paypal_merchant_id" value="<?php echo esc_attr(get_option('wp_paypal_merchant_id')); ?>" class="regular-text">
                                             <p class="description"><?Php _e('Your PayPal Merchant ID', 'wp-paypal');?></p></td>
                                     </tr>
 
                                     <tr valign="top">
                                         <th scope="row"><label for="paypal_email"><?Php _e('PayPal Email', 'wp-paypal');?></label></th>
-                                        <td><input name="paypal_email" type="text" id="paypal_email" value="<?php echo get_option('wp_paypal_email'); ?>" class="regular-text">
+                                        <td><input name="paypal_email" type="text" id="paypal_email" value="<?php echo esc_attr(get_option('wp_paypal_email')); ?>" class="regular-text">
                                             <p class="description"><?Php _e('Your PayPal email address', 'wp-paypal');?></p></td>
                                     </tr>
 
                                     <tr valign="top">
                                         <th scope="row"><label for="currency_code"><?Php _e('Currency Code', 'wp-paypal');?></label></th>
-                                        <td><input name="currency_code" type="text" id="currency_code" value="<?php echo get_option('wp_paypal_currency_code'); ?>" class="regular-text">
+                                        <td><input name="currency_code" type="text" id="currency_code" value="<?php echo esc_attr(get_option('wp_paypal_currency_code')); ?>" class="regular-text">
                                             <p class="description"><?Php _e('The currency of the payment', 'wp-paypal');?> (<?Php _e('example', 'wp-paypal');?>: USD, CAD, GBP, EUR)</p></td>
                                     </tr>
 
@@ -301,7 +312,7 @@ class WP_PAYPAL {
             }
             $purchase_email_body = '';
             if(isset($_POST['purchase_email_body']) && !empty($_POST['purchase_email_body'])){
-                $purchase_email_body = trim($_POST['purchase_email_body']);
+                $purchase_email_body = wp_kses_post($_POST['purchase_email_body']);
             }
             $sale_notification_email_enabled = (isset($_POST["sale_notification_email_enabled"]) && $_POST["sale_notification_email_enabled"] == '1') ? '1' : '';
             $sale_notification_email_recipient = '';
@@ -318,7 +329,7 @@ class WP_PAYPAL {
             }
             $sale_notification_email_body = '';
             if(isset($_POST['sale_notification_email_body']) && !empty($_POST['sale_notification_email_body'])){
-                $sale_notification_email_body = trim($_POST['sale_notification_email_body']);
+                $sale_notification_email_body = wp_kses_post($_POST['sale_notification_email_body']);
             }
             $paypal_options = array();
             $paypal_options['email_from_name'] = $email_from_name;
@@ -347,7 +358,7 @@ class WP_PAYPAL {
             <tbody>
                 <tr>
                     <td valign="top">
-                        <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
+                        <form method="post" action="">
                             <?php wp_nonce_field('wp_paypal_email_settings_nonce'); ?>
 
                             <h2><?Php _e('Email Sender Options', 'wp-paypal');?></h2>
@@ -492,7 +503,7 @@ class WP_PAYPAL {
                     $content = esc_textarea($content);
                     ?>
                     <div id="template"><textarea cols="70" rows="25" name="wp_paypal_log" id="wp_paypal_log"><?php echo $content; ?></textarea></div>                     
-                    <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
+                    <form method="post" action="">
                         <?php wp_nonce_field('wp_paypal_debug_log_settings'); ?>
                         <table class="form-table">
                             <tbody>
@@ -509,7 +520,7 @@ class WP_PAYPAL {
                         </table>
                         <p class="submit"><input type="submit" name="wp_paypal_update_log_settings" id="wp_paypal_update_log_settings" class="button button-primary" value="<?Php _e('Save Changes', 'wp-paypal');?>"></p>
                     </form>
-                    <form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
+                    <form method="post" action="">
                         <?php wp_nonce_field('wp_paypal_reset_log_settings'); ?>                            
                         <p class="submit"><input type="submit" name="wp_paypal_reset_log" id="wp_paypal_reset_log" class="button" value="<?Php _e('Reset Log', 'wp-paypal');?>"></p>
                     </form>

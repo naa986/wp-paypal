@@ -2,7 +2,7 @@
 
 function wp_paypal_process_ipn() {
     if (!empty($_GET['wp_paypal_ipn']) && $_GET['wp_paypal_ipn'] == '1') {
-        $ipn_response = !empty($_POST) ? $_POST : false;
+        $ipn_response = !empty($_POST) ? array_map('sanitize_text_field', $_POST) : false;
         if (!$ipn_response) {
             wp_die( "Empty PayPal IPN Request", "PayPal IPN", array( 'response' => 200 ) );
             return;

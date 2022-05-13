@@ -4,7 +4,6 @@ function wp_paypal_display_extensions_menu()
 {
     echo '<div class="wrap">';
     echo '<h2>' .__('WP PayPal Extensions', 'wp-paypal') . '</h2>';
-    echo '<link type="text/css" rel="stylesheet" href="'.WP_PAYPAL_URL.'/extensions/wp-paypal-extensions-menu.css" />' . "\n";
     
     $extensions_data = array();
 
