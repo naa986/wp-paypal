@@ -1,4 +1,4 @@
-=== WP PayPal ===
+=== Payment Button for PayPal ===
 Contributors: naa986
 Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce, subscription, payment
@@ -12,15 +12,17 @@ Easily accept payment in WordPress by adding a PayPal button to your website. Ad
 
 == Description ==
 
-[WP PayPal](https://wphowto.net/wordpress-paypal-plugin-732) plugin allows you to easily create PayPal Buy Now, Add to Cart, Donation or Subscription type buttons. It generates dynamic buttons using shortcodes that enable PayPal checkout on your WordPress site.
+[Payment Button for PayPal](https://wphowto.net/wordpress-paypal-plugin-732) plugin allows you to easily create PayPal Buy Now, Add to Cart, Donation or Subscription type buttons. It generates dynamic buttons using shortcodes that enable PayPal checkout on your WordPress site.
 
 https://www.youtube.com/watch?v=lYVRUDp8c9s&rel=0
 
 Your customers will be able to pay for your products using PayPal or Credit Card. This plugin makes it easy for you to set up your online e-commerce store. You do not need to spend days configuring products and settings. All you need to do is insert a shortcode into one of your web pages and your website will be ready to go live.
 
-WP PayPal supports PayPal Sandbox. PayPal Sandbox is a simulation environment which allows you to do test purchases between a test buyer and a seller account. This is to make sure that your store can process PayPal transactions without any issues. It also helps you get prepared before selling to real customers.
+Payment Button for PayPal supports PayPal Sandbox. PayPal Sandbox is a simulation environment which allows you to do test purchases between a test buyer and a seller account. This is to make sure that your store can process PayPal transactions without any issues. It also helps you get prepared before selling to real customers.
 
-=== WP PayPal Features ===
+*Note: This is NOT an official PayPal product.*
+
+=== Payment Button for PayPal Features ===
 
 * Sell products or services using PayPal
 * Create PayPal buttons on the fly in a post/page using shortcodes
@@ -48,7 +50,7 @@ WP PayPal supports PayPal Sandbox. PayPal Sandbox is a simulation environment wh
 * Send a purchase confirmation email to your customer after a transaction
 * Send a sale notification email to one or more recipients (e.g. the seller) after a transaction
 
-=== WP PayPal Extensions ===
+=== Payment Button for PayPal Extensions ===
 
 * [Buy Now Custom Amount](https://wphowto.net/wordpress-paypal-plugin-732)
 * [Buy Now Discount](https://wphowto.net/applying-discount-to-a-paypal-buy-button-in-wordpress-834)
@@ -57,7 +59,7 @@ WP PayPal supports PayPal Sandbox. PayPal Sandbox is a simulation environment wh
 * [Variable Quantity](https://wphowto.net/how-to-add-a-quantity-field-to-a-paypal-button-6428)
 * [Variable Subscription](https://wphowto.net/how-to-add-a-recurring-price-field-to-a-paypal-subscription-button-6450)
 
-=== How to Use WP PayPal ===
+=== How to Use Payment Button for PayPal ===
 
 Once you have installed this plugin you need to go to the settings menu to configure some PayPal settings (WP PayPal -> Settings).
 
@@ -65,9 +67,9 @@ Once you have installed this plugin you need to go to the settings menu to confi
 * **PayPal Email**: Your PayPal email address
 * **Currency Code**: The default currency code
 
-=== WP PayPal Emails ===
+=== Payment Button for PayPal Emails ===
 
-WP PayPal plugin comes with an "Emails" tab where you will be able to configure some email related settings.
+Payment Button for PayPal plugin comes with an "Emails" tab where you will be able to configure some email related settings.
 
 **Email Sender Options**
 
@@ -151,11 +153,11 @@ You can use additional parameters to customize your PayPal buttons.
 
 * **handling** - Handling charges. This parameter is not quantity-specific, which means the same handling cost applies, regardless of the number of items on the order. (e.g. handling="2.00").
 
-For detailed documentation please check out the [PayPal](https://wphowto.net/wordpress-paypal-plugin-732) plugin page.
+For detailed documentation please check out the [Payment Button for PayPal](https://wphowto.net/wordpress-paypal-plugin-732) plugin page.
 
 === Translation ===
 
-If you are a non-English speaker please help [translate WP PayPal](https://translate.wordpress.org/projects/wp-plugins/wp-paypal) into your language.
+If you are a non-English speaker please help [translate Payment Button for PayPal](https://translate.wordpress.org/projects/wp-plugins/wp-paypal) into your language.
 
 === Additional PayPal Documentation ===
 
