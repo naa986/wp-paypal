@@ -163,8 +163,14 @@ class WP_PAYPAL {
         );
         echo '<div class="wrap"><h2>'.__('WP PayPal', 'wp-paypal').' v' . WP_PAYPAL_VERSION . '</h2>';
         $url = 'https://wphowto.net/wordpress-paypal-plugin-732';
-        $link_msg = sprintf( wp_kses( __( 'Please visit the <a target="_blank" href="%s">WP PayPal</a> documentation page for usage instructions.', 'wp-paypal' ), array(  'a' => array( 'href' => array(), 'target' => array() ) ) ), esc_url( $url ) );
-        echo '<div class="update-nag">'.$link_msg.'</div>';
+        $link_msg = sprintf(__('Please visit the <a target="_blank" href="%s">WP PayPal</a> documentation page for usage instructions.', 'wp-paypal'), esc_url($url));
+        $allowed_html_tags = array(
+            'a' => array(
+                'href' => array(),
+                'title' => array()
+            )
+        );
+        echo '<div class="update-nag">'.wp_kses($link_msg, $allowed_html_tags).'</div>';
         $current = '';
         $tab = '';
         if (isset($_GET['page'])) {
@@ -185,7 +191,17 @@ class WP_PAYPAL {
             $content .= '<a class="nav-tab' . $class . '" href="?post_type=wp_paypal_order&page=' . $location . '">' . $tabname . '</a>';
         }
         $content .= '</h2>';
-        echo $content;
+        $allowed_html_tags = array(
+            'a' => array(
+                'href' => array(),
+                'class' => array()
+            ),
+            'h2' => array(
+                'href' => array(),
+                'class' => array()
+            )
+        );
+        echo wp_kses($content, $allowed_html_tags);
         
         if(!empty($tab))
         { 
@@ -352,7 +368,13 @@ class WP_PAYPAL {
         $paypal_options = wp_paypal_get_email_option();
         
         $email_tags_url = "https://wphowto.net/wordpress-paypal-plugin-732";
-        $email_tags_link = sprintf(wp_kses(__('You can find the full list of available email tags <a target="_blank" href="%s">here</a>.', 'wp-paypal'), array('a' => array('href' => array(), 'target' => array()))), esc_url($email_tags_url));
+        $email_tags_link = sprintf(__('You can find the full list of available email tags <a target="_blank" href="%s">here</a>.', 'wp-paypal'), esc_url($email_tags_url));
+        $allowed_html_tags = array(
+            'a' => array(
+                'href' => array(),
+                'title' => array()
+            )
+        );
         ?>
         <table class="wppaypal-email-settings-table">
             <tbody>
@@ -405,7 +427,7 @@ class WP_PAYPAL {
                                     <tr valign="top">
                                         <th scope="row"><label for="purchase_email_body"><?Php _e('Email Body', 'wp-paypal');?></label></th>
                                         <td><?php wp_editor($paypal_options['purchase_email_body'], 'purchase_email_body', array('textarea_name' => 'purchase_email_body'));?>
-                                            <p class="description"><?Php echo __('The main content of the purchase receipt email.', 'wp-paypal').' '.$email_tags_link;?></p></td>
+                                            <p class="description"><?Php echo __('The main content of the purchase receipt email.', 'wp-paypal').' '.wp_kses($email_tags_link, $allowed_html_tags);?></p></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -443,7 +465,7 @@ class WP_PAYPAL {
                                     <tr valign="top">
                                         <th scope="row"><label for="sale_notification_email_body"><?Php _e('Email Body', 'wp-paypal');?></label></th>
                                         <td><?php wp_editor($paypal_options['sale_notification_email_body'], 'sale_notification_email_body', array('textarea_name' => 'sale_notification_email_body'));?>
-                                            <p class="description"><?Php echo __('The main content of the sale notification email.', 'wp-paypal').' '.$email_tags_link;?></p></td>
+                                            <p class="description"><?Php echo __('The main content of the sale notification email.', 'wp-paypal').' '.wp_kses($email_tags_link, $allowed_html_tags);?></p></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -500,9 +522,8 @@ class WP_PAYPAL {
                     }
                     $real_file = WP_PAYPAL_DEBUG_LOG_PATH;
                     $content = file_get_contents($real_file);
-                    $content = esc_textarea($content);
                     ?>
-                    <div id="template"><textarea cols="70" rows="25" name="wp_paypal_log" id="wp_paypal_log"><?php echo $content; ?></textarea></div>                     
+                    <div id="template"><textarea cols="70" rows="25" name="wp_paypal_log" id="wp_paypal_log"><?php echo esc_textarea($content); ?></textarea></div>                     
                     <form method="post" action="">
                         <?php wp_nonce_field('wp_paypal_debug_log_settings'); ?>
                         <table class="form-table">

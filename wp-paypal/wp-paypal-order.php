@@ -85,18 +85,18 @@ function wp_paypal_order_meta_box($post) {
         <tbody>
             <tr valign="top">
                 <th scope="row"><label for="_payment_status"><?php _e('Payment Status', 'wp-paypal'); ?></label></th>
-                <td><input name="_payment_status" type="text" id="_payment_status" value="<?php echo $payment_status; ?>" class="regular-text">
-                    <p class="description">Item Name</p></td>
+                <td><input name="_payment_status" type="text" id="_payment_status" value="<?php echo esc_attr($payment_status); ?>" class="regular-text">
+                    <p class="description">Payment Status</p></td>
             </tr>
             <tr valign="top">
                 <th scope="row"><label for="_payment_type"><?php _e('Payment Type', 'wp-paypal'); ?></label></th>
-                <td><input name="_payment_type" type="text" id="_payment_type" value="<?php echo $payment_type; ?>" class="regular-text">
-                    <p class="description">Item Name</p></td>
+                <td><input name="_payment_type" type="text" id="_payment_type" value="<?php echo esc_attr($payment_type); ?>" class="regular-text">
+                    <p class="description">Payment Type</p></td>
             </tr>
             <tr valign="top">
                 <th scope="row"><label for="_txn_id"><?php _e('Transaction ID', 'wp-paypal'); ?></label></th>
-                <td><input name="_txn_id" type="text" id="_txn_id" value="<?php echo $txn_id; ?>" class="regular-text">
-                    <p class="description">Item Name</p></td>
+                <td><input name="_txn_id" type="text" id="_txn_id" value="<?php echo esc_attr($txn_id); ?>" class="regular-text">
+                    <p class="description">Transaction ID</p></td>
             </tr>
         </tbody>
 
@@ -108,25 +108,25 @@ function wp_paypal_order_meta_box($post) {
 function wp_paypal_custom_column($column, $post_id) {
     switch ($column) {
         case 'title' :
-            echo $post_id;
+            echo esc_html($post_id);
             break;
         case 'txn_id' :
-            echo get_post_meta($post_id, '_txn_id', true);
+            echo esc_html(get_post_meta($post_id, '_txn_id', true));
             break;
         case 'first_name' :
-            echo get_post_meta($post_id, '_first_name', true);
+            echo esc_html(get_post_meta($post_id, '_first_name', true));
             break;
         case 'last_name' :
-            echo get_post_meta($post_id, '_last_name', true);
+            echo esc_html(get_post_meta($post_id, '_last_name', true));
             break;
         case 'payer_email' :
-            echo get_post_meta($post_id, '_payer_email', true);
+            echo esc_html(get_post_meta($post_id, '_payer_email', true));
             break;
         case 'mc_gross' :
-            echo get_post_meta($post_id, '_mc_gross', true);
+            echo esc_html(get_post_meta($post_id, '_mc_gross', true));
             break;
         case 'payment_status' :
-            echo get_post_meta($post_id, '_payment_status', true);
+            echo esc_html(get_post_meta($post_id, '_payment_status', true));
             break;
     }
 }
