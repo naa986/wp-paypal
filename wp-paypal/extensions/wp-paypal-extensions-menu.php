@@ -56,32 +56,26 @@ function wp_paypal_display_extensions_menu()
     array_push($extensions_data, $extension_6);
     
     //Display the list
-    $output = '';
     foreach ($extensions_data as $extension) {
-        $output .= '<div class="wp_paypal_extensions_item_canvas">';
-
-        $output .= '<div class="wp_paypal_extensions_item_thumb">';
-        $img_src = $extension['thumbnail'];
-        $output .= '<img src="' . $img_src . '" alt="' . $extension['name'] . '">';
-        $output .= '</div>'; //end thumbnail
-
-        $output .='<div class="wp_paypal_extensions_item_body">';
-        $output .='<div class="wp_paypal_extensions_item_name">';
-        $output .= '<a href="' . $extension['page_url'] . '" target="_blank">' . $extension['name'] . '</a>';
-        $output .='</div>'; //end name
-
-        $output .='<div class="wp_paypal_extensions_item_description">';
-        $output .= $extension['description'];
-        $output .='</div>'; //end description
-
-        $output .='<div class="wp_paypal_extensions_item_details_link">';
-        $output .='<a href="'.$extension['page_url'].'" class="wp_paypal_extensions_view_details" target="_blank">View Details</a>';
-        $output .='</div>'; //end detils link      
-        $output .='</div>'; //end body
-
-        $output .= '</div>'; //end canvas
-    }
-    echo $output;
-    
+        ?>
+        <div class="wp_paypal_extensions_item_canvas">
+        <div class="wp_paypal_extensions_item_thumb">
+            <img src="<?php echo esc_url($extension['thumbnail']);?>" alt="<?php echo esc_attr($extension['name']);?>">
+        </div>
+        <div class="wp_paypal_extensions_item_body">
+        <div class="wp_paypal_extensions_item_name">
+            <a href="<?php echo esc_url($extension['page_url']);?>" target="_blank"><?php echo esc_html($extension['name']);?></a>
+        </div>
+        <div class="wp_paypal_extensions_item_description">
+        <?php echo esc_html($extension['description']);?>
+        </div>
+        <div class="wp_paypal_extensions_item_details_link">
+        <a href="<?php echo esc_url($extension['page_url']);?>" class="wp_paypal_extensions_view_details" target="_blank">View Details</a>
+        </div>    
+        </div>
+        </div>
+        <?php
+    } 
     echo '</div>';//end of wrap
+    
 }
