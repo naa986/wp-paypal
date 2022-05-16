@@ -315,7 +315,7 @@ class WP_PAYPAL {
             }
             $email_from_address= '';
             if(isset($_POST['email_from_address']) && !empty($_POST['email_from_address'])){
-                $email_from_address = sanitize_text_field($_POST['email_from_address']);
+                $email_from_address = sanitize_email($_POST['email_from_address']);
             }
             $purchase_email_enabled = (isset($_POST["purchase_email_enabled"]) && $_POST["purchase_email_enabled"] == '1') ? '1' : '';
             $purchase_email_subject = '';
