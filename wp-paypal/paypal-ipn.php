@@ -156,7 +156,7 @@ function wp_paypal_process_ipn() {
             }
         }
         else if (isset($seller_email) && !empty($seller_email) && isset($ipn_response['receiver_email']) && !empty($ipn_response['receiver_email'])) {
-            $receiver_email = sanitize_text_field($ipn_response['receiver_email']);
+            $receiver_email = sanitize_email($ipn_response['receiver_email']);
             if ($seller_email != $receiver_email) {
                 wp_paypal_debug_log("Seller PayPal email (".$seller_email.") and Receiver PayPal email (".$receiver_email.") do not match. This payment cannot be processed.", false);
                 return;
@@ -168,7 +168,7 @@ function wp_paypal_process_ipn() {
         }
         $payment_data['payer_email'] = '';
         if (isset($ipn_response['payer_email']) && !empty($ipn_response['payer_email'])) {
-            $payment_data['payer_email'] = sanitize_text_field($ipn_response['payer_email']);
+            $payment_data['payer_email'] = sanitize_email($ipn_response['payer_email']);
         }
         $payment_data['custom'] = '';
         if (isset($ipn_response['custom']) && !empty($ipn_response['custom'])) {

@@ -311,7 +311,7 @@ class WP_PAYPAL {
             $_POST = stripslashes_deep($_POST);
             $email_from_name = '';
             if(isset($_POST['email_from_name']) && !empty($_POST['email_from_name'])){
-                $email_from_name = sanitize_text_field($_POST['email_from_name']);
+                $email_from_name = sanitize_email($_POST['email_from_name']);
             }
             $email_from_address= '';
             if(isset($_POST['email_from_address']) && !empty($_POST['email_from_address'])){
