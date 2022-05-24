@@ -3,7 +3,7 @@ Contributors: naa986
 Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce, subscription, payment
 Requires at least: 5.3
-Tested up to: 5.9
+Tested up to: 6.0
 Stable tag: 1.2.3.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -233,6 +233,9 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.8 =
+* Made some security related improvements in the orders menu.
 
 = 1.2.3.7 =
 * Added support for custom input. This can be used to show a custom text box at checkout where buyers can enter any data.
