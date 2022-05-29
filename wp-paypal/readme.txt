@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce, subscription, payment
 Requires at least: 5.3
 Tested up to: 6.0
-Stable tag: 1.2.3.8
+Stable tag: 1.2.3.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Easily accept payment in WordPress by adding a PayPal button to your website. Ad
 
 == Description ==
 
-[Payment Button for PayPal](https://wphowto.net/wordpress-paypal-plugin-732) plugin allows you to easily create PayPal Buy Now, Add to Cart, Donation or Subscription type buttons. It generates dynamic buttons using shortcodes that enable PayPal checkout on your WordPress site.
+[Payment Button for PayPal](https://wphowto.net/wordpress-paypal-plugin-732) plugin (also known as WP PayPal) allows you to easily create PayPal Buy Now, Add to Cart, Donation or Subscription type buttons. It generates dynamic buttons using shortcodes that enable PayPal checkout on your WordPress site.
 
 https://www.youtube.com/watch?v=lYVRUDp8c9s&rel=0
 
@@ -140,7 +140,9 @@ You can use additional parameters to customize your PayPal buttons.
 * **quantity** - Quantity of items to purchase (e.g. quantity="2").
 * **shipping** - The cost of shipping this item. (e.g. shipping="0.75"). If you specify "shipping" and "shipping2" is not defined, this flat amount is charged regardless of the quantity of items purchased. 
 * **shipping2** - The cost of shipping each additional unit of this item (e.g. shipping2="1.25")
-* **tax** - Transaction-based tax override variable (e.g. tax="2.99").
+* **handling** - The handling cost of an item (e.g. handling="2.5")
+* **tax** - The flat tax amount for an item (e.g. tax="2.99").
+* **tax_rate** - The rate of tax for an item (e.g. tax_rate="2.9").
 * **locale** - The desired locale of the PayPal site (e.g. locale="GB"). This feature is useful if you want to render the payment page in a specific language.
 * **return** - The URL to which the user will be redirected after the payment (e.g. return="https://example.com/thank-you").
 * **cancel_return** - The URL to which PayPal will redirect the buyer if they cancel checkout before completing the payment (e.g. cancel_return="https://example.com/payment-canceled").
@@ -233,6 +235,9 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.9 =
+* Product name and price can be dynamically changed for a Buy Now button via query strings in the URL.
 
 = 1.2.3.8 =
 * Made some security related improvements in the orders menu.

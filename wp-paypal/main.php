@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.8
+  Version: 1.2.3.9
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.8';
+    var $plugin_version = '1.2.3.9';
     var $db_version = '1.0.1';
     var $plugin_url;
     var $plugin_path;
@@ -796,6 +796,12 @@ function wp_paypal_get_buy_now_button($atts){
         $lc = $atts['lc'];
         $button_code .= '<input type="hidden" name="lc" value="'.esc_attr($lc).'">';
     }
+    /* product name sent via URL */
+    if(isset($_GET['wppp_name']) && !empty($_GET['wppp_name']))
+    {
+        $atts['name'] = sanitize_text_field(stripslashes($_GET['wppp_name']));
+    }
+    /* end */
     if(isset($atts['name']) && !empty($atts['name'])) {
         $name = $atts['name'];
         $button_code .= '<input type="hidden" name="item_name" value="'.esc_attr($name).'">';
@@ -811,6 +817,12 @@ function wp_paypal_get_buy_now_button($atts){
             $button_code .= $amount_input_code;
         }
         else{
+            /* product amount sent via URL */
+            if(isset($_GET['wppp_amount']) && !empty($_GET['wppp_amount']))
+            {
+                $atts['amount'] = sanitize_text_field($_GET['wppp_amount']);
+            }
+            /* end */
             if(isset($atts['amount']) && is_numeric($atts['amount']) && $atts['amount'] > 0) {
                 $amount = $atts['amount'];
                 $button_code .= '<input type="hidden" name="amount" value="'.esc_attr($amount).'">';
