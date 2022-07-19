@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce, subscription, payment
 Requires at least: 5.3
 Tested up to: 6.0
-Stable tag: 1.2.3.9
+Stable tag: 1.2.3.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,6 +55,7 @@ Payment Button for PayPal supports PayPal Sandbox. PayPal Sandbox is a simulatio
 * [Buy Now Custom Amount](https://wphowto.net/wordpress-paypal-plugin-732)
 * [Buy Now Discount](https://wphowto.net/applying-discount-to-a-paypal-buy-button-in-wordpress-834)
 * [Custom Input](https://wphowto.net/how-to-show-a-text-box-at-wp-paypal-checkout-to-collect-custom-data-from-buyers-6517)
+* [Mailchimp Integration](https://wphowto.net/wp-paypal-mailchimp-integration-6559)
 * [Product Variations](https://wphowto.net/how-to-configure-product-variations-in-wp-paypal-6413)
 * [Variable Quantity](https://wphowto.net/how-to-add-a-quantity-field-to-a-paypal-button-6428)
 * [Variable Subscription](https://wphowto.net/how-to-add-a-recurring-price-field-to-a-paypal-subscription-button-6450)
@@ -235,6 +236,9 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.10 =
+* Added support for Mailchimp.
 
 = 1.2.3.9 =
 * Product name and price can be dynamically changed for a Buy Now button via query strings in the URL.

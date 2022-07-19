@@ -16,7 +16,7 @@
 .wp_paypal_extensions_item_thumb a img {border: 1px solid #ccc;}
 .wp_paypal_extensions_item_body{line-height:22px;height:170px;overflow:hidden;}
 .wp_paypal_extensions_item_name{font-size:16px;font-weight:bold;text-align: center;margin:10px 10px 10px 0px;}
-.wp_paypal_extensions_item_description{margin:10px 10px 5px 0px;text-align:justify;overflow:hidden;height:70px;}
+.wp_paypal_extensions_item_description{margin:10px 10px 5px 0px;/*text-align:justify;*/overflow:hidden;height:70px;}
 .wp_paypal_extensions_clear{clear:both;}
 .wp_paypal_extensions_item_details_link{
     text-align: center;

@@ -55,6 +55,14 @@ function wp_paypal_display_extensions_menu()
     );
     array_push($extensions_data, $extension_6);
     
+    $extension_7 = array(
+        'name' => 'Mailchimp Integration',
+        'thumbnail' => WP_PAYPAL_URL.'/extensions/images/wp-paypal-mailchimp-integration.png',
+        'description' => "Automatically add the buyer's email address to your Mailchimp Audience / List after a payment",
+        'page_url' => 'https://wphowto.net/wp-paypal-mailchimp-integration-6559',
+    );
+    array_push($extensions_data, $extension_7);
+    
     //Display the list
     foreach ($extensions_data as $extension) {
         ?>
