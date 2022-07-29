@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce, subscription, payment
 Requires at least: 5.3
 Tested up to: 6.0
-Stable tag: 1.2.3.10
+Stable tag: 1.2.3.11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,7 +50,7 @@ Payment Button for PayPal supports PayPal Sandbox. PayPal Sandbox is a simulatio
 * Send a purchase confirmation email to your customer after a transaction
 * Send a sale notification email to one or more recipients (e.g. the seller) after a transaction
 
-=== Payment Button for PayPal Extensions ===
+=== Payment Button for PayPal Add-ons ===
 
 * [Buy Now Custom Amount](https://wphowto.net/wordpress-paypal-plugin-732)
 * [Buy Now Discount](https://wphowto.net/applying-discount-to-a-paypal-buy-button-in-wordpress-834)
@@ -237,6 +237,9 @@ none
 
 == Changelog ==
 
+= 1.2.3.11 =
+* Added custom variable to order list.
+
 = 1.2.3.10 =
 * Added support for Mailchimp.
 
@@ -266,7 +269,7 @@ none
 * Added support for variable quantity.
 
 = 1.2.3.1 =
-* Added support for product variations extension.
+* Added support for product variations add-on.
 
 = 1.2.3.0 =
 * Added support for trial period 2 in the PayPal subscription button.

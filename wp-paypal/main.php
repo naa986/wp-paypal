@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.10
+  Version: 1.2.3.11
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.10';
+    var $plugin_version = '1.2.3.11';
     var $db_version = '1.0.1';
     var $plugin_url;
     var $plugin_path;
@@ -48,7 +48,7 @@ class WP_PAYPAL {
         include_once('wp-paypal-order.php');
         include_once('paypal-ipn.php');
         if(is_admin()){
-            include_once('extensions/wp-paypal-extensions-menu.php');
+            include_once('addons/wp-paypal-addons-menu.php');
         }
     }
 
@@ -112,11 +112,11 @@ class WP_PAYPAL {
     }
 
     function enqueue_admin_scripts($hook) {
-        if('wp_paypal_order_page_wp-paypal-extensions' != $hook) {
+        if('wp_paypal_order_page_wp-paypal-addons' != $hook) {
             return;
         }
-        wp_register_style('wp-paypal-extension-menu', WP_PAYPAL_URL.'/extensions/wp-paypal-extensions-menu.css');
-        wp_enqueue_style('wp-paypal-extension-menu');
+        wp_register_style('wp-paypal-addons-menu', WP_PAYPAL_URL.'/addons/wp-paypal-addons-menu.css');
+        wp_enqueue_style('wp-paypal-addons-menu');
     }
     
     function plugin_scripts() {
@@ -152,7 +152,7 @@ class WP_PAYPAL {
         if (is_admin()) {
             add_submenu_page('edit.php?post_type=wp_paypal_order', __('Settings', 'wp-paypal'), __('Settings', 'wp-paypal'), 'manage_options', 'wp-paypal-settings', array($this, 'options_page'));
             add_submenu_page('edit.php?post_type=wp_paypal_order', __('Debug', 'wp-paypal'), __('Debug', 'wp-paypal'), 'manage_options', 'wp-paypal-debug', array($this, 'debug_page'));
-            add_submenu_page('edit.php?post_type=wp_paypal_order', __('Extensions', 'wp-paypal'), __('Extensions', 'wp-paypal'), 'manage_options', 'wp-paypal-extensions', 'wp_paypal_display_extensions_menu');
+            add_submenu_page('edit.php?post_type=wp_paypal_order', __('Add-ons', 'wp-paypal'), __('Add-ons', 'wp-paypal'), 'manage_options', 'wp-paypal-addons', 'wp_paypal_display_addons_menu');
         }
     }
 
@@ -282,7 +282,7 @@ class WP_PAYPAL {
                         <div style="background: #ffc; border: 1px solid #333; margin: 2px; padding: 3px 15px">
                         <h3><?php _e('Need More Features?', 'wp-paypal')?></h3>
                         <ol>
-                        <li><?php printf(__('Check out the <a href="%s">plugin extensions</a>.', 'wp-paypal'), 'edit.php?post_type=wp_paypal_order&page=wp-paypal-extensions');?></li>
+                        <li><?php printf(__('Check out the <a href="%s">plugin add-ons</a>.', 'wp-paypal'), 'edit.php?post_type=wp_paypal_order&page=wp-paypal-addons');?></li>
                         </ol>    
                         <h3><?php _e('Need Help?', 'wp-paypal')?></h3>
                         <ol>
@@ -476,7 +476,7 @@ class WP_PAYPAL {
                         <div style="background: #ffc; border: 1px solid #333; margin: 2px; padding: 3px 15px">
                         <h3><?php _e('Need More Features?', 'wp-paypal')?></h3>
                         <ol>
-                        <li><?php printf(__('Check out the <a href="%s">plugin extensions</a>.', 'wp-paypal'), 'edit.php?post_type=wp_paypal_order&page=wp-paypal-extensions');?></li>
+                        <li><?php printf(__('Check out the <a href="%s">plugin add-ons</a>.', 'wp-paypal'), 'edit.php?post_type=wp_paypal_order&page=wp-paypal-addons');?></li>
                         </ol>    
                         <h3><?php _e('Need Help?', 'wp-paypal')?></h3>
                         <ol>

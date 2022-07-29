@@ -68,6 +68,7 @@ function wp_paypal_order_columns($columns) {
         'payer_email' => __('Email', 'wp-paypal'),
         'mc_gross' => __('Total', 'wp-paypal'),
         'payment_status' => __('Payment Status', 'wp-paypal'),
+        'custom' => __('Custom', 'wp-paypal'),
         'date' => __('Date', 'wp-paypal')
     );
     return array_merge($columns, $edited_columns);
@@ -127,6 +128,9 @@ function wp_paypal_custom_column($column, $post_id) {
             break;
         case 'payment_status' :
             echo esc_html(get_post_meta($post_id, '_payment_status', true));
+            break;
+        case 'custom' :
+            echo esc_html(get_post_meta($post_id, '_custom', true));
             break;
     }
 }
