@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce, subscription, payment
 Requires at least: 5.3
 Tested up to: 6.0
-Stable tag: 1.2.3.11
+Stable tag: 1.2.3.12
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,7 +20,15 @@ Your customers will be able to pay for your products using PayPal or Credit Card
 
 Payment Button for PayPal supports PayPal Sandbox. PayPal Sandbox is a simulation environment which allows you to do test purchases between a test buyer and a seller account. This is to make sure that your store can process PayPal transactions without any issues. It also helps you get prepared before selling to real customers.
 
-*Note: This is NOT an official PayPal product.*
+=== Payment Button for PayPal Add-ons ===
+
+* [Buy Now Custom Amount](https://wphowto.net/wordpress-paypal-plugin-732)
+* [Buy Now Discount](https://wphowto.net/applying-discount-to-a-paypal-buy-button-in-wordpress-834)
+* [Custom Input](https://wphowto.net/how-to-show-a-text-box-at-wp-paypal-checkout-to-collect-custom-data-from-buyers-6517)
+* [Mailchimp Integration](https://wphowto.net/wp-paypal-mailchimp-integration-6559)
+* [Product Variations](https://wphowto.net/how-to-configure-product-variations-in-wp-paypal-6413)
+* [Variable Quantity](https://wphowto.net/how-to-add-a-quantity-field-to-a-paypal-button-6428)
+* [Variable Subscription](https://wphowto.net/how-to-add-a-recurring-price-field-to-a-paypal-subscription-button-6450)
 
 === Payment Button for PayPal Features ===
 
@@ -50,15 +58,7 @@ Payment Button for PayPal supports PayPal Sandbox. PayPal Sandbox is a simulatio
 * Send a purchase confirmation email to your customer after a transaction
 * Send a sale notification email to one or more recipients (e.g. the seller) after a transaction
 
-=== Payment Button for PayPal Add-ons ===
-
-* [Buy Now Custom Amount](https://wphowto.net/wordpress-paypal-plugin-732)
-* [Buy Now Discount](https://wphowto.net/applying-discount-to-a-paypal-buy-button-in-wordpress-834)
-* [Custom Input](https://wphowto.net/how-to-show-a-text-box-at-wp-paypal-checkout-to-collect-custom-data-from-buyers-6517)
-* [Mailchimp Integration](https://wphowto.net/wp-paypal-mailchimp-integration-6559)
-* [Product Variations](https://wphowto.net/how-to-configure-product-variations-in-wp-paypal-6413)
-* [Variable Quantity](https://wphowto.net/how-to-add-a-quantity-field-to-a-paypal-button-6428)
-* [Variable Subscription](https://wphowto.net/how-to-add-a-recurring-price-field-to-a-paypal-subscription-button-6450)
+*Note: This is NOT an official PayPal product.*
 
 === How to Use Payment Button for PayPal ===
 
@@ -236,6 +236,9 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.12 =
+* Fixed a minor bug that was preventing From Name from saving into the database.
 
 = 1.2.3.11 =
 * Added custom variable to order list.
