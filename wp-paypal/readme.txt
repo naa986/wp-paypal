@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce, subscription, payment
 Requires at least: 5.3
 Tested up to: 6.0
-Stable tag: 1.2.3.12
+Stable tag: 1.2.3.13
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,6 +24,7 @@ Payment Button for PayPal supports PayPal Sandbox. PayPal Sandbox is a simulatio
 
 * [Buy Now Custom Amount](https://wphowto.net/wordpress-paypal-plugin-732)
 * [Buy Now Discount](https://wphowto.net/applying-discount-to-a-paypal-buy-button-in-wordpress-834)
+* [Contact Form 7 Integration](https://wphowto.net/wp-paypal-button-integration-with-contact-form-7-6710)
 * [Custom Input](https://wphowto.net/how-to-show-a-text-box-at-wp-paypal-checkout-to-collect-custom-data-from-buyers-6517)
 * [Mailchimp Integration](https://wphowto.net/wp-paypal-mailchimp-integration-6559)
 * [Product Variations](https://wphowto.net/how-to-configure-product-variations-in-wp-paypal-6413)
@@ -236,6 +237,10 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.13 =
+* Added support for Contact Form 7.
+* Fixed a sanitization issue in the general settings.
 
 = 1.2.3.12 =
 * Fixed a minor bug that was preventing From Name from saving into the database.

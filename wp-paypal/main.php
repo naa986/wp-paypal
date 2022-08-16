@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.12
+  Version: 1.2.3.13
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.12';
+    var $plugin_version = '1.2.3.13';
     var $db_version = '1.0.1';
     var $plugin_url;
     var $plugin_path;
@@ -163,11 +163,11 @@ class WP_PAYPAL {
         );
         echo '<div class="wrap"><h2>'.__('WP PayPal', 'wp-paypal').' v' . WP_PAYPAL_VERSION . '</h2>';
         $url = 'https://wphowto.net/wordpress-paypal-plugin-732';
-        $link_msg = sprintf(__('Please visit the <a target="_blank" href="%s">WP PayPal</a> documentation page for usage instructions.', 'wp-paypal'), esc_url($url));
+        $link_msg = sprintf(__('Please visit the <a target="_blank" href="%s">WP PayPal</a> documentation page for setup instructions.', 'wp-paypal'), esc_url($url));
         $allowed_html_tags = array(
             'a' => array(
                 'href' => array(),
-                'title' => array()
+                'target' => array()
             )
         );
         echo '<div class="update-nag">'.wp_kses($link_msg, $allowed_html_tags).'</div>';

@@ -63,6 +63,14 @@ function wp_paypal_display_addons_menu()
     );
     array_push($addons_data, $addon_7);
     
+    $addon_8 = array(
+        'name' => 'Contact Form 7 Integration',
+        'thumbnail' => WP_PAYPAL_URL.'/addons/images/wp-paypal-contact-form-7-integration.png',
+        'description' => "Show a pre-configured WP PayPal button after a Contact Form 7 submission",
+        'page_url' => 'https://wphowto.net/wp-paypal-button-integration-with-contact-form-7-6710',
+    );
+    array_push($addons_data, $addon_8);
+    
     //Display the list
     foreach ($addons_data as $addon) {
         ?>
