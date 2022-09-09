@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.13
+  Version: 1.2.3.14
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.13';
+    var $plugin_version = '1.2.3.14';
     var $db_version = '1.0.1';
     var $plugin_url;
     var $plugin_path;
@@ -84,18 +84,19 @@ class WP_PAYPAL {
     }
 
     function activate_handler() {
-        add_option('wp_paypal_plugin_version', $this->plugin_version);
+        add_option('wp_paypal_db_version', $this->db_version);
         add_option('wp_paypal_email', get_bloginfo('admin_email'));
         add_option('wp_paypal_currency_code', 'USD');
+        add_option('wp_paypal_enable_ipn_validation', '1');
         wp_paypal_set_default_email_options();
     }
 
     function check_upgrade() {
         if (is_admin()) {
-            $plugin_version = get_option('wp_paypal_plugin_version');
-            if (!isset($plugin_version) || $plugin_version != $this->plugin_version) {
+            $db_version = get_option('wp_paypal_db_version');
+            if (!isset($db_version) || $db_version != $this->db_version) {
                 $this->activate_handler();
-                update_option('wp_paypal_plugin_version', $this->plugin_version);
+                update_option('wp_paypal_db_version', $this->db_version);
             }
         }
     }
@@ -230,6 +231,7 @@ class WP_PAYPAL {
             update_option('wp_paypal_merchant_id', sanitize_text_field($_POST["paypal_merchant_id"]));
             update_option('wp_paypal_email', sanitize_email($_POST["paypal_email"]));
             update_option('wp_paypal_currency_code', sanitize_text_field($_POST["currency_code"]));
+            update_option('wp_paypal_enable_ipn_validation', (isset($_POST["enable_ipn_validation"]) && $_POST["enable_ipn_validation"] == '1') ? '1' : '');
             echo '<div id="message" class="updated fade"><p><strong>';
             echo __('Settings Saved', 'wp-paypal').'!';
             echo '</strong></p></div>';
@@ -270,6 +272,14 @@ class WP_PAYPAL {
                                         <th scope="row"><label for="currency_code"><?Php _e('Currency Code', 'wp-paypal');?></label></th>
                                         <td><input name="currency_code" type="text" id="currency_code" value="<?php echo esc_attr(get_option('wp_paypal_currency_code')); ?>" class="regular-text">
                                             <p class="description"><?Php _e('The currency of the payment', 'wp-paypal');?> (<?Php _e('example', 'wp-paypal');?>: USD, CAD, GBP, EUR)</p></td>
+                                    </tr>
+                                    
+                                    <tr valign="top">
+                                        <th scope="row"><?Php _e('Enable IPN Validation', 'wp-paypal');?></th>
+                                        <td> <fieldset><legend class="screen-reader-text"><span>Enable IPN Validation</span></legend><label for="enable_ipn_validation">
+                                                    <input name="enable_ipn_validation" type="checkbox" id="enable_ipn_validation" <?php if (get_option('wp_paypal_enable_ipn_validation') == '1') echo ' checked="checked"'; ?> value="1">
+                                                    <?Php _e('Check this option if you want to send the IPN data to PayPal for validation', 'wp-paypal');?></label>
+                                            </fieldset></td>
                                     </tr>
 
                                 </tbody>

@@ -9,45 +9,48 @@ function wp_paypal_process_ipn() {
         }
         wp_paypal_debug_log("Received IPN from PayPal", true);
         wp_paypal_debug_log_array($ipn_response, true);
-        $paypal_adr = "https://www.paypal.com/cgi-bin/webscr";
-        if (WP_PAYPAL_USE_SANDBOX) {
-            $paypal_adr = "https://www.sandbox.paypal.com/cgi-bin/webscr";
-        }
-        wp_paypal_debug_log("Checking if IPN response is valid via ".$paypal_adr, true);
-        // Get received values from post data
-        $validate_ipn = array('cmd' => '_notify-validate');
-        $validate_ipn += stripslashes_deep($ipn_response);
-        // Send back post vars to paypal
-        $params = array(
-            'body' => $validate_ipn,
-            'sslverify' => false,
-            'timeout' => 60,
-            'httpversion' => '1.1',
-            'compress' => false,
-            'decompress' => false,
-            'user-agent' => 'WP PayPal/' . WP_PAYPAL_VERSION
-        );
-        wp_paypal_debug_log("IPN Request: ", true);
-        wp_paypal_debug_log_array($params, true);
-        // Post back to get a response
-        $response = wp_remote_post($paypal_adr, $params);
-        //wp_paypal_debug_log("IPN Response: ", true);
-        //wp_paypal_debug_log_array($response, true);
-        // check to see if the request was valid
-        $ipn_verified = false;
-        if (!is_wp_error($response) && $response['response']['code'] >= 200 && $response['response']['code'] < 300 && strstr($response['body'], 'VERIFIED')) {
-            header( 'HTTP/1.1 200 OK' );
-            wp_paypal_debug_log("Received valid response from PayPal", true);
-            $ipn_verified = true;
-        }
-        
-        if(!$ipn_verified){
-            wp_paypal_debug_log("Received invalid response from PayPal", false);
-            if (is_wp_error($response)) {
-                wp_paypal_debug_log("Error response: ".$response->get_error_message(), false);
+        $enable_ipn_validation = get_option('wp_paypal_enable_ipn_validation');
+        if(isset($enable_ipn_validation) && !empty($enable_ipn_validation)){
+            $paypal_adr = "https://www.paypal.com/cgi-bin/webscr";
+            if (WP_PAYPAL_USE_SANDBOX) {
+                $paypal_adr = "https://www.sandbox.paypal.com/cgi-bin/webscr";
             }
-            wp_die( "PayPal IPN Request Failure", "PayPal IPN", array( 'response' => 200 ) );
-            return;
+            wp_paypal_debug_log("Checking if IPN response is valid via ".$paypal_adr, true);
+            // Get received values from post data
+            $validate_ipn = array('cmd' => '_notify-validate');
+            $validate_ipn += stripslashes_deep($ipn_response);
+            // Send back post vars to paypal
+            $params = array(
+                'body' => $validate_ipn,
+                'sslverify' => false,
+                'timeout' => 60,
+                'httpversion' => '1.1',
+                'compress' => false,
+                'decompress' => false,
+                'user-agent' => 'WP PayPal/' . WP_PAYPAL_VERSION
+            );
+            wp_paypal_debug_log("IPN Request: ", true);
+            wp_paypal_debug_log_array($params, true);
+            // Post back to get a response
+            $response = wp_remote_post($paypal_adr, $params);
+            //wp_paypal_debug_log("IPN Validation Response Data: ", true);
+            //wp_paypal_debug_log_array($response, true);
+            // check to see if the request was valid
+            $ipn_verified = false;
+            if (!is_wp_error($response) && $response['response']['code'] >= 200 && $response['response']['code'] < 300 && strstr($response['body'], 'VERIFIED')) {
+                header( 'HTTP/1.1 200 OK' );
+                wp_paypal_debug_log("Received valid response from PayPal", true);
+                $ipn_verified = true;
+            }
+
+            if(!$ipn_verified){
+                wp_paypal_debug_log("Received invalid response from PayPal", false);
+                if (is_wp_error($response)) {
+                    wp_paypal_debug_log("Error response: ".$response->get_error_message(), false);
+                }
+                wp_die( "PayPal IPN Request Failure", "PayPal IPN", array( 'response' => 200 ) );
+                return;
+            }
         }
         $txn_type = '';
         if(isset($ipn_response['txn_type']) && !empty($ipn_response['txn_type'])){
