@@ -178,18 +178,29 @@ function wp_paypal_process_ipn() {
             $payment_data['custom'] = sanitize_text_field($ipn_response['custom']);
         }
         $ship_to = '';
+        $shipping_address = '';
         if (isset($ipn_response['address_street'])) {
             $address_street = sanitize_text_field($ipn_response['address_street']);
             $ship_to .= !empty($address_street) ? $address_street.'<br />' : '';
+            $shipping_address .= !empty($address_street) ? $address_street.', ' : '';
+            
             $address_city = isset($ipn_response['address_city']) ? sanitize_text_field($ipn_response['address_city']) : '';
             $ship_to .= !empty($address_city) ? $address_city.', ' : '';
+            $shipping_address .= !empty($address_city) ? $address_city.', ' : '';
+            
             $address_state = isset($ipn_response['address_state']) ? sanitize_text_field($ipn_response['address_state']) : '';
             $ship_to .= !empty($address_state) ? $address_state.' ' : '';
+            $shipping_address .= !empty($address_state) ? $address_state.' ' : '';
+            
             $address_zip = isset($ipn_response['address_zip']) ? sanitize_text_field($ipn_response['address_zip']) : '';
             $ship_to .= !empty($address_zip) ? $address_zip.'<br />' : '';
+            $shipping_address .= !empty($address_zip) ? $address_zip.', ' : '';
+            
             $address_country = isset($ipn_response['address_country']) ? sanitize_text_field($ipn_response['address_country']) : '';
             $ship_to .= !empty($address_country) ? $address_country : '';
+            $shipping_address .= !empty($address_country) ? $address_country : '';
         }
+        $payment_data['shipping_address'] = $shipping_address;
         $wp_paypal_order = array(
             'post_title' => 'order',
             'post_type' => 'wp_paypal_order',
@@ -326,7 +337,8 @@ function wp_paypal_do_email_tags($payment_data, $content){
         '{mc_currency}',
         '{mc_gross}',
         '{payer_email}',
-        '{custom}'
+        '{custom}',
+        '{shipping_address}',
     );
     $replace = array(
         $payment_data['first_name'], 
@@ -336,7 +348,8 @@ function wp_paypal_do_email_tags($payment_data, $content){
         $payment_data['mc_currency'],
         $payment_data['mc_gross'],
         $payment_data['payer_email'],
-        $payment_data['custom']
+        $payment_data['custom'],
+        $payment_data['shipping_address']
     );
     $content = str_replace($search, $replace, $content);
     return $content;
