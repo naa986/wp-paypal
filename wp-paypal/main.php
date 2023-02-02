@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.15
+  Version: 1.2.3.16
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,8 +15,8 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.15';
-    var $db_version = '1.0.1';
+    var $plugin_version = '1.2.3.16';
+    var $db_version = '1.0.2';
     var $plugin_url;
     var $plugin_path;
     
@@ -88,6 +88,7 @@ class WP_PAYPAL {
         add_option('wp_paypal_email', get_bloginfo('admin_email'));
         add_option('wp_paypal_currency_code', 'USD');
         add_option('wp_paypal_enable_ipn_validation', '1');
+        add_option('wp_paypal_enable_receiver_check', '1');
         wp_paypal_set_default_email_options();
     }
 
@@ -232,6 +233,7 @@ class WP_PAYPAL {
             update_option('wp_paypal_email', sanitize_email($_POST["paypal_email"]));
             update_option('wp_paypal_currency_code', sanitize_text_field($_POST["currency_code"]));
             update_option('wp_paypal_enable_ipn_validation', (isset($_POST["enable_ipn_validation"]) && $_POST["enable_ipn_validation"] == '1') ? '1' : '');
+            update_option('wp_paypal_enable_receiver_check', (isset($_POST["enable_receiver_check"]) && $_POST["enable_receiver_check"] == '1') ? '1' : '');
             echo '<div id="message" class="updated fade"><p><strong>';
             echo __('Settings Saved', 'wp-paypal').'!';
             echo '</strong></p></div>';
@@ -279,6 +281,14 @@ class WP_PAYPAL {
                                         <td> <fieldset><legend class="screen-reader-text"><span>Enable IPN Validation</span></legend><label for="enable_ipn_validation">
                                                     <input name="enable_ipn_validation" type="checkbox" id="enable_ipn_validation" <?php if (get_option('wp_paypal_enable_ipn_validation') == '1') echo ' checked="checked"'; ?> value="1">
                                                     <?Php _e('Check this option if you want to send the IPN data to PayPal for validation', 'wp-paypal');?></label>
+                                            </fieldset></td>
+                                    </tr>
+                                    
+                                    <tr valign="top">
+                                        <th scope="row"><?Php _e('Enable Receiver Check', 'wp-paypal');?></th>
+                                        <td> <fieldset><legend class="screen-reader-text"><span>Enable Receiver Check</span></legend><label for="enable_receiver_check">
+                                                    <input name="enable_receiver_check" type="checkbox" id="enable_receiver_check" <?php if (get_option('wp_paypal_enable_receiver_check') == '1') echo ' checked="checked"'; ?> value="1">
+                                                    <?Php _e('Check this option if you want the seller account in the settings to match the receiver account when processing a payment. This option should be disabled when accepting payments on separate accounts.', 'wp-paypal');?></label>
                                             </fieldset></td>
                                     </tr>
 
@@ -627,7 +637,11 @@ function wp_paypal_get_add_to_cart_button($atts){
     else if(isset($paypal_email) && !empty($paypal_email)) {
         $business = $paypal_email;
     }
-    
+    //
+    if(isset($atts['business']) && !empty($atts['business'])) {
+        $business = $atts['business'];
+    }
+    //
     if(isset($business) && !empty($business)) {
         $button_code .= '<input type="hidden" name="business" value="'.esc_attr($business).'">';
     }
@@ -795,6 +809,11 @@ function wp_paypal_get_buy_now_button($atts){
     else if(isset($paypal_email) && !empty($paypal_email)) {
         $business = $paypal_email;
     }
+    //
+    if(isset($atts['business']) && !empty($atts['business'])) {
+        $business = $atts['business'];
+    }
+    //
     $price_variation = false;
     if(isset($atts['os0_amount0']) && is_numeric($atts['os0_amount0'])) {
         $price_variation = true;
@@ -949,7 +968,11 @@ function wp_paypal_get_donate_button($atts){
     else if(isset($paypal_email) && !empty($paypal_email)) {
         $business = $paypal_email;
     }
-    
+    //
+    if(isset($atts['business']) && !empty($atts['business'])) {
+        $business = $atts['business'];
+    }
+    //
     if(isset($business) && !empty($business)) {
         $button_code .= '<input type="hidden" name="business" value="'.esc_attr($business).'">';
     }
@@ -1027,7 +1050,11 @@ function wp_paypal_get_subscribe_button($atts){
     else if(isset($paypal_email) && !empty($paypal_email)) {
         $business = $paypal_email;
     }
-    
+    //
+    if(isset($atts['business']) && !empty($atts['business'])) {
+        $business = $atts['business'];
+    }
+    //
     if(isset($business) && !empty($business)) {
         $button_code .= '<input type="hidden" name="business" value="'.esc_attr($business).'">';
     }

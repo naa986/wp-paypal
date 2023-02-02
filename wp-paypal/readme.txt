@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce, subscription, payment
 Requires at least: 5.3
 Tested up to: 6.1
-Stable tag: 1.2.3.15
+Stable tag: 1.2.3.16
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,7 @@ Payment Button for PayPal supports PayPal Sandbox. PayPal Sandbox is a simulatio
 * Accept once off payments
 * Accept recurring subscription payments
 * Accept donations from users
+* Use multiple PayPal accounts to accept payments
 * Allow users to add multiple items to the shopping cart and checkout
 * View or Manage orders received via PayPal buttons from your WordPress admin dashboard
 * Quick settings configurations
@@ -152,6 +153,7 @@ You can use additional parameters to customize your PayPal buttons.
 * **undefined_quantity** - Allow buyers to specify the quantity of the item on the payment page (e.g. undefined_quantity="1"). This option is only used with a Buy Now button.
 * **target** - This parameter allows you to open a PayPal button in a new window or tab (e.g. target="_blank").
 * **shopping_url** - This parameter allows you to customize the Continue Shopping URL for the View Cart button (e.g. shopping_url="https://example.com/shop").
+* **business** - This parameter allows you to override the seller account specified in the settings. You can specify either your PayPal merchant ID or email address in it (e.g. business="HV3QO52MBTT34" or business="rbg123@gmail.com").
 
 = PayPal Add to Cart Button/Shopping Cart Specific Parameters =
 
@@ -237,6 +239,10 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.16 =
+* Added a shortcode parameter to receive payments on separate accounts.
+* Added an option to enable/disable the receiver check.
 
 = 1.2.3.15 =
 * Added an email tag for shipping address.

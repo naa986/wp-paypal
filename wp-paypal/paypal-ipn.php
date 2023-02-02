@@ -149,26 +149,31 @@ function wp_paypal_process_ipn() {
             wp_paypal_debug_log("mc_currency is not valid. This payment cannot be processed.", false);
             return;
         }
-        $seller_id = get_option('wp_paypal_merchant_id');
-        $seller_email = get_option('wp_paypal_email');
-        if (isset($seller_id) && !empty($seller_id) && isset($ipn_response['receiver_id']) && !empty($ipn_response['receiver_id'])) {
-            $receiver_id = sanitize_text_field($ipn_response['receiver_id']);
-            if ($seller_id != $receiver_id) {
-                wp_paypal_debug_log("Seller PayPal ID (".$seller_id.") and Receiver PayPal ID (".$receiver_id.") do not match. This payment cannot be processed.", false);
+        //
+        $enable_receiver_check = get_option('wp_paypal_enable_receiver_check');
+        if(isset($enable_receiver_check) && !empty($enable_receiver_check)){
+            $seller_id = get_option('wp_paypal_merchant_id');
+            $seller_email = get_option('wp_paypal_email');
+            if (isset($seller_id) && !empty($seller_id) && isset($ipn_response['receiver_id']) && !empty($ipn_response['receiver_id'])) {
+                $receiver_id = sanitize_text_field($ipn_response['receiver_id']);
+                if ($seller_id != $receiver_id) {
+                    wp_paypal_debug_log("Seller PayPal ID (".$seller_id.") and Receiver PayPal ID (".$receiver_id.") do not match. This payment cannot be processed.", false);
+                    return;
+                }
+            }
+            else if (isset($seller_email) && !empty($seller_email) && isset($ipn_response['receiver_email']) && !empty($ipn_response['receiver_email'])) {
+                $receiver_email = sanitize_email($ipn_response['receiver_email']);
+                if ($seller_email != $receiver_email) {
+                    wp_paypal_debug_log("Seller PayPal email (".$seller_email.") and Receiver PayPal email (".$receiver_email.") do not match. This payment cannot be processed.", false);
+                    return;
+                }
+            }
+            else{
+                wp_paypal_debug_log("Seller PayPal ID and Receiver PayPal ID could not be verified. This payment cannot be processed.", false);
                 return;
             }
         }
-        else if (isset($seller_email) && !empty($seller_email) && isset($ipn_response['receiver_email']) && !empty($ipn_response['receiver_email'])) {
-            $receiver_email = sanitize_email($ipn_response['receiver_email']);
-            if ($seller_email != $receiver_email) {
-                wp_paypal_debug_log("Seller PayPal email (".$seller_email.") and Receiver PayPal email (".$receiver_email.") do not match. This payment cannot be processed.", false);
-                return;
-            }
-        }
-        else{
-            wp_paypal_debug_log("Seller PayPal ID and Receiver PayPal ID could not be verified. This payment cannot be processed.", false);
-            return;
-        }
+        //
         $payment_data['payer_email'] = '';
         if (isset($ipn_response['payer_email']) && !empty($ipn_response['payer_email'])) {
             $payment_data['payer_email'] = sanitize_email($ipn_response['payer_email']);
