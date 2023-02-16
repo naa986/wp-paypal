@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.16
+  Version: 1.2.3.17
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.16';
+    var $plugin_version = '1.2.3.17';
     var $db_version = '1.0.2';
     var $plugin_url;
     var $plugin_path;
@@ -620,11 +620,17 @@ function wp_paypal_get_add_to_cart_button($atts){
     if(isset($atts['env']) && $atts['env'] == "sandbox"){
         $action_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
     }
+    $method = 'post';
+    $amp = false;
+    if(function_exists('amp_is_request') && amp_is_request()){
+        $method = 'get';
+        $amp = true;
+    }
     $target = '';
     if(isset($atts['target']) && !empty($atts['target'])) {
         $target = 'target="'.esc_attr($atts['target']).'" ';
     }
-    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="post" >';
+    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="'.$method.'" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_cart">';
     $button_code .= '<input type="hidden" name="add" value="1">';
@@ -742,7 +748,18 @@ function wp_paypal_get_add_to_cart_button($atts){
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
         $button_image_url = $atts['button_image'];
     }
-    $button_code .= '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
+    //$button_code .= '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
+    $button_submit_code = '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
+    $button_text = 'Add to Cart';
+    if(isset($atts['button_text']) && !empty($atts['button_text'])){
+        $button_text = $atts['button_text'];
+    }
+    //
+    if($amp){
+        $button_submit_code = '<input type="submit" value="'.esc_attr($button_text).'">';
+    }
+    //
+    $button_code .= $button_submit_code;
     $button_code .= '</form>';
     return $button_code;        
 }
@@ -753,11 +770,17 @@ function wp_paypal_get_view_cart_button($atts){
     if(isset($atts['env']) && $atts['env'] == "sandbox"){
         $action_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
     }
+    $method = 'post';
+    $amp = false;
+    if(function_exists('amp_is_request') && amp_is_request()){
+        $method = 'get';
+        $amp = true;
+    }
     $target = '';
     if(isset($atts['target']) && !empty($atts['target'])) {
         $target = 'target="'.esc_attr($atts['target']).'" ';
     }
-    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="post" >';
+    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="'.$method.'" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_cart">';
     $button_code .= '<input type="hidden" name="display" value="1">';
@@ -782,7 +805,18 @@ function wp_paypal_get_view_cart_button($atts){
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
         $button_image_url = $atts['button_image'];
     }
-    $button_code .= '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
+    //$button_code .= '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
+    $button_submit_code = '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
+    $button_text = 'View Cart';
+    if(isset($atts['button_text']) && !empty($atts['button_text'])){
+        $button_text = $atts['button_text'];
+    }
+    //
+    if($amp){
+        $button_submit_code = '<input type="submit" value="'.esc_attr($button_text).'">';
+    }
+    //
+    $button_code .= $button_submit_code;
     $button_code .= '</form>';
     return $button_code;        
 }
@@ -793,11 +827,17 @@ function wp_paypal_get_buy_now_button($atts){
     if(isset($atts['env']) && $atts['env'] == "sandbox"){
         $action_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
     }
+    $method = 'post';
+    $amp = false;
+    if(function_exists('amp_is_request') && amp_is_request()){
+        $method = 'get';
+        $amp = true;
+    }
     $target = '';
     if(isset($atts['target']) && !empty($atts['target'])) {
         $target = 'target="'.esc_attr($atts['target']).'" ';
     }
-    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="post" >';
+    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="'.$method.'" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_xclick">';
     $business = '';
@@ -941,7 +981,18 @@ function wp_paypal_get_buy_now_button($atts){
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
         $button_image_url = $atts['button_image'];
     }
-    $button_code .= '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
+    //$button_code .= '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
+    $button_submit_code = '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
+    $button_text = 'Buy Now';
+    if(isset($atts['button_text']) && !empty($atts['button_text'])){
+        $button_text = $atts['button_text'];
+    }
+    //
+    if($amp){
+        $button_submit_code = '<input type="submit" value="'.esc_attr($button_text).'">';
+    }
+    //
+    $button_code .= $button_submit_code;
     $button_code .= '</form>';
     return $button_code;        
 }
@@ -952,11 +1003,17 @@ function wp_paypal_get_donate_button($atts){
     if(isset($atts['env']) && $atts['env'] == "sandbox"){
         $action_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
     }
+    $method = 'post';
+    $amp = false;
+    if(function_exists('amp_is_request') && amp_is_request()){
+        $method = 'get';
+        $amp = true;
+    }
     $target = '';
     if(isset($atts['target']) && !empty($atts['target'])) {
         $target = 'target="'.esc_attr($atts['target']).'" ';
     }
-    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="post" >';
+    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="'.$method.'" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_donations">';
     $business = '';
@@ -1023,7 +1080,18 @@ function wp_paypal_get_donate_button($atts){
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
         $button_image_url = $atts['button_image'];
     }
-    $button_code .= '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
+    //$button_code .= '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
+    $button_submit_code = '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
+    $button_text = 'Donate';
+    if(isset($atts['button_text']) && !empty($atts['button_text'])){
+        $button_text = $atts['button_text'];
+    }
+    //
+    if($amp){
+        $button_submit_code = '<input type="submit" value="'.esc_attr($button_text).'">';
+    }
+    //
+    $button_code .= $button_submit_code;
     $button_code .= '</form>';
     return $button_code;        
 }
@@ -1034,11 +1102,17 @@ function wp_paypal_get_subscribe_button($atts){
     if(isset($atts['env']) && $atts['env'] == "sandbox"){
         $action_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
     }
+    $method = 'post';
+    $amp = false;
+    if(function_exists('amp_is_request') && amp_is_request()){
+        $method = 'get';
+        $amp = true;
+    }
     $target = '';
     if(isset($atts['target']) && !empty($atts['target'])) {
         $target = 'target="'.esc_attr($atts['target']).'" ';
     }
-    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="post" >';
+    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="'.$method.'" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_xclick-subscriptions">';
     $business = '';
@@ -1191,7 +1265,18 @@ function wp_paypal_get_subscribe_button($atts){
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
         $button_image_url = $atts['button_image'];
     }
-    $button_code .= '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
+    //$button_code .= '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
+    $button_submit_code = '<input type="image" src="'.esc_url($button_image_url).'" border="0" name="submit">';
+    $button_text = 'Subscribe';
+    if(isset($atts['button_text']) && !empty($atts['button_text'])){
+        $button_text = $atts['button_text'];
+    }
+    //
+    if($amp){
+        $button_submit_code = '<input type="submit" value="'.esc_attr($button_text).'">';
+    }
+    //
+    $button_code .= $button_submit_code;
     $button_code .= '</form>';
     return $button_code;        
 }
