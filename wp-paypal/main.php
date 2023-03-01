@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.17
+  Version: 1.2.3.18
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.17';
+    var $plugin_version = '1.2.3.18';
     var $db_version = '1.0.2';
     var $plugin_url;
     var $plugin_path;
@@ -1045,6 +1045,19 @@ function wp_paypal_get_donate_button($atts){
         $item_number = $atts['item_number'];
         $button_code .= '<input type="hidden" name="item_number" value="'.esc_attr($item_number).'">';
     }
+    //
+    $amount_input_code = '';
+    $amount_input_code = apply_filters('wppaypal_custom_donations', $amount_input_code, $button_code, $atts);
+    if(!empty($amount_input_code)){
+        $button_code .= $amount_input_code;
+    }
+    else{
+        if(isset($atts['amount']) && is_numeric($atts['amount']) && $atts['amount'] > 0) {
+            $amount = $atts['amount'];
+            $button_code .= '<input type="hidden" name="amount" value="'.esc_attr($amount).'">';
+        }
+    }
+    //
     if(isset($atts['currency']) && !empty($atts['currency'])) {
         $currency = $atts['currency'];
         $button_code .= '<input type="hidden" name="currency_code" value="'.esc_attr($currency).'">';

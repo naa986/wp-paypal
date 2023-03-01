@@ -71,6 +71,14 @@ function wp_paypal_display_addons_menu()
     );
     array_push($addons_data, $addon_8);
     
+    $addon_9 = array(
+        'name' => 'Custom Donations',
+        'thumbnail' => WP_PAYPAL_URL.'/addons/images/wp-paypal-custom-donations.png',
+        'description' => "Allow visitors to set a donation amount for your PayPal Donate buttons",
+        'page_url' => 'https://wphowto.net/custom-donations-for-wordpress-paypal-donate-buttons-6778',
+    );
+    array_push($addons_data, $addon_9);
+    
     //Display the list
     foreach ($addons_data as $addon) {
         ?>

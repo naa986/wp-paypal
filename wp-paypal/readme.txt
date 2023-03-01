@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce, subscription, payment
 Requires at least: 5.3
 Tested up to: 6.1
-Stable tag: 1.2.3.17
+Stable tag: 1.2.3.18
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,7 @@ Payment Button for PayPal supports PayPal Sandbox. PayPal Sandbox is a simulatio
 * [Product Variations](https://wphowto.net/how-to-configure-product-variations-in-wp-paypal-6413)
 * [Variable Quantity](https://wphowto.net/how-to-add-a-quantity-field-to-a-paypal-button-6428)
 * [Variable Subscription](https://wphowto.net/how-to-add-a-recurring-price-field-to-a-paypal-subscription-button-6450)
+* [Custom Donations](https://wphowto.net/custom-donations-for-wordpress-paypal-donate-buttons-6778)
 
 === Payment Button for PayPal Features ===
 
@@ -239,6 +240,10 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.18 =
+* A fixed amount can be specified in the donate button.
+* Added support for the custom donations add-on.
 
 = 1.2.3.17 =
 * Made the PayPal buttons compatible with AMP.
