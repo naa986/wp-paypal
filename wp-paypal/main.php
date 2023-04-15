@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.18
+  Version: 1.2.3.19
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.18';
+    var $plugin_version = '1.2.3.19';
     var $db_version = '1.0.2';
     var $plugin_url;
     var $plugin_path;
@@ -630,7 +630,11 @@ function wp_paypal_get_add_to_cart_button($atts){
     if(isset($atts['target']) && !empty($atts['target'])) {
         $target = 'target="'.esc_attr($atts['target']).'" ';
     }
-    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="'.$method.'" >';
+    $form_class = '';
+    if(isset($atts['form_class']) && !empty($atts['form_class'])) {
+        $form_class = 'class="'.esc_attr($atts['form_class']).'" ';
+    }
+    $button_code .= '<form '.$form_class.$target.'action="'.esc_url($action_url).'" method="'.$method.'" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_cart">';
     $button_code .= '<input type="hidden" name="add" value="1">';
@@ -753,6 +757,7 @@ function wp_paypal_get_add_to_cart_button($atts){
     $button_text = 'Add to Cart';
     if(isset($atts['button_text']) && !empty($atts['button_text'])){
         $button_text = $atts['button_text'];
+        $button_submit_code = '<input type="submit" value="'.esc_attr($button_text).'">';
     }
     //
     if($amp){
@@ -780,7 +785,11 @@ function wp_paypal_get_view_cart_button($atts){
     if(isset($atts['target']) && !empty($atts['target'])) {
         $target = 'target="'.esc_attr($atts['target']).'" ';
     }
-    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="'.$method.'" >';
+    $form_class = '';
+    if(isset($atts['form_class']) && !empty($atts['form_class'])) {
+        $form_class = 'class="'.esc_attr($atts['form_class']).'" ';
+    }
+    $button_code .= '<form '.$form_class.$target.'action="'.esc_url($action_url).'" method="'.$method.'" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_cart">';
     $button_code .= '<input type="hidden" name="display" value="1">';
@@ -810,6 +819,7 @@ function wp_paypal_get_view_cart_button($atts){
     $button_text = 'View Cart';
     if(isset($atts['button_text']) && !empty($atts['button_text'])){
         $button_text = $atts['button_text'];
+        $button_submit_code = '<input type="submit" value="'.esc_attr($button_text).'">';
     }
     //
     if($amp){
@@ -837,7 +847,11 @@ function wp_paypal_get_buy_now_button($atts){
     if(isset($atts['target']) && !empty($atts['target'])) {
         $target = 'target="'.esc_attr($atts['target']).'" ';
     }
-    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="'.$method.'" >';
+    $form_class = '';
+    if(isset($atts['form_class']) && !empty($atts['form_class'])) {
+        $form_class = 'class="'.esc_attr($atts['form_class']).'" ';
+    }
+    $button_code .= '<form '.$form_class.$target.'action="'.esc_url($action_url).'" method="'.$method.'" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_xclick">';
     $business = '';
@@ -986,6 +1000,7 @@ function wp_paypal_get_buy_now_button($atts){
     $button_text = 'Buy Now';
     if(isset($atts['button_text']) && !empty($atts['button_text'])){
         $button_text = $atts['button_text'];
+        $button_submit_code = '<input type="submit" value="'.esc_attr($button_text).'">';
     }
     //
     if($amp){
@@ -1013,7 +1028,11 @@ function wp_paypal_get_donate_button($atts){
     if(isset($atts['target']) && !empty($atts['target'])) {
         $target = 'target="'.esc_attr($atts['target']).'" ';
     }
-    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="'.$method.'" >';
+    $form_class = '';
+    if(isset($atts['form_class']) && !empty($atts['form_class'])) {
+        $form_class = 'class="'.esc_attr($atts['form_class']).'" ';
+    }
+    $button_code .= '<form '.$form_class.$target.'action="'.esc_url($action_url).'" method="'.$method.'" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_donations">';
     $business = '';
@@ -1098,6 +1117,7 @@ function wp_paypal_get_donate_button($atts){
     $button_text = 'Donate';
     if(isset($atts['button_text']) && !empty($atts['button_text'])){
         $button_text = $atts['button_text'];
+        $button_submit_code = '<input type="submit" value="'.esc_attr($button_text).'">';
     }
     //
     if($amp){
@@ -1125,7 +1145,11 @@ function wp_paypal_get_subscribe_button($atts){
     if(isset($atts['target']) && !empty($atts['target'])) {
         $target = 'target="'.esc_attr($atts['target']).'" ';
     }
-    $button_code .= '<form '.$target.'action="'.esc_url($action_url).'" method="'.$method.'" >';
+    $form_class = '';
+    if(isset($atts['form_class']) && !empty($atts['form_class'])) {
+        $form_class = 'class="'.esc_attr($atts['form_class']).'" ';
+    }
+    $button_code .= '<form '.$form_class.$target.'action="'.esc_url($action_url).'" method="'.$method.'" >';
     $button_code .= '<input type="hidden" name="charset" value="utf-8">';
     $button_code .= '<input type="hidden" name="cmd" value="_xclick-subscriptions">';
     $business = '';
@@ -1283,6 +1307,7 @@ function wp_paypal_get_subscribe_button($atts){
     $button_text = 'Subscribe';
     if(isset($atts['button_text']) && !empty($atts['button_text'])){
         $button_text = $atts['button_text'];
+        $button_submit_code = '<input type="submit" value="'.esc_attr($button_text).'">';
     }
     //
     if($amp){

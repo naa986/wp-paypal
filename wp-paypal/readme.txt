@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce, subscription, payment
 Requires at least: 5.3
 Tested up to: 6.2
-Stable tag: 1.2.3.18
+Stable tag: 1.2.3.19
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,6 +60,7 @@ Payment Button for PayPal supports PayPal Sandbox. PayPal Sandbox is a simulatio
 * Charge tax on your products or services
 * Send a purchase confirmation email to your customer after a transaction
 * Send a sale notification email to one or more recipients (e.g. the seller) after a transaction
+* Customize PayPal buttons with CSS
 
 *Note: This is NOT an official PayPal product.*
 
@@ -138,6 +139,7 @@ You can use additional parameters to customize your PayPal buttons.
 * **type** - The type of button to render (e.g. "buynow", "cart", "donate" or "subscribe")
 * **name** - Description of the item.
 * **button_image** - Your custom button image URL (e.g. button_image="https://example.com/images/buy.png").
+* **button_text** - Your custom button text (e.g. button_text="Buy Now").
 * **number** - The number of the item (Also known as SKU. e.g. number="16").
 * **amount**- The price of the item (e.g. amount="4.95").
 * **currency** - The currency of the item (e.g. currency="USD").
@@ -155,6 +157,7 @@ You can use additional parameters to customize your PayPal buttons.
 * **target** - This parameter allows you to open a PayPal button in a new window or tab (e.g. target="_blank").
 * **shopping_url** - This parameter allows you to customize the Continue Shopping URL for the View Cart button (e.g. shopping_url="https://example.com/shop").
 * **business** - This parameter allows you to override the seller account specified in the settings. You can specify either your PayPal merchant ID or email address in it (e.g. business="HV3QO52MBTT34" or business="rbg123@gmail.com").
+* **form_class** - Your custom CSS class to target the button form (e.g. form_class="ppbtn"). Multiple classes are supported (e.g. form_class="ppbtn ppbtn2 ppbtn3").
 
 = PayPal Add to Cart Button/Shopping Cart Specific Parameters =
 
@@ -240,6 +243,10 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.19 =
+* Added button_text parameter to create PayPal buttons without images.
+* Added form_class parameter to target PayPal button form and apply custom styling.
 
 = 1.2.3.18 =
 * A fixed amount can be specified in the donate button.
