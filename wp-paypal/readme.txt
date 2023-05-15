@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce, subscription, payment
 Requires at least: 5.3
 Tested up to: 6.2
-Stable tag: 1.2.3.19
+Stable tag: 1.2.3.20
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -96,7 +96,7 @@ When this feature is enabled an email is sent to your chosen recipient(s) after 
 * The content type of the sale notification email. The default is "Plain Text". But you can also set it to "HTML"
 * The body of the sale notification email.
 
-You can use various email tags in the body of an email to dynamically change its content. You can find the full list of available email tags in the [WordPress PayPal](https://wphowto.net/wordpress-paypal-plugin-732) plugin page.
+You can use various email tags in the subject/body of an email to dynamically change its content. You can find the full list of available email tags in the [WordPress PayPal](https://wphowto.net/wordpress-paypal-plugin-732) plugin page.
 
 === How to Create a PayPal Button ===
 
@@ -243,6 +243,9 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.20 =
+* Added support for email tags in the email subject.
 
 = 1.2.3.19 =
 * Added button_text parameter to create PayPal buttons without images.
