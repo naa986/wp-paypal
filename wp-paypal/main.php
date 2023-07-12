@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.20
+  Version: 1.2.3.21
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.20';
+    var $plugin_version = '1.2.3.21';
     var $db_version = '1.0.2';
     var $plugin_url;
     var $plugin_path;
@@ -46,6 +46,7 @@ class WP_PAYPAL {
 
     function plugin_includes() {
         include_once('wp-paypal-order.php');
+        include_once('wp-paypal-checkout.php');
         include_once('paypal-ipn.php');
         if(is_admin()){
             include_once('addons/wp-paypal-addons-menu.php');
@@ -67,6 +68,10 @@ class WP_PAYPAL {
         add_filter('manage_wp_paypal_order_posts_columns', 'wp_paypal_order_columns');
         add_action('manage_wp_paypal_order_posts_custom_column', 'wp_paypal_custom_column', 10, 2);
         add_shortcode('wp_paypal', 'wp_paypal_button_handler');
+        add_action('wp_ajax_wppaypalcheckout_ajax_process_order', 'wp_paypal_checkout_ajax_process_order');
+        add_action('wp_ajax_nopriv_wppaypalcheckout_ajax_process_order', 'wp_paypal_checkout_ajax_process_order');
+        add_action('wp_paypal_checkout_process_order', 'wp_paypal_checkout_process_order_handler');
+        add_shortcode('wp_paypal_checkout', 'wp_paypal_checkout_button_handler');
     }
 
     function plugins_loaded_handler() {  //Runs when plugins_loaded action gets fired
@@ -122,8 +127,27 @@ class WP_PAYPAL {
     }
     
     function plugin_scripts() {
+        if (is_404()) {
+            return;
+        }
         if (!is_admin()) {
-            
+            global $post;
+            if(is_a($post, 'WP_Post')
+                    && has_shortcode($post->post_content, 'wp_paypal_checkout')
+                        || has_shortcode(get_post_meta($post->ID, 'wp-paypal-custom-field', true), 'wp_paypal_checkout')){
+                $options = wp_paypal_checkout_get_option();
+                if(!is_wp_paypal_checkout_configured()){
+                    return;
+                }
+                $args = array(
+                    'client-id' => $options['app_client_id'],
+                    'currency' => $options['currency_code'],                 
+                );
+                $sdk_js_url = add_query_arg($args, 'https://www.paypal.com/sdk/js');
+                wp_enqueue_script('jquery');
+                wp_register_script('wp-paypal', $sdk_js_url, array('jquery'), null);
+                wp_enqueue_script('wp-paypal');
+            }        
         }
     }
 
@@ -228,6 +252,30 @@ class WP_PAYPAL {
             if (!wp_verify_nonce($nonce, 'wp_paypal_general_settings')) {
                 wp_die('Error! Nonce Security Check Failed! please save the settings again.');
             }
+            //
+            $checkout_app_client_id = '';
+            if(isset($_POST['checkout_app_client_id']) && !empty($_POST['checkout_app_client_id'])){
+                $checkout_app_client_id = sanitize_text_field($_POST['checkout_app_client_id']);
+            }
+            $checkout_currency_code = '';
+            if(isset($_POST['checkout_currency_code']) && !empty($_POST['checkout_currency_code'])){
+                $checkout_currency_code = sanitize_text_field($_POST['checkout_currency_code']);
+            }
+            $checkout_return_url = '';
+            if(isset($_POST['checkout_return_url']) && !empty($_POST['checkout_return_url'])){
+                $checkout_return_url = esc_url_raw($_POST['checkout_return_url']);
+            }
+            $checkout_cancel_url = '';
+            if(isset($_POST['checkout_cancel_url']) && !empty($_POST['checkout_cancel_url'])){
+                $checkout_cancel_url = esc_url_raw($_POST['checkout_cancel_url']);
+            }
+            $paypal_checkout_options = array();
+            $paypal_checkout_options['app_client_id'] = $checkout_app_client_id;
+            $paypal_checkout_options['currency_code'] = $checkout_currency_code;
+            $paypal_checkout_options['return_url'] = $checkout_return_url;
+            $paypal_checkout_options['cancel_url'] = $checkout_cancel_url;
+            wp_paypal_checkout_update_option($paypal_checkout_options);
+            //
             update_option('wp_paypal_enable_testmode', (isset($_POST["enable_testmode"]) && $_POST["enable_testmode"] == '1') ? '1' : '');
             update_option('wp_paypal_merchant_id', sanitize_text_field($_POST["paypal_merchant_id"]));
             update_option('wp_paypal_email', sanitize_email($_POST["paypal_email"]));
@@ -238,6 +286,7 @@ class WP_PAYPAL {
             echo __('Settings Saved', 'wp-paypal').'!';
             echo '</strong></p></div>';
         }
+        $paypal_checkout_options = wp_paypal_checkout_get_option();
         ?>
         <table class="wppaypal-general-settings-table">
             <tbody>
@@ -245,50 +294,84 @@ class WP_PAYPAL {
                     <td valign="top">
                         <form method="post" action="">
                             <?php wp_nonce_field('wp_paypal_general_settings'); ?>
-
+                            <h2><?php _e('PayPal Checkout', 'wp-paypal');?></h2>
+                            <p><?php printf(__('These settings apply to %s shortcode buttons', 'wp-paypal'), '[wp_paypal_checkout]');?></p>
                             <table class="form-table">
 
                                 <tbody>
 
                                     <tr valign="top">
-                                        <th scope="row"><?Php _e('Enable Test Mode', 'wp-paypal');?></th>
+                                        <th scope="row"><label for="checkout_app_client_id"><?php _e('PayPal Merchant ID', 'wp-paypal');?></label></th>
+                                        <td><input name="checkout_app_client_id" type="text" id="checkout_app_client_id" value="<?php echo esc_attr($paypal_checkout_options['app_client_id']); ?>" class="regular-text">
+                                            <p class="description"><?php _e('The client ID for your PayPal REST API app', 'wp-paypal');?></p></td>
+                                    </tr>
+
+                                    <tr valign="top">
+                                        <th scope="row"><label for="checkout_currency_code"><?php _e('Currency Code', 'wp-paypal');?></label></th>
+                                        <td><input name="checkout_currency_code" type="text" id="checkout_currency_code" value="<?php echo esc_attr($paypal_checkout_options['currency_code']); ?>" class="regular-text">
+                                            <p class="description"><?php _e('The default currency of the payment', 'wp-paypal');?> (<?php _e('example', 'wp-paypal');?>: USD, CAD, GBP, EUR)</p></td>
+                                    </tr>
+                                    
+                                    <tr valign="top">
+                                        <th scope="row"><label for="checkout_return_url"><?php _e('Return URL', 'wp-paypal');?></label></th>
+                                        <td><input name="checkout_return_url" type="text" id="checkout_return_url" value="<?php echo esc_url($paypal_checkout_options['return_url']); ?>" class="regular-text">
+                                            <p class="description"><?php _e('The page URL to which the customer will be redirected after a successful payment (optional)', 'wp-paypal');?></p></td>
+                                    </tr>
+                                    
+                                    <tr valign="top">
+                                        <th scope="row"><label for="checkout_cancel_url"><?php _e('Cancel URL', 'wp-paypal');?></label></th>
+                                        <td><input name="checkout_cancel_url" type="text" id="checkout_cancel_url" value="<?php echo esc_url($paypal_checkout_options['cancel_url']); ?>" class="regular-text">
+                                            <p class="description"><?php _e('The page URL to which the customer will be redirected when a payment is cancelled (optional)', 'wp-paypal');?></p></td>
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+                            <h2><?php _e('PayPal Payments Standard', 'wp-paypal');?></h2>
+                            <p><?php printf(__('These settings apply to %s shortcode buttons', 'wp-paypal'), '[wp_paypal]');?></p>
+                            <table class="form-table">
+
+                                <tbody>
+
+                                    <tr valign="top">
+                                        <th scope="row"><?php _e('Enable Test Mode', 'wp-paypal');?></th>
                                         <td> <fieldset><legend class="screen-reader-text"><span>Enable Test Mode</span></legend><label for="enable_testmode">
                                                     <input name="enable_testmode" type="checkbox" id="enable_testmode" <?php if (get_option('wp_paypal_enable_testmode') == '1') echo ' checked="checked"'; ?> value="1">
-                                                    <?Php _e('Check this option if you want to enable PayPal sandbox for testing', 'wp-paypal');?></label>
+                                                    <?php _e('Check this option if you want to enable PayPal sandbox for testing', 'wp-paypal');?></label>
                                             </fieldset></td>
                                     </tr>
 
                                     <tr valign="top">
-                                        <th scope="row"><label for="paypal_merchant_id"><?Php _e('PayPal Merchant ID', 'wp-paypal');?></label></th>
+                                        <th scope="row"><label for="paypal_merchant_id"><?php _e('PayPal Merchant ID', 'wp-paypal');?></label></th>
                                         <td><input name="paypal_merchant_id" type="text" id="paypal_merchant_id" value="<?php echo esc_attr(get_option('wp_paypal_merchant_id')); ?>" class="regular-text">
-                                            <p class="description"><?Php _e('Your PayPal Merchant ID', 'wp-paypal');?></p></td>
+                                            <p class="description"><?php _e('Your PayPal Merchant ID', 'wp-paypal');?></p></td>
                                     </tr>
 
                                     <tr valign="top">
-                                        <th scope="row"><label for="paypal_email"><?Php _e('PayPal Email', 'wp-paypal');?></label></th>
+                                        <th scope="row"><label for="paypal_email"><?php _e('PayPal Email', 'wp-paypal');?></label></th>
                                         <td><input name="paypal_email" type="text" id="paypal_email" value="<?php echo esc_attr(get_option('wp_paypal_email')); ?>" class="regular-text">
-                                            <p class="description"><?Php _e('Your PayPal email address', 'wp-paypal');?></p></td>
+                                            <p class="description"><?php _e('Your PayPal email address', 'wp-paypal');?></p></td>
                                     </tr>
 
                                     <tr valign="top">
-                                        <th scope="row"><label for="currency_code"><?Php _e('Currency Code', 'wp-paypal');?></label></th>
+                                        <th scope="row"><label for="currency_code"><?php _e('Currency Code', 'wp-paypal');?></label></th>
                                         <td><input name="currency_code" type="text" id="currency_code" value="<?php echo esc_attr(get_option('wp_paypal_currency_code')); ?>" class="regular-text">
-                                            <p class="description"><?Php _e('The currency of the payment', 'wp-paypal');?> (<?Php _e('example', 'wp-paypal');?>: USD, CAD, GBP, EUR)</p></td>
+                                            <p class="description"><?php _e('The currency of the payment', 'wp-paypal');?> (<?php _e('example', 'wp-paypal');?>: USD, CAD, GBP, EUR)</p></td>
                                     </tr>
                                     
                                     <tr valign="top">
-                                        <th scope="row"><?Php _e('Enable IPN Validation', 'wp-paypal');?></th>
+                                        <th scope="row"><?php _e('Enable IPN Validation', 'wp-paypal');?></th>
                                         <td> <fieldset><legend class="screen-reader-text"><span>Enable IPN Validation</span></legend><label for="enable_ipn_validation">
                                                     <input name="enable_ipn_validation" type="checkbox" id="enable_ipn_validation" <?php if (get_option('wp_paypal_enable_ipn_validation') == '1') echo ' checked="checked"'; ?> value="1">
-                                                    <?Php _e('Check this option if you want to send the IPN data to PayPal for validation', 'wp-paypal');?></label>
+                                                    <?php _e('Check this option if you want to send the IPN data to PayPal for validation', 'wp-paypal');?></label>
                                             </fieldset></td>
                                     </tr>
                                     
                                     <tr valign="top">
-                                        <th scope="row"><?Php _e('Enable Receiver Check', 'wp-paypal');?></th>
+                                        <th scope="row"><?php _e('Enable Receiver Check', 'wp-paypal');?></th>
                                         <td> <fieldset><legend class="screen-reader-text"><span>Enable Receiver Check</span></legend><label for="enable_receiver_check">
                                                     <input name="enable_receiver_check" type="checkbox" id="enable_receiver_check" <?php if (get_option('wp_paypal_enable_receiver_check') == '1') echo ' checked="checked"'; ?> value="1">
-                                                    <?Php _e('Check this option if you want the seller account in the settings to match the receiver account when processing a payment. This option should be disabled when accepting payments on separate accounts.', 'wp-paypal');?></label>
+                                                    <?php _e('Check this option if you want the seller account in the settings to match the receiver account when processing a payment. This option should be disabled when accepting payments on separate accounts.', 'wp-paypal');?></label>
                                             </fieldset></td>
                                     </tr>
 
@@ -296,7 +379,7 @@ class WP_PAYPAL {
 
                             </table>
 
-                            <p class="submit"><input type="submit" name="wp_paypal_update_settings" id="wp_paypal_update_settings" class="button button-primary" value="<?Php _e('Save Changes', 'wp-paypal');?>"></p></form>
+                            <p class="submit"><input type="submit" name="wp_paypal_update_settings" id="wp_paypal_update_settings" class="button button-primary" value="<?php _e('Save Changes', 'wp-paypal');?>"></p></form>
                     </td>
                     <td valign="top" style="width: 300px">
                         <div style="background: #ffc; border: 1px solid #333; margin: 2px; padding: 3px 15px">
@@ -403,36 +486,36 @@ class WP_PAYPAL {
                         <form method="post" action="">
                             <?php wp_nonce_field('wp_paypal_email_settings_nonce'); ?>
 
-                            <h2><?Php _e('Email Sender Options', 'wp-paypal');?></h2>
+                            <h2><?php _e('Email Sender Options', 'wp-paypal');?></h2>
                             <table class="form-table">
                                 <tbody>                   
                                     <tr valign="top">
-                                        <th scope="row"><label for="email_from_name"><?Php _e('From Name', 'wp-paypal');?></label></th>
+                                        <th scope="row"><label for="email_from_name"><?php _e('From Name', 'wp-paypal');?></label></th>
                                         <td><input name="email_from_name" type="text" id="email_from_name" value="<?php echo esc_attr($paypal_options['email_from_name']); ?>" class="regular-text">
-                                            <p class="description"><?Php _e('The sender name that appears in outgoing emails. Leave empty to use the default.', 'wp-paypal');?></p></td>
+                                            <p class="description"><?php _e('The sender name that appears in outgoing emails. Leave empty to use the default.', 'wp-paypal');?></p></td>
                                     </tr>                
                                     <tr valign="top">
-                                        <th scope="row"><label for="email_from_address"><?Php _e('From Email Address', 'wp-paypal');?></label></th>
+                                        <th scope="row"><label for="email_from_address"><?php _e('From Email Address', 'wp-paypal');?></label></th>
                                         <td><input name="email_from_address" type="text" id="email_from_address" value="<?php echo esc_attr($paypal_options['email_from_address']); ?>" class="regular-text">
-                                            <p class="description"><?Php _e('The sender email that appears in outgoing emails. Leave empty to use the default.', 'wp-paypal');?></p></td>
+                                            <p class="description"><?php _e('The sender email that appears in outgoing emails. Leave empty to use the default.', 'wp-paypal');?></p></td>
                                     </tr>
                                 </tbody>
                             </table>
-                            <h2><?Php _e('Purchase Receipt Email', 'wp-paypal');?></h2>
-                            <p><?Php _e('A purchase receipt email is sent to the customer after completion of a successful purchase', 'wp-paypal');?></p>
+                            <h2><?php _e('Purchase Receipt Email', 'wp-paypal');?></h2>
+                            <p><?php _e('A purchase receipt email is sent to the customer after completion of a successful purchase', 'wp-paypal');?></p>
                             <table class="form-table">
                                 <tbody>
                                     <tr valign="top">
-                                        <th scope="row"><?Php _e('Enable/Disable', 'wp-paypal');?></th>
+                                        <th scope="row"><?php _e('Enable/Disable', 'wp-paypal');?></th>
                                         <td> <fieldset><legend class="screen-reader-text"><span>Enable/Disable</span></legend><label for="purchase_email_enabled">
                                                     <input name="purchase_email_enabled" type="checkbox" id="purchase_email_enabled" <?php if ($paypal_options['purchase_email_enabled'] == '1') echo ' checked="checked"'; ?> value="1">
-                                                    <?Php _e('Enable this email notification', 'wp-paypal');?></label>
+                                                    <?php _e('Enable this email notification', 'wp-paypal');?></label>
                                             </fieldset></td>
                                     </tr>                   
                                     <tr valign="top">
-                                        <th scope="row"><label for="purchase_email_subject"><?Php _e('Subject', 'wp-paypal');?></label></th>
+                                        <th scope="row"><label for="purchase_email_subject"><?php _e('Subject', 'wp-paypal');?></label></th>
                                         <td><input name="purchase_email_subject" type="text" id="purchase_email_subject" value="<?php echo esc_attr($paypal_options['purchase_email_subject']); ?>" class="regular-text">
-                                            <p class="description"><?Php _e('The subject line for the purchase receipt email.', 'wp-paypal');?></p></td>
+                                            <p class="description"><?php _e('The subject line for the purchase receipt email.', 'wp-paypal');?></p></td>
                                     </tr>
                                     <tr valign="top">
                                         <th scope="row"><label for="purchase_email_type"><?php _e('Email Type', 'wp-paypal');?></label></th>
@@ -445,32 +528,32 @@ class WP_PAYPAL {
                                         </td>
                                     </tr>
                                     <tr valign="top">
-                                        <th scope="row"><label for="purchase_email_body"><?Php _e('Email Body', 'wp-paypal');?></label></th>
+                                        <th scope="row"><label for="purchase_email_body"><?php _e('Email Body', 'wp-paypal');?></label></th>
                                         <td><?php wp_editor($paypal_options['purchase_email_body'], 'purchase_email_body', array('textarea_name' => 'purchase_email_body'));?>
-                                            <p class="description"><?Php echo __('The main content of the purchase receipt email.', 'wp-paypal').' '.wp_kses($email_tags_link, $allowed_html_tags);?></p></td>
+                                            <p class="description"><?php echo __('The main content of the purchase receipt email.', 'wp-paypal').' '.wp_kses($email_tags_link, $allowed_html_tags);?></p></td>
                                     </tr>
                                 </tbody>
                             </table>
-                            <h2><?Php _e('Sale Notification Email', 'wp-paypal');?></h2>
-                            <p><?Php _e('A sale notification email is sent to the chosen recipient after completion of a successful purchase', 'wp-paypal');?></p>
+                            <h2><?php _e('Sale Notification Email', 'wp-paypal');?></h2>
+                            <p><?php _e('A sale notification email is sent to the chosen recipient after completion of a successful purchase', 'wp-paypal');?></p>
                             <table class="form-table">
                                 <tbody>
                                     <tr valign="top">
-                                        <th scope="row"><?Php _e('Enable/Disable', 'wp-paypal');?></th>
+                                        <th scope="row"><?php _e('Enable/Disable', 'wp-paypal');?></th>
                                         <td> <fieldset><legend class="screen-reader-text"><span>Enable/Disable</span></legend><label for="sale_notification_email_enabled">
                                                     <input name="sale_notification_email_enabled" type="checkbox" id="sale_notification_email_enabled" <?php if ($paypal_options['sale_notification_email_enabled'] == '1') echo ' checked="checked"'; ?> value="1">
-                                                    <?Php _e('Enable this email notification', 'wp-paypal');?></label>
+                                                    <?php _e('Enable this email notification', 'wp-paypal');?></label>
                                             </fieldset></td>
                                     </tr>
                                     <tr valign="top">
-                                        <th scope="row"><label for="sale_notification_email_recipient"><?Php _e('Recipient', 'wp-paypal');?></label></th>
+                                        <th scope="row"><label for="sale_notification_email_recipient"><?php _e('Recipient', 'wp-paypal');?></label></th>
                                         <td><input name="sale_notification_email_recipient" type="text" id="sale_notification_email_recipient" value="<?php echo esc_attr($paypal_options['sale_notification_email_recipient']); ?>" class="regular-text">
-                                            <p class="description"><?Php _e('The email address that should receive a notification anytime a sale is made. Multiple recipients can be specified by separating the addresses with a comma.', 'wp-paypal');?></p></td>
+                                            <p class="description"><?php _e('The email address that should receive a notification anytime a sale is made. Multiple recipients can be specified by separating the addresses with a comma.', 'wp-paypal');?></p></td>
                                     </tr>
                                     <tr valign="top">
-                                        <th scope="row"><label for="sale_notification_email_subject"><?Php _e('Subject', 'wp-paypal');?></label></th>
+                                        <th scope="row"><label for="sale_notification_email_subject"><?php _e('Subject', 'wp-paypal');?></label></th>
                                         <td><input name="sale_notification_email_subject" type="text" id="sale_notification_email_subject" value="<?php echo esc_attr($paypal_options['sale_notification_email_subject']); ?>" class="regular-text">
-                                            <p class="description"><?Php _e('The subject line for the sale notification email.', 'wp-paypal');?></p></td>
+                                            <p class="description"><?php _e('The subject line for the sale notification email.', 'wp-paypal');?></p></td>
                                     </tr>
                                     <tr valign="top">
                                         <th scope="row"><label for="sale_notification_email_type"><?php _e('Email Type', 'wp-paypal');?></label></th>
@@ -483,14 +566,14 @@ class WP_PAYPAL {
                                         </td>
                                     </tr>
                                     <tr valign="top">
-                                        <th scope="row"><label for="sale_notification_email_body"><?Php _e('Email Body', 'wp-paypal');?></label></th>
+                                        <th scope="row"><label for="sale_notification_email_body"><?php _e('Email Body', 'wp-paypal');?></label></th>
                                         <td><?php wp_editor($paypal_options['sale_notification_email_body'], 'sale_notification_email_body', array('textarea_name' => 'sale_notification_email_body'));?>
-                                            <p class="description"><?Php echo __('The main content of the sale notification email.', 'wp-paypal').' '.wp_kses($email_tags_link, $allowed_html_tags);?></p></td>
+                                            <p class="description"><?php echo __('The main content of the sale notification email.', 'wp-paypal').' '.wp_kses($email_tags_link, $allowed_html_tags);?></p></td>
                                     </tr>
                                 </tbody>
                             </table>
                             
-                            <p class="submit"><input type="submit" name="wp_paypal_update_email_settings" id="wp_paypal_update_email_settings" class="button button-primary" value="<?Php _e('Save Changes', 'wp-paypal');?>"></p></form>
+                            <p class="submit"><input type="submit" name="wp_paypal_update_email_settings" id="wp_paypal_update_email_settings" class="button button-primary" value="<?php _e('Save Changes', 'wp-paypal');?>"></p></form>
                     </td>
                     <td valign="top" style="width: 300px">
                         <div style="background: #ffc; border: 1px solid #333; margin: 2px; padding: 3px 15px">
@@ -517,7 +600,7 @@ class WP_PAYPAL {
     function debug_page() {
         ?>
         <div class="wrap">
-            <h2><?Php _e('WP PayPal Debug Log', 'wp-paypal');?></h2>
+            <h2><?php _e('WP PayPal Debug Log', 'wp-paypal');?></h2>
             <div id="poststuff">
                 <div id="post-body">
                     <?php
@@ -549,21 +632,21 @@ class WP_PAYPAL {
                         <table class="form-table">
                             <tbody>
                                 <tr valign="top">
-                                    <th scope="row"><?Php _e('Enable Debug', 'wp-paypal');?></th>
+                                    <th scope="row"><?php _e('Enable Debug', 'wp-paypal');?></th>
                                     <td> <fieldset><legend class="screen-reader-text"><span>Enable Debug</span></legend><label for="enable_debug">
                                                 <input name="enable_debug" type="checkbox" id="enable_debug" <?php if (get_option('wp_paypal_enable_debug') == '1') echo ' checked="checked"'; ?> value="1">
-                                                <?Php _e('Check this option if you want to enable debug', 'wp-paypal');?></label>
+                                                <?php _e('Check this option if you want to enable debug', 'wp-paypal');?></label>
                                         </fieldset></td>
                                 </tr>
 
                             </tbody>
 
                         </table>
-                        <p class="submit"><input type="submit" name="wp_paypal_update_log_settings" id="wp_paypal_update_log_settings" class="button button-primary" value="<?Php _e('Save Changes', 'wp-paypal');?>"></p>
+                        <p class="submit"><input type="submit" name="wp_paypal_update_log_settings" id="wp_paypal_update_log_settings" class="button button-primary" value="<?php _e('Save Changes', 'wp-paypal');?>"></p>
                     </form>
                     <form method="post" action="">
                         <?php wp_nonce_field('wp_paypal_reset_log_settings'); ?>                            
-                        <p class="submit"><input type="submit" name="wp_paypal_reset_log" id="wp_paypal_reset_log" class="button" value="<?Php _e('Reset Log', 'wp-paypal');?>"></p>
+                        <p class="submit"><input type="submit" name="wp_paypal_reset_log" id="wp_paypal_reset_log" class="button" value="<?php _e('Reset Log', 'wp-paypal');?>"></p>
                     </form>
                 </div>         
             </div>
