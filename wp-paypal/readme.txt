@@ -61,12 +61,27 @@ Payment Button for PayPal supports PayPal Sandbox. PayPal Sandbox is a simulatio
 * Send a purchase confirmation email to your customer after a transaction
 * Send a sale notification email to one or more recipients (e.g. the seller) after a transaction
 * Customize PayPal buttons with CSS
+* Accept payments with PayPal smart payment buttons
+* Accept Pay Later Pay in 4 payments
 
 *Note: This is NOT an official PayPal product.*
 
 === How to Use Payment Button for PayPal ===
 
 Once you have installed this plugin you need to go to the settings menu to configure some PayPal settings (WP PayPal -> Settings).
+
+= PayPal Checkout Settings =
+
+These settings apply to the "[wp_paypal_checkout]" shortcode button. It uses the PayPal Checkout payment method.
+
+* **Client ID**: The client ID for your PayPal REST API app
+* **Currency Code**: The default currency code for payments
+* **Return URL**: The redirect URL after a successful payment
+* **Cancel URL**: The redirect URL when a payment is cancelled
+
+= PayPal Payments Standard Settings =
+
+These settings apply to the "[wp_paypal]" shortcode button. It uses the PayPal Payments Standard payment method.
 
 * **PayPal Merchant ID**: Your PayPal Merchant ID
 * **PayPal Email**: Your PayPal email address
@@ -98,9 +113,24 @@ When this feature is enabled an email is sent to your chosen recipient(s) after 
 
 You can use various email tags in the subject/body of an email to dynamically change its content. You can find the full list of available email tags in the [WordPress PayPal](https://wphowto.net/wordpress-paypal-plugin-732) plugin page.
 
-=== How to Create a PayPal Button ===
+=== How to Create a PayPal Checkout Button ===
 
-In order to create a button insert the shortcode like the following:
+In order to create a PayPal Checkout button insert the shortcode like the following:
+
+`[wp_paypal_checkout description="test checkout product" amount="3.99"]`
+
+= PayPal Checkout Shortcode Parameters =
+
+You can use additional parameters to customize your PayPal Checkout buttons.
+
+* **description** - Description of the purchase.
+* **amount** - The price of the product.
+
+For more information check the [PayPal Checkout](https://wphowto.net/wordpress-paypal-plugin-732) documentation page.
+
+=== How to Create a PayPal Payments Standard Button ===
+
+In order to create a PayPal Payments Standard button insert the shortcode like the following.
 
 = PayPal Buy Now =
 
@@ -132,7 +162,7 @@ Donation buttons let you accept donations from your users.
 
 Subscribe buttons let you set up payment subscriptions.
 
-=== PayPal Button Parameters ===
+= PayPal Payments Standard Shortcode Buttons Parameters =
 
 You can use additional parameters to customize your PayPal buttons.
 
@@ -233,11 +263,12 @@ No.
 
 == Screenshots ==
 
-1. PayPal Button Demo
-2. PayPal Orders
-3. PayPal Email Sender Options
-4. PayPal Purchase Receipt Email Settings
-5. PayPal Sale Notification Email Settings
+1. PayPal Checkout Button
+2. PayPal Payments Standard Button
+3. PayPal Orders
+4. PayPal Email Sender Options
+5. PayPal Purchase Receipt Email Settings
+6. PayPal Sale Notification Email Settings
 
 == Upgrade Notice ==
 none
@@ -245,7 +276,7 @@ none
 == Changelog ==
 
 = 1.2.3.21 =
-* Added support for PayPal checkout (smart payment buttons).
+* Added support for PayPal checkout payment method.
 
 = 1.2.3.20 =
 * Added support for email tags in the email subject.

@@ -301,7 +301,7 @@ class WP_PAYPAL {
                                 <tbody>
 
                                     <tr valign="top">
-                                        <th scope="row"><label for="checkout_app_client_id"><?php _e('PayPal Merchant ID', 'wp-paypal');?></label></th>
+                                        <th scope="row"><label for="checkout_app_client_id"><?php _e('Client ID', 'wp-paypal');?></label></th>
                                         <td><input name="checkout_app_client_id" type="text" id="checkout_app_client_id" value="<?php echo esc_attr($paypal_checkout_options['app_client_id']); ?>" class="regular-text">
                                             <p class="description"><?php _e('The client ID for your PayPal REST API app', 'wp-paypal');?></p></td>
                                     </tr>
