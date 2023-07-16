@@ -182,6 +182,13 @@ function wp_paypal_process_ipn() {
         if (isset($ipn_response['custom']) && !empty($ipn_response['custom'])) {
             $payment_data['custom'] = sanitize_text_field($ipn_response['custom']);
         }
+        $payment_data['variation'] = '';
+        if (isset($ipn_response['option_selection1']) && !empty($ipn_response['option_selection1'])) {
+            $payment_data['variation'] = sanitize_text_field($ipn_response['option_selection1']);
+        }
+        if (isset($ipn_response['option_selection2']) && !empty($ipn_response['option_selection2'])) {
+            $payment_data['variation'] .= ', '.sanitize_text_field($ipn_response['option_selection2']);
+        }
         $ship_to = '';
         $shipping_address = '';
         if (isset($ipn_response['address_street'])) {
@@ -230,6 +237,9 @@ function wp_paypal_process_ipn() {
             }
             if(isset($payment_data['custom']) && !empty($payment_data['custom'])){
                 $post_content .= '<strong>Custom:</strong> '.$payment_data['custom'].'<br />';
+            }
+            if(isset($payment_data['variation']) && !empty($payment_data['variation'])){
+                $post_content .= '<strong>Variation:</strong> '.$payment_data['variation'].'<br />';
             }
             if(!empty($ship_to)){
                 $ship_to = '<h2>'.__('Ship To', 'wp-paypal').'</h2><br />'.$payment_data['first_name'].' '.$payment_data['last_name'].'<br />'.$ship_to.'<br />';
@@ -346,6 +356,7 @@ function wp_paypal_do_email_tags($payment_data, $content){
         '{payer_email}',
         '{custom}',
         '{shipping_address}',
+        '{variation}'
     );
     $replace = array(
         $payment_data['first_name'], 
@@ -356,7 +367,8 @@ function wp_paypal_do_email_tags($payment_data, $content){
         $payment_data['mc_gross'],
         $payment_data['payer_email'],
         $payment_data['custom'],
-        $payment_data['shipping_address']
+        $payment_data['shipping_address'],
+        $payment_data['variation']    
     );
     $content = str_replace($search, $replace, $content);
     return $content;

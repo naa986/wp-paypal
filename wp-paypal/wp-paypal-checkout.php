@@ -85,6 +85,15 @@ EOT;
     $amount_queryselector = "document.querySelector('#{$button_container_id} .wppaypal_checkout_amount_input')";
     $button_code .= $amount_code;
     //
+    $variation_code = '';
+    $variation_queryselector = '""';
+    $variation_code = apply_filters('wppaypal_checkout_variations', $variation_code, $button_code, $atts);
+    if(!empty($variation_code)){
+        $variation_queryselector = "document.querySelector('#{$button_container_id} .variation_select')";
+        $additional_el .= ', variation';
+        $button_code .= $variation_code;
+    }
+    //
     $custom_input_code = '';
     $custom_queryselector = '""';
     $custom_input_code = apply_filters('wppaypal_checkout_custom_input', $custom_input_code, $button_code, $atts);
@@ -106,6 +115,7 @@ EOT;
             var amount = {$amount_queryselector};
             var checkoutvar = {};
             var custom = {$custom_queryselector};
+            var variation = {$variation_queryselector};
             var elArr = [description, amount{$additional_el}];
 
             var purchase_units = [];
@@ -118,6 +128,15 @@ EOT;
                 }
                 if(event.name == "custom"){
                     checkoutvar.custom = event.value;  
+                }
+                if(event.name == "variation"){
+                    var variation_arr = event.value.split("_");
+                    if(typeof variation_arr[0] !== 'undefined'){
+                        checkoutvar.variation = variation_arr[0];
+                    }
+                    if(typeof variation_arr[1] !== 'undefined'){
+                        amount.value = variation_arr[1];
+                    }  
                 }
                 return true;
             }
@@ -347,6 +366,10 @@ function wp_paypal_checkout_process_order_handler($post_data)
     if (isset($checkoutvar['custom']) && !empty($checkoutvar['custom'])) {
         $payment_data['custom'] = sanitize_text_field($checkoutvar['custom']);
     } 
+    $payment_data['variation'] = '';
+    if (isset($checkoutvar['variation']) && !empty($checkoutvar['variation'])) {
+        $payment_data['variation'] = sanitize_text_field($checkoutvar['variation']);
+    }
     $payment_data['shipping_name'] = '';
     if (isset($purchase_units['shipping']['name'])) {
         $payment_data['shipping_name'] = isset($purchase_units['shipping']['name']['full_name']) ? sanitize_text_field($purchase_units['shipping']['name']['full_name']) : '';
@@ -399,6 +422,9 @@ function wp_paypal_checkout_process_order_handler($post_data)
         }
         if(isset($payment_data['custom']) && !empty($payment_data['custom'])){
             $post_content .= '<strong>Custom:</strong> '.$payment_data['custom'].'<br />';
+        }
+        if(isset($payment_data['variation']) && !empty($payment_data['variation'])){
+            $post_content .= '<strong>Variation:</strong> '.$payment_data['variation'].'<br />';
         }
         if(!empty($payment_data['mc_gross'])){
             $post_content .= '<strong>Amount:</strong> '.$payment_data['mc_gross'].'<br />';

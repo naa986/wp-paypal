@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce, subscription, payment
 Requires at least: 5.3
 Tested up to: 6.2
-Stable tag: 1.2.3.21
+Stable tag: 1.2.3.22
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,8 +13,6 @@ Easily accept payment in WordPress by adding a PayPal button to your website. Ad
 == Description ==
 
 [Payment Button for PayPal](https://wphowto.net/wordpress-paypal-plugin-732) plugin (also known as WP PayPal) allows you to easily create PayPal Buy Now, Add to Cart, Donation or Subscription type buttons. It generates dynamic buttons using shortcodes that enable PayPal checkout on your WordPress site.
-
-https://www.youtube.com/watch?v=lYVRUDp8c9s&rel=0
 
 Your customers will be able to pay for your products using PayPal or Credit Card. This plugin makes it easy for you to set up your online e-commerce store. You do not need to spend days configuring products and settings. All you need to do is insert a shortcode into one of your web pages and your website will be ready to go live.
 
@@ -129,6 +127,8 @@ You can use additional parameters to customize your PayPal Checkout buttons.
 For more information check the [PayPal Checkout](https://wphowto.net/wordpress-paypal-plugin-732) documentation page.
 
 === How to Create a PayPal Payments Standard Button ===
+
+https://www.youtube.com/watch?v=lYVRUDp8c9s&rel=0
 
 In order to create a PayPal Payments Standard button insert the shortcode like the following.
 
@@ -274,6 +274,9 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.22 =
+* Added email tag for variations.
 
 = 1.2.3.21 =
 * Added support for PayPal checkout payment method.
