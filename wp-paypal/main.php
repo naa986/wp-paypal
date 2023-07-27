@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.22
+  Version: 1.2.3.23
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.22';
+    var $plugin_version = '1.2.3.23';
     var $db_version = '1.0.2';
     var $plugin_url;
     var $plugin_path;
@@ -817,6 +817,10 @@ function wp_paypal_get_add_to_cart_button($atts){
         $notify_url = $atts['notify_url'];
         $button_code .= '<input type="hidden" name="notify_url" value="'.esc_attr($notify_url).'">';
     }
+    $button_code = apply_filters('wppaypal_variations', $button_code, $atts);
+    if(strpos($button_code, 'Error') !== false){
+        return $button_code;
+    }
     $custom_input_code = '';
     $custom_input_code = apply_filters('wppaypal_custom_input', $custom_input_code, $button_code, $atts);
     if(!empty($custom_input_code)){
@@ -827,10 +831,6 @@ function wp_paypal_get_add_to_cart_button($atts){
         $button_code .= '<input type="hidden" name="custom" value="'.esc_attr($custom).'">';
     }
     $button_code .= '<input type="hidden" name="bn" value="WPPayPal_AddToCart_WPS_US">';
-    $button_code = apply_filters('wppaypal_variations', $button_code, $atts);
-    if(strpos($button_code, 'Error') !== false){
-        return $button_code;
-    }
     $button_image_url = WP_PAYPAL_URL.'/images/add-to-cart.png';
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
         $button_image_url = $atts['button_image'];
@@ -1060,6 +1060,10 @@ function wp_paypal_get_buy_now_button($atts){
         $notify_url = $atts['notify_url'];
         $button_code .= '<input type="hidden" name="notify_url" value="'.esc_attr($notify_url).'">';
     }
+    $button_code = apply_filters('wppaypal_variations', $button_code, $atts);
+    if(strpos($button_code, 'Error') !== false){
+        return $button_code;
+    }
     $custom_input_code = '';
     $custom_input_code = apply_filters('wppaypal_custom_input', $custom_input_code, $button_code, $atts);
     if(!empty($custom_input_code)){
@@ -1070,10 +1074,6 @@ function wp_paypal_get_buy_now_button($atts){
         $button_code .= '<input type="hidden" name="custom" value="'.esc_attr($custom).'">';
     }
     $button_code .= '<input type="hidden" name="bn" value="WPPayPal_BuyNow_WPS_US">';
-    $button_code = apply_filters('wppaypal_variations', $button_code, $atts);
-    if(strpos($button_code, 'Error') !== false){
-        return $button_code;
-    }
     $button_image_url = WP_PAYPAL_URL.'/images/buy-now.png';
     if(isset($atts['button_image']) && filter_var($atts['button_image'], FILTER_VALIDATE_URL)){
         $button_image_url = $atts['button_image'];

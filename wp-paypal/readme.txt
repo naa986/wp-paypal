@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce, subscription, payment
 Requires at least: 5.3
 Tested up to: 6.2
-Stable tag: 1.2.3.22
+Stable tag: 1.2.3.23
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -274,6 +274,9 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.23 =
+* Changed the order of variations and custom input fields.
 
 = 1.2.3.22 =
 * Added email tag for variations.
