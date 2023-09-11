@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.23
+  Version: 1.2.3.24
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.23';
+    var $plugin_version = '1.2.3.24';
     var $db_version = '1.0.2';
     var $plugin_url;
     var $plugin_path;
@@ -56,9 +56,6 @@ class WP_PAYPAL {
     function loader_operations() {
         register_activation_hook(__FILE__, array($this, 'activate_handler'));
         add_action('plugins_loaded', array($this, 'plugins_loaded_handler'));
-        if (is_admin()) {
-            add_filter('plugin_action_links', array($this, 'add_plugin_action_links'), 10, 2);
-        }
         add_action('admin_notices', array($this, 'admin_notice'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
         add_action('wp_enqueue_scripts', array($this, 'plugin_scripts'));
@@ -75,6 +72,9 @@ class WP_PAYPAL {
     }
 
     function plugins_loaded_handler() {  //Runs when plugins_loaded action gets fired
+        if(is_admin() && current_user_can('manage_options')){
+            add_filter('plugin_action_links', array($this, 'add_plugin_action_links'), 10, 2);
+        }
         load_plugin_textdomain( 'wp-paypal', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
         $this->check_upgrade();
     }
