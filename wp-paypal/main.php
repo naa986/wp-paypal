@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.24
+  Version: 1.2.3.25
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -15,7 +15,7 @@ if (!defined('ABSPATH'))
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.24';
+    var $plugin_version = '1.2.3.25';
     var $db_version = '1.0.2';
     var $plugin_url;
     var $plugin_path;
@@ -81,9 +81,12 @@ class WP_PAYPAL {
 
     function admin_notice() {
         if (WP_PAYPAL_DEBUG) {  //debug is enabled. Check to make sure log file is writable
-            $real_file = WP_PAYPAL_DEBUG_LOG_PATH;
-            if (!is_writeable($real_file)) {
-                echo '<div class="updated"><p>' . __('WP PayPal Debug log file is not writable. Please check to make sure that it has the correct file permission (ideally 644). Otherwise the plugin will not be able to write to the log file. The log file (log.txt) can be found in the root directory of the plugin - ', 'wp-paypal') . '<code>' . WP_PAYPAL_URL . '</code></p></div>';
+            $log_file = WP_PAYPAL_DEBUG_LOG_PATH;
+            if(!file_exists($log_file)){
+                return;
+            }
+            if (!is_writeable($log_file)) {
+                echo '<div class="updated"><p>' . __('WP PayPal Debug log file is not writable. Please check to make sure that it has the correct file permission (ideally 644). Otherwise the plugin will not be able to write to the log file. The log file can be found in the root directory of the plugin - ', 'wp-paypal') . '<code>' . WP_PAYPAL_URL . '</code></p></div>';
             }
         }
     }
@@ -164,9 +167,23 @@ class WP_PAYPAL {
     }
 
     function debug_log_path() {
-        return WP_PAYPAL_PATH . '/log.txt';
+        return WP_PAYPAL_PATH . '/logs/'. $this->debug_log_file_name();
     }
-
+        
+    function debug_log_file_name() {
+        return 'log-'.$this->debug_log_file_suffix().'.txt';
+    }
+    
+    function debug_log_file_suffix() {
+        $suffix = get_option('wppaypal_logfile_suffix');
+        if(isset($suffix) && !empty($suffix)) {
+            return $suffix;
+        }
+        $suffix = uniqid();
+        update_option('wppaypal_logfile_suffix', $suffix);
+        return $suffix;
+    }
+    
     function add_plugin_action_links($links, $file) {
         if ($file == plugin_basename(dirname(__FILE__) . '/main.php')) {
             $links[] = '<a href="'.esc_url(admin_url('edit.php?post_type=wp_paypal_order&page=wp-paypal-settings')).'">'.__('Settings', 'wp-paypal').'</a>';
@@ -623,8 +640,12 @@ class WP_PAYPAL {
                             echo '<div id="message" class="error"><p>'.__('Debug log file could not be reset', 'wp-paypal').'!</p></div>';
                         }
                     }
-                    $real_file = WP_PAYPAL_DEBUG_LOG_PATH;
-                    $content = file_get_contents($real_file);
+                    $log_file = WP_PAYPAL_DEBUG_LOG_PATH;
+                    $content = '';
+                    if(file_exists($log_file))
+                    {
+                        $content = file_get_contents($log_file);
+                    }
                     ?>
                     <div id="template"><textarea cols="70" rows="25" name="wp_paypal_log" id="wp_paypal_log"><?php echo esc_textarea($content); ?></textarea></div>                     
                     <form method="post" action="">
