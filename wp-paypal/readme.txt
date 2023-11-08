@@ -1,9 +1,9 @@
 === Payment Button for PayPal ===
 Contributors: naa986
 Donate link: https://wphowto.net/
-Tags: paypal, cart, checkout, donation, e-commerce, subscription, payment
+Tags: paypal, cart, checkout, donation, e-commerce
 Requires at least: 5.3
-Tested up to: 6.3
+Tested up to: 6.4
 Stable tag: 1.2.3.25
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -44,21 +44,13 @@ Payment Button for PayPal supports PayPal Sandbox. PayPal Sandbox is a simulatio
 * Enable debug to troubleshoot various issues (e.g. orders not getting updated)
 * Open PayPal log to see how IPN (Instant Payment Notification) is being received from PayPal
 * Accept debit or credit card payments
-* Pay with PayPal balance
-* Pay with a bank account
-* Pay with PayPal Credit (Pay later, Pay over time)
-* Pay with PayPal credit or debit cards
 * Accept recurring subscription payments on a daily, weekly, monthly or yearly basis
-* Sell items with different variation options (e.g. size, color, price)
 * Switch your store to PayPal sandbox mode for testing
-* Compatible with the latest version of WordPress
-* Compatible with any WordPress theme
 * Sell in any currency supported by PayPal
 * Charge shipping on your products or services
 * Charge tax on your products or services
 * Send a purchase confirmation email to your customer after a transaction
 * Send a sale notification email to one or more recipients (e.g. the seller) after a transaction
-* Customize PayPal buttons with CSS
 * Accept payments with PayPal smart payment buttons
 * Accept Pay Later Pay in 4 payments
 
@@ -236,18 +228,6 @@ Yes.
 = Can I accept WooCommerce PayPal payments using this plugin? =
 
 No. This is not a WooCommerce plugin.
-
-= How much does it cost to use PayPal?
-
-If you are a merchant or business that uses PayPal to accept payments from your customers, PayPal takes 2.9 percent of the payment plus 30 cents per transaction before putting the money in your account.
-
-= Does PayPal have a monthly fee? =
-
-No.
-
-= My PayPal button is not working. What can I do? =
-
-You can post your issue on the PayPal plugin page: https://wphowto.net/wordpress-paypal-plugin-732. 
 
 = Can I create a PayPal account using this plugin? =
 
