@@ -262,6 +262,7 @@ function wp_paypal_checkout_get_empty_options_array(){
     $options['currency_code'] = '';
     $options['return_url'] = '';
     $options['cancel_url'] = '';
+    $options['disable_funding'] = '';
     return $options;
 }
 

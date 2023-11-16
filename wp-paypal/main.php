@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.25
+  Version: 1.2.3.26
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -10,12 +10,13 @@
   Domain Path: /languages
  */
 
-if (!defined('ABSPATH'))
+if (!defined('ABSPATH')){
     exit;
+}
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.25';
+    var $plugin_version = '1.2.3.26';
     var $db_version = '1.0.2';
     var $plugin_url;
     var $plugin_path;
@@ -146,6 +147,9 @@ class WP_PAYPAL {
                     'client-id' => $options['app_client_id'],
                     'currency' => $options['currency_code'],                 
                 );
+                if(isset($options['disable_funding']) && !empty($options['disable_funding'])){
+                    $args['disable-funding'] = $options['disable_funding'];
+                }
                 $sdk_js_url = add_query_arg($args, 'https://www.paypal.com/sdk/js');
                 wp_enqueue_script('jquery');
                 wp_register_script('wp-paypal', $sdk_js_url, array('jquery'), null);
@@ -286,11 +290,16 @@ class WP_PAYPAL {
             if(isset($_POST['checkout_cancel_url']) && !empty($_POST['checkout_cancel_url'])){
                 $checkout_cancel_url = esc_url_raw($_POST['checkout_cancel_url']);
             }
+            $checkout_disable_funding = '';
+            if(isset($_POST['checkout_disable_funding'])){
+                $checkout_disable_funding = sanitize_text_field($_POST['checkout_disable_funding']);
+            }
             $paypal_checkout_options = array();
             $paypal_checkout_options['app_client_id'] = $checkout_app_client_id;
             $paypal_checkout_options['currency_code'] = $checkout_currency_code;
             $paypal_checkout_options['return_url'] = $checkout_return_url;
             $paypal_checkout_options['cancel_url'] = $checkout_cancel_url;
+            $paypal_checkout_options['disable_funding'] = $checkout_disable_funding;
             wp_paypal_checkout_update_option($paypal_checkout_options);
             //
             update_option('wp_paypal_enable_testmode', (isset($_POST["enable_testmode"]) && $_POST["enable_testmode"] == '1') ? '1' : '');
@@ -304,6 +313,20 @@ class WP_PAYPAL {
             echo '</strong></p></div>';
         }
         $paypal_checkout_options = wp_paypal_checkout_get_option();
+        //this option may not be set as it was added later
+        if(!isset($paypal_checkout_options['disable_funding']) || empty($paypal_checkout_options['disable_funding'])){
+            $paypal_checkout_options['disable_funding'] = '';
+        }
+        //
+        $funding_src_url = "https://wphowto.net/wordpress-paypal-plugin-732";
+        $funding_src_link = sprintf(__('You can find the full list of funding sources <a target="_blank" href="%s">here</a>.', 'wp-paypal'), esc_url($funding_src_url));
+        $allowed_html_tags = array(
+            'a' => array(
+                'href' => array(),
+                'title' => array()
+            )
+        );
+              
         ?>
         <table class="wppaypal-general-settings-table">
             <tbody>
@@ -339,6 +362,12 @@ class WP_PAYPAL {
                                         <th scope="row"><label for="checkout_cancel_url"><?php _e('Cancel URL', 'wp-paypal');?></label></th>
                                         <td><input name="checkout_cancel_url" type="text" id="checkout_cancel_url" value="<?php echo esc_url($paypal_checkout_options['cancel_url']); ?>" class="regular-text">
                                             <p class="description"><?php _e('The page URL to which the customer will be redirected when a payment is cancelled (optional)', 'wp-paypal');?></p></td>
+                                    </tr>
+                                    
+                                    <tr valign="top">
+                                        <th scope="row"><label for="checkout_disable_funding"><?php _e('Disabled Funding Sources', 'wp-paypal');?></label></th>
+                                        <td><textarea name="checkout_disable_funding" id="checkout_disable_funding" class="large-text"><?php echo esc_html($paypal_checkout_options['disable_funding']); ?></textarea>
+                                            <p class="description"><?php echo __('Disabled funding sources in comma-separated format', 'wp-paypal').' ';?>(Example: <strong>credit</strong> or <strong>card,credit</strong> or <strong>card,credit,paylater</strong>).<?php echo ' '.__('Any funding sources that you enter here are not displayed as buttons at checkout.', 'wp-paypal').' '.wp_kses($funding_src_link, $allowed_html_tags);?></p></td>
                                     </tr>
 
                                 </tbody>

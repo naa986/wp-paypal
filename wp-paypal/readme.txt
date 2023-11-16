@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce
 Requires at least: 5.3
 Tested up to: 6.4
-Stable tag: 1.2.3.25
+Stable tag: 1.2.3.26
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -254,6 +254,9 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.26 =
+* Added an option to disable funding sources.
 
 = 1.2.3.25 =
 * Better debug logging.
