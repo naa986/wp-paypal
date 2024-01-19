@@ -371,6 +371,7 @@ function wp_paypal_do_email_tags($payment_data, $content){
         $payment_data['variation']    
     );
     $content = str_replace($search, $replace, $content);
+    $content = wp_paypal_do_additional_email_tags($payment_data, $content);
     return $content;
 }
 
@@ -393,4 +394,22 @@ function wp_paypal_set_email_from_name($from_name){
 function wp_paypal_set_html_email_content_type($content_type){
     $content_type = 'text/html';
     return $content_type;
+}
+
+function wp_paypal_do_additional_email_tags($payment_data, $content){
+    $threedigitdiffrandnum_tag = '{threedigitdiffrandnum}';
+    $count_threedigitdiffrandnum = substr_count($content, $threedigitdiffrandnum_tag);
+    $threedigitdiffrandnum_arr = array();
+    for($i=1; $i<=$count_threedigitdiffrandnum; $i++){
+        $rand_num = rand(100, 999);
+        while(in_array($rand_num, $threedigitdiffrandnum_arr)){
+            $rand_num = rand(100, 999);
+        }
+        $threedigitdiffrandnum_arr[] = $rand_num;
+        $pos = strpos($content, $threedigitdiffrandnum_tag);
+        if($pos !== false){
+            $content = substr_replace($content, $rand_num, $pos, strlen($threedigitdiffrandnum_tag));
+        }
+    }
+    return $content;
 }
