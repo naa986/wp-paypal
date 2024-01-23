@@ -52,6 +52,7 @@ function wp_paypal_process_ipn() {
                 return;
             }
         }
+        do_action('wp_paypal_ipn_received', $ipn_response);
         $txn_type = '';
         if(isset($ipn_response['txn_type']) && !empty($ipn_response['txn_type'])){
             $txn_type = sanitize_text_field($ipn_response['txn_type']);
