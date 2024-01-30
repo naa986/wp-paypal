@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce
 Requires at least: 5.3
 Tested up to: 6.4
-Stable tag: 1.2.3.30
+Stable tag: 1.2.3.31
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,7 @@ Payment Button for PayPal supports PayPal Sandbox. PayPal Sandbox is a simulatio
 * [Custom Input](https://wphowto.net/how-to-show-a-text-box-at-wp-paypal-checkout-to-collect-custom-data-from-buyers-6517)
 * [Mailchimp Integration](https://wphowto.net/wp-paypal-mailchimp-integration-6559)
 * [Product Variations](https://wphowto.net/how-to-configure-product-variations-in-wp-paypal-6413)
+* [Variable Price](https://wphowto.net/wp-paypal-variable-price-6988)
 * [Variable Quantity](https://wphowto.net/how-to-add-a-quantity-field-to-a-paypal-button-6428)
 * [Variable Subscription](https://wphowto.net/how-to-add-a-recurring-price-field-to-a-paypal-subscription-button-6450)
 * [Custom Donations](https://wphowto.net/custom-donations-for-wordpress-paypal-donate-buttons-6778)
@@ -254,6 +255,9 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.31 =
+* Added support for the variable price add-on.
 
 = 1.2.3.30 =
 * Added an action hook after the IPN is received.

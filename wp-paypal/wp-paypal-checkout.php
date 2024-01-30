@@ -83,6 +83,12 @@ EOT;
     $button_code .= $description_code;
     $amount_code = '<input class="wppaypal_checkout_amount_input" type="hidden" name="amount" value="'.esc_attr($amount).'" required>';
     $amount_queryselector = "document.querySelector('#{$button_container_id} .wppaypal_checkout_amount_input')";
+    $variable_price_code = '';
+    $variable_price_code = apply_filters('wppaypal_checkout_variable_price', $variable_price_code, $button_code, $atts);
+    if(!empty($variable_price_code)){
+        $amount_code = $variable_price_code;
+        $amount_queryselector = "document.querySelector('#{$button_container_id} .wppaypal_checkout_variable_price_input')";
+    }
     $button_code .= $amount_code;
     //
     $variation_code = '';
@@ -125,6 +131,11 @@ EOT;
             function validate(event) {
                 if(event.value.length === 0){
                     return false;
+                }
+                if(event.name == "amount"){
+                    if(!isNaN(Number(event.value)) && Number(event.value) < 0.1){
+                        return false;
+                    }
                 }
                 if(event.name == "custom"){
                     checkoutvar.custom = event.value;  
