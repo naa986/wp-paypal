@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.31
+  Version: 1.2.3.32
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')){
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.31';
+    var $plugin_version = '1.2.3.32';
     var $db_version = '1.0.2';
     var $plugin_url;
     var $plugin_path;
@@ -135,30 +135,47 @@ class WP_PAYPAL {
             return;
         }
         if (!is_admin()) {
+            $checkout_load_scripts_globally = get_option('wp_paypal_checkout_load_scripts_globally');
+            if(isset($checkout_load_scripts_globally) && !empty($checkout_load_scripts_globally)){
+                $this->load_scripts();
+                return;
+            }
             global $post;
-            if(is_a($post, 'WP_Post')
-                    && has_shortcode($post->post_content, 'wp_paypal_checkout')
-                        || has_shortcode(get_post_meta($post->ID, 'wp-paypal-custom-field', true), 'wp_paypal_checkout')){
-                $options = wp_paypal_checkout_get_option();
-                if(!is_wp_paypal_checkout_configured()){
-                    return;
-                }
-                $args = array(
-                    'client-id' => $options['app_client_id'],
-                    'currency' => $options['currency_code'],                 
-                );
-                if(isset($options['enable_funding']) && !empty($options['enable_funding'])){
-                    $args['enable-funding'] = $options['enable_funding'];
-                }
-                if(isset($options['disable_funding']) && !empty($options['disable_funding'])){
-                    $args['disable-funding'] = $options['disable_funding'];
-                }
-                $sdk_js_url = add_query_arg($args, 'https://www.paypal.com/sdk/js');
-                wp_enqueue_script('jquery');
-                wp_register_script('wp-paypal', $sdk_js_url, array('jquery'), null);
-                wp_enqueue_script('wp-paypal');
-            }        
+            if(!is_a($post, 'WP_Post')){
+                return;
+            }
+            $is_js_required = false;
+            if(has_shortcode($post->post_content, 'wp_paypal_checkout')){
+                $is_js_required = true;
+            }
+            if(has_shortcode(get_post_meta($post->ID, 'wp-paypal-custom-field', true), 'wp_paypal_checkout')){
+                $is_js_required = true;
+            }
+            if($is_js_required){
+                $this->load_scripts();
+            }
         }
+    }
+    
+    function load_scripts(){
+        $options = wp_paypal_checkout_get_option();
+        if(!is_wp_paypal_checkout_configured()){
+            return;
+        }
+        $args = array(
+            'client-id' => $options['app_client_id'],
+            'currency' => $options['currency_code'],                 
+        );
+        if(isset($options['enable_funding']) && !empty($options['enable_funding'])){
+            $args['enable-funding'] = $options['enable_funding'];
+        }
+        if(isset($options['disable_funding']) && !empty($options['disable_funding'])){
+            $args['disable-funding'] = $options['disable_funding'];
+        }
+        $sdk_js_url = add_query_arg($args, 'https://www.paypal.com/sdk/js');
+        wp_enqueue_script('jquery');
+        wp_register_script('wp-paypal', $sdk_js_url, array('jquery'), null);
+        wp_enqueue_script('wp-paypal');
     }
 
     function plugin_url() {
@@ -310,6 +327,8 @@ class WP_PAYPAL {
             $paypal_checkout_options['cancel_url'] = $checkout_cancel_url;
             $paypal_checkout_options['enable_funding'] = $checkout_enable_funding;
             $paypal_checkout_options['disable_funding'] = $checkout_disable_funding;
+            $checkout_load_scripts_globally = (isset($_POST['checkout_load_scripts_globally']) && $_POST['checkout_load_scripts_globally'] == '1') ? '1' : '';
+            update_option('wp_paypal_checkout_load_scripts_globally', $checkout_load_scripts_globally);
             wp_paypal_checkout_update_option($paypal_checkout_options);
             //
             update_option('wp_paypal_enable_testmode', (isset($_POST["enable_testmode"]) && $_POST["enable_testmode"] == '1') ? '1' : '');
@@ -329,6 +348,10 @@ class WP_PAYPAL {
         }
         if(!isset($paypal_checkout_options['disable_funding']) || empty($paypal_checkout_options['disable_funding'])){
             $paypal_checkout_options['disable_funding'] = '';
+        }
+        $checkout_load_scripts_globally = get_option('wp_paypal_checkout_load_scripts_globally');
+        if(!isset($checkout_load_scripts_globally) || empty($checkout_load_scripts_globally)){
+            $checkout_load_scripts_globally = '';
         }
         //
         $funding_src_url = "https://wphowto.net/wordpress-paypal-plugin-732";
@@ -387,6 +410,14 @@ class WP_PAYPAL {
                                         <th scope="row"><label for="checkout_disable_funding"><?php _e('Disabled Funding Sources', 'wp-paypal');?></label></th>
                                         <td><textarea name="checkout_disable_funding" id="checkout_disable_funding" class="large-text"><?php echo esc_html($paypal_checkout_options['disable_funding']); ?></textarea>
                                             <p class="description"><?php echo __('Disabled funding sources in comma-separated format', 'wp-paypal').' ';?>(Example: <strong>credit</strong> or <strong>card,credit</strong> or <strong>card,credit,paylater</strong>).<?php echo ' '.__('Any funding sources that you enter here are not displayed as buttons at checkout.', 'wp-paypal').' '.wp_kses($funding_src_link, $allowed_html_tags);?></p></td>
+                                    </tr>
+                                    
+                                    <tr valign="top">
+                                        <th scope="row"><?php _e('Load Scripts Globally', 'wp-paypal');?></th>
+                                        <td> <fieldset><legend class="screen-reader-text"><span>Load Scripts Globally</span></legend><label for="checkout_load_scripts_globally">
+                                                    <input name="checkout_load_scripts_globally" type="checkbox" id="checkout_load_scripts_globally" <?php if ($checkout_load_scripts_globally == '1') echo ' checked="checked"'; ?> value="1">
+                                                    <?php _e("Check this option if you want to load PayPal Checkout scripts on every page. By default, the scripts are loaded only when a shortcode is present.", 'wp-paypal');?></label>
+                                            </fieldset></td>
                                     </tr>
 
                                 </tbody>
