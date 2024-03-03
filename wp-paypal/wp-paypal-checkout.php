@@ -65,6 +65,16 @@ EOT;
     if(isset($atts['shape']) && $atts['shape'] == 'pill'){
         $shape = 'pill';
     }
+    $label = 'paypal';
+    if(isset($atts['label']) && $atts['label'] == 'checkout'){
+        $label = 'checkout';
+    }
+    else if(isset($atts['label']) && $atts['label'] == 'buynow'){
+        $label = 'buynow';
+    }
+    else if(isset($atts['label']) && $atts['label'] == 'pay'){
+        $label = 'pay';
+    }
     $id = uniqid();
     $atts['id'] = $id;
     $button_code = '';
@@ -155,7 +165,8 @@ EOT;
                 style: {
                     layout: '{$layout}',
                     color: '{$color}',
-                    shape: '{$shape}'
+                    shape: '{$shape}',
+                    label: '{$label}'
                 },
                 onInit: function (data, actions) {
                     actions.disable();
