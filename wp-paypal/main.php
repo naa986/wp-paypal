@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.33
+  Version: 1.2.3.34
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')){
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.33';
+    var $plugin_version = '1.2.3.34';
     var $db_version = '1.0.2';
     var $plugin_url;
     var $plugin_path;
@@ -546,6 +546,7 @@ class WP_PAYPAL {
             if(isset($_POST['sale_notification_email_body']) && !empty($_POST['sale_notification_email_body'])){
                 $sale_notification_email_body = wp_kses_post($_POST['sale_notification_email_body']);
             }
+            $sale_notification_email_append_purchase_email = (isset($_POST["sale_notification_email_append_purchase_email"]) && $_POST["sale_notification_email_append_purchase_email"] == '1') ? '1' : '';
             $paypal_options = array();
             $paypal_options['email_from_name'] = $email_from_name;
             $paypal_options['email_from_address'] = $email_from_address;
@@ -558,6 +559,7 @@ class WP_PAYPAL {
             $paypal_options['sale_notification_email_subject'] = $sale_notification_email_subject;
             $paypal_options['sale_notification_email_type'] = $sale_notification_email_type;
             $paypal_options['sale_notification_email_body'] = $sale_notification_email_body;
+            $paypal_options['sale_notification_email_append_purchase_email'] = $sale_notification_email_append_purchase_email;
             wp_paypal_update_email_option($paypal_options);
             echo '<div id="message" class="updated fade"><p><strong>';
             echo __('Settings Saved', 'wp-paypal').'!';
@@ -665,6 +667,13 @@ class WP_PAYPAL {
                                         <th scope="row"><label for="sale_notification_email_body"><?php _e('Email Body', 'wp-paypal');?></label></th>
                                         <td><?php wp_editor($paypal_options['sale_notification_email_body'], 'sale_notification_email_body', array('textarea_name' => 'sale_notification_email_body'));?>
                                             <p class="description"><?php echo __('The main content of the sale notification email.', 'wp-paypal').' '.wp_kses($email_tags_link, $allowed_html_tags);?></p></td>
+                                    </tr>
+                                    <tr valign="top">
+                                        <th scope="row"><?php _e('Append Purchase Email', 'wp-paypal');?></th>
+                                        <td> <fieldset><legend class="screen-reader-text"><span>Append Purchase Email</span></legend><label for="sale_notification_email_append_purchase_email">
+                                                    <input name="sale_notification_email_append_purchase_email" type="checkbox" id="sale_notification_email_append_purchase_email" <?php if (isset($paypal_options['sale_notification_email_append_purchase_email']) && $paypal_options['sale_notification_email_append_purchase_email'] == '1') echo ' checked="checked"'; ?> value="1">
+                                                    <?php _e('When enabled, the body of the purchase receipt email will be appended to the sale notification email body', 'wp-paypal');?></label>
+                                            </fieldset></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1537,6 +1546,7 @@ function wp_paypal_get_empty_email_options_array(){
     $options['sale_notification_email_subject'] = '';
     $options['sale_notification_email_type'] = '';
     $options['sale_notification_email_body'] = '';
+    $options['sale_notification_email_append_purchase_email'] = '';
     return $options;
 }
 

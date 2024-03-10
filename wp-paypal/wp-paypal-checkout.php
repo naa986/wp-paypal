@@ -501,6 +501,7 @@ function wp_paypal_checkout_process_order_handler($post_data)
         $email_options = wp_paypal_get_email_option();
         add_filter('wp_mail_from', 'wp_paypal_set_email_from');
         add_filter('wp_mail_from_name', 'wp_paypal_set_email_from_name');
+        $purchase_email_body = '';
         if(isset($email_options['purchase_email_enabled']) && !empty($email_options['purchase_email_enabled']) && !empty($payment_data['payer_email'])){
             $subject = $email_options['purchase_email_subject'];
             $subject = wp_paypal_do_email_tags($payment_data, $subject);
@@ -511,6 +512,11 @@ function wp_paypal_checkout_process_order_handler($post_data)
                 add_filter('wp_mail_content_type', 'wp_paypal_set_html_email_content_type');
                 $body = apply_filters('wp_paypal_email_body_wpautop', true) ? wpautop($body) : $body;
             }
+            //
+            if(isset($body) && !empty($body)){
+                $purchase_email_body = $body;
+            }
+            //
             wp_paypal_debug_log("Sending a purchase receipt email to ".$payment_data['payer_email'], true);
             $mail_sent = wp_mail($payment_data['payer_email'], $subject, $body);
             if($type == "html"){
@@ -533,6 +539,16 @@ function wp_paypal_checkout_process_order_handler($post_data)
                 add_filter('wp_mail_content_type', 'wp_paypal_set_html_email_content_type');
                 $body = apply_filters('wp_paypal_email_body_wpautop', true) ? wpautop($body) : $body;
             }
+            //
+            if(isset($email_options['sale_notification_email_append_purchase_email']) && !empty($email_options['sale_notification_email_append_purchase_email'])){
+                $appended_content = PHP_EOL.PHP_EOL.'---Purchase Receipt Email---'.PHP_EOL.PHP_EOL;
+                if($type == "html"){
+                    $appended_content = wpautop($appended_content);
+                }
+                $appended_content .= $purchase_email_body;
+                $body .= $appended_content;
+            }
+            //
             $email_recipients = explode(",", $email_options['sale_notification_email_recipient']);
             foreach($email_recipients as $email_recipient){
                 $to = sanitize_email($email_recipient);

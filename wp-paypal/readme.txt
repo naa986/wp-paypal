@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, e-commerce
 Requires at least: 5.3
 Tested up to: 6.4
-Stable tag: 1.2.3.33
+Stable tag: 1.2.3.34
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -255,6 +255,9 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.34 =
+* Added an option to append the purchase email to the sale notification email.
 
 = 1.2.3.33 =
 * Added the label parameter to customize the PayPal button text.
