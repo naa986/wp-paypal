@@ -22,7 +22,7 @@ function wp_paypal_checkout_button_handler($atts) {
     }
     $return_output = '';
     if(!empty($return_url)){
-        $return_output = 'window.location.replace("'.$return_url.'");';
+        $return_output = 'window.location.replace("'.esc_js($return_url).'");';
     }
     $cancel_url = (isset($options['cancel_url']) && !empty($options['cancel_url'])) ? $options['cancel_url'] : '';
     if(isset($atts['cancel_url']) && !empty($atts['cancel_url'])){
@@ -30,7 +30,7 @@ function wp_paypal_checkout_button_handler($atts) {
     }
     $cancel_output = '';
     if(!empty($cancel_url)){
-        $cancel_output = 'window.location.replace("'.$cancel_url.'");';
+        $cancel_output = 'window.location.replace("'.esc_js($cancel_url).'");';
     }
     $no_shipping = '';
     if(isset($atts['no_shipping']) && $atts['no_shipping']=='1'){
