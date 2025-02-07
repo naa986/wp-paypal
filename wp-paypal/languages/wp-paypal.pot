@@ -2,151 +2,40 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WP PayPal\n"
-"POT-Creation-Date: 2020-06-27 12:10+0600\n"
+"POT-Creation-Date: 2025-02-07 12:06+1100\n"
 "PO-Revision-Date: 2015-11-26 16:17+1000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.2.3\n"
+"X-Generator: Poedit 3.4.1\n"
 "X-Poedit-KeywordsList: _e;__\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: main.php:75
-msgid ""
-"WP PayPal Debug log file is not writable. Please check to make sure that it "
-"has the correct file permission (ideally 644). Otherwise the plugin will not "
-"be able to write to the log file. The log file (log.txt) can be found in the "
-"root directory of the plugin - "
+#: addons/wp-paypal-addons-menu.php:6
+msgid "WP PayPal Add-ons"
 msgstr ""
 
-#: main.php:131 main.php:138
-msgid "Settings"
-msgstr ""
-
-#: main.php:139
-msgid "Debug"
-msgstr ""
-
-#: main.php:145
-msgid "General"
-msgstr ""
-
-#: main.php:147 wp-paypal-order.php:7
-msgid "WP PayPal"
-msgstr ""
-
-#: main.php:149
-#, php-format
-msgid ""
-"Please visit the <a target=\"_blank\" href=\"%s\">WP PayPal</a> "
-"documentation page for usage instructions."
-msgstr ""
-
-#: main.php:189 main.php:249
-msgid "Settings Saved"
-msgstr ""
-
-#: main.php:202
-msgid "Enable Test Mode"
-msgstr ""
-
-#: main.php:205
-msgid "Check this option if you want to enable PayPal sandbox for testing"
-msgstr ""
-
-#: main.php:210
-msgid "PayPal Merchant ID"
-msgstr ""
-
-#: main.php:212
-msgid "Your PayPal Merchant ID"
-msgstr ""
-
-#: main.php:216
-msgid "PayPal Email"
-msgstr ""
-
-#: main.php:218
-msgid "Your PayPal email address"
-msgstr ""
-
-#: main.php:222
-msgid "Currency Code"
-msgstr ""
-
-#: main.php:224
-msgid "The currency of the payment"
-msgstr ""
-
-#: main.php:224
-msgid "example"
-msgstr ""
-
-#: main.php:231 main.php:282
-msgid "Save Changes"
-msgstr ""
-
-#: main.php:239
-msgid "WP PayPal Debug Log"
-msgstr ""
-
-#: main.php:257
-msgid "Debug log file has been reset"
-msgstr ""
-
-#: main.php:259
-msgid "Debug log file could not be reset"
-msgstr ""
-
-#: main.php:272
-msgid "Enable Debug"
-msgstr ""
-
-#: main.php:275
-msgid "Check this option if you want to enable debug"
-msgstr ""
-
-#: main.php:286
-msgid "Reset Log"
-msgstr ""
-
-#: main.php:385
-msgid "Please enter a correct button type"
-msgstr ""
-
-#: main.php:591
-msgid "Amount cannot be empty"
-msgstr ""
-
-#: main.php:782
-msgid "Please enter a trial period duration p1"
-msgstr ""
-
-#: main.php:790
-msgid "Please enter a trial period units of duration t1"
-msgstr ""
-
-#: main.php:799
-msgid "Please enter a regular subscription price a3"
-msgstr ""
-
-#: main.php:807
-msgid "Please enter a subscription duration p3"
-msgstr ""
-
-#: main.php:815
-msgid "Please enter a subscription units of duration t3"
-msgstr ""
-
-#: paypal-ipn.php:132
+#: paypal-ipn.php:246 wp-paypal-checkout.php:466
 msgid "Ship To"
 msgstr ""
 
-#: paypal-ipn.php:135
+#: paypal-ipn.php:249 wp-paypal-checkout.php:469
 msgid "Payment Data"
+msgstr ""
+
+#: wp-paypal-checkout.php:5
+msgid "You need to configure checkout options in the settings"
+msgstr ""
+
+#: wp-paypal-checkout.php:9
+msgid "You need to provide a valid description"
+msgstr ""
+
+#: wp-paypal-checkout.php:82
+msgid "You need to provide a valid price amount"
 msgstr ""
 
 #: wp-paypal-order.php:5
@@ -155,6 +44,10 @@ msgstr ""
 
 #: wp-paypal-order.php:6 wp-paypal-order.php:8 wp-paypal-order.php:64
 msgid "Order"
+msgstr ""
+
+#: wp-paypal-order.php:7 wp-paypal.php:233
+msgid "WP PayPal"
 msgstr ""
 
 #: wp-paypal-order.php:9
@@ -197,7 +90,7 @@ msgstr ""
 msgid "No orders found in Trash."
 msgstr ""
 
-#: wp-paypal-order.php:65 wp-paypal-order.php:96
+#: wp-paypal-order.php:65 wp-paypal-order.php:98
 msgid "Transaction ID"
 msgstr ""
 
@@ -210,17 +103,493 @@ msgid "Last Name"
 msgstr ""
 
 #: wp-paypal-order.php:68
+msgid "Email"
+msgstr ""
+
+#: wp-paypal-order.php:69
 msgid "Total"
 msgstr ""
 
-#: wp-paypal-order.php:69 wp-paypal-order.php:86
+#: wp-paypal-order.php:70 wp-paypal-order.php:88
 msgid "Payment Status"
 msgstr ""
 
-#: wp-paypal-order.php:70
+#: wp-paypal-order.php:71
+msgid "Custom"
+msgstr ""
+
+#: wp-paypal-order.php:72
 msgid "Date"
 msgstr ""
 
-#: wp-paypal-order.php:91
+#: wp-paypal-order.php:93
 msgid "Payment Type"
+msgstr ""
+
+#: wp-paypal.php:90
+msgid ""
+"WP PayPal Debug log file is not writable. Please check to make sure that it "
+"has the correct file permission (ideally 644). Otherwise the plugin will not "
+"be able to write to the log file. The log file can be found in the root "
+"directory of the plugin - "
+msgstr ""
+
+#: wp-paypal.php:215 wp-paypal.php:222
+msgid "Settings"
+msgstr ""
+
+#: wp-paypal.php:223
+msgid "Debug"
+msgstr ""
+
+#: wp-paypal.php:224
+msgid "Add-ons"
+msgstr ""
+
+#: wp-paypal.php:230
+msgid "General"
+msgstr ""
+
+#: wp-paypal.php:231
+msgid "Emails"
+msgstr ""
+
+#: wp-paypal.php:235
+#, php-format
+msgid ""
+"Please visit the <a target=\"_blank\" href=\"%s\">WP PayPal</a> "
+"documentation page for setup instructions."
+msgstr ""
+
+#: wp-paypal.php:341 wp-paypal.php:565 wp-paypal.php:718
+msgid "Settings Saved"
+msgstr ""
+
+#: wp-paypal.php:358
+#, php-format
+msgid ""
+"You can find the full list of funding sources <a target=\"_blank\" "
+"href=\"%s\">here</a>."
+msgstr ""
+
+#: wp-paypal.php:373
+msgid "PayPal Checkout"
+msgstr ""
+
+#: wp-paypal.php:374 wp-paypal.php:427
+#, php-format
+msgid "These settings apply to %s shortcode buttons"
+msgstr ""
+
+#: wp-paypal.php:380
+msgid "Client ID"
+msgstr ""
+
+#: wp-paypal.php:382
+msgid "The client ID for your PayPal REST API app"
+msgstr ""
+
+#: wp-paypal.php:386 wp-paypal.php:453
+msgid "Currency Code"
+msgstr ""
+
+#: wp-paypal.php:388
+msgid "The default currency of the payment"
+msgstr ""
+
+#: wp-paypal.php:388 wp-paypal.php:455
+msgid "example"
+msgstr ""
+
+#: wp-paypal.php:392
+msgid "Return URL"
+msgstr ""
+
+#: wp-paypal.php:394
+msgid ""
+"The page URL to which the customer will be redirected after a successful "
+"payment (optional)"
+msgstr ""
+
+#: wp-paypal.php:398
+msgid "Cancel URL"
+msgstr ""
+
+#: wp-paypal.php:400
+msgid ""
+"The page URL to which the customer will be redirected when a payment is "
+"cancelled (optional)"
+msgstr ""
+
+#: wp-paypal.php:404
+msgid "Enabled Funding Sources"
+msgstr ""
+
+#: wp-paypal.php:406
+msgid "Enabled funding sources in comma-separated format"
+msgstr ""
+
+#: wp-paypal.php:406
+msgid ""
+"This is not required as the eligibility is determined automatically. "
+"However, this field can be used to ensure a funding source is always "
+"rendered, if eligible."
+msgstr ""
+
+#: wp-paypal.php:410
+msgid "Disabled Funding Sources"
+msgstr ""
+
+#: wp-paypal.php:412
+msgid "Disabled funding sources in comma-separated format"
+msgstr ""
+
+#: wp-paypal.php:412
+msgid ""
+"Any funding sources that you enter here are not displayed as buttons at "
+"checkout."
+msgstr ""
+
+#: wp-paypal.php:416
+msgid "Load Scripts Globally"
+msgstr ""
+
+#: wp-paypal.php:419
+msgid ""
+"Check this option if you want to load PayPal Checkout scripts on every page. "
+"By default, the scripts are loaded only when a shortcode is present."
+msgstr ""
+
+#: wp-paypal.php:426
+msgid "PayPal Payments Standard"
+msgstr ""
+
+#: wp-paypal.php:433
+msgid "Enable Test Mode"
+msgstr ""
+
+#: wp-paypal.php:436
+msgid "Check this option if you want to enable PayPal sandbox for testing"
+msgstr ""
+
+#: wp-paypal.php:441
+msgid "PayPal Merchant ID"
+msgstr ""
+
+#: wp-paypal.php:443
+msgid "Your PayPal Merchant ID"
+msgstr ""
+
+#: wp-paypal.php:447
+msgid "PayPal Email"
+msgstr ""
+
+#: wp-paypal.php:449
+msgid "Your PayPal email address"
+msgstr ""
+
+#: wp-paypal.php:455
+msgid "The currency of the payment"
+msgstr ""
+
+#: wp-paypal.php:459
+msgid "Enable IPN Validation"
+msgstr ""
+
+#: wp-paypal.php:462
+msgid ""
+"Check this option if you want to send the IPN data to PayPal for validation"
+msgstr ""
+
+#: wp-paypal.php:467
+msgid "Enable Receiver Check"
+msgstr ""
+
+#: wp-paypal.php:470
+msgid ""
+"Check this option if you want the seller account in the settings to match "
+"the receiver account when processing a payment. This option should be "
+"disabled when accepting payments on separate accounts."
+msgstr ""
+
+#: wp-paypal.php:478 wp-paypal.php:681 wp-paypal.php:754
+msgid "Save Changes"
+msgstr ""
+
+#: wp-paypal.php:482 wp-paypal.php:685
+msgid "Need More Features?"
+msgstr ""
+
+#: wp-paypal.php:484 wp-paypal.php:687
+#, php-format
+msgid "Check out the <a href=\"%s\">plugin add-ons</a>."
+msgstr ""
+
+#: wp-paypal.php:486 wp-paypal.php:689
+msgid "Need Help?"
+msgstr ""
+
+#: wp-paypal.php:488 wp-paypal.php:691
+#, php-format
+msgid "Use the <a href=\"%s\">Debug</a> menu for diagnostics."
+msgstr ""
+
+#: wp-paypal.php:489 wp-paypal.php:692
+#, php-format
+msgid ""
+"Check out the <a target=\"_blank\" href=\"%s\">support forum</a> and <a "
+"target=\"_blank\" href=\"%s\">FAQ</a>."
+msgstr ""
+
+#: wp-paypal.php:490 wp-paypal.php:693
+#, php-format
+msgid "Visit the <a target=\"_blank\" href=\"%s\">plugin homepage</a>."
+msgstr ""
+
+#: wp-paypal.php:492 wp-paypal.php:695
+msgid "Rate This Plugin"
+msgstr ""
+
+#: wp-paypal.php:493 wp-paypal.php:696
+#, php-format
+msgid "Please <a target=\"_blank\" href=\"%s\">rate us</a> and give feedback."
+msgstr ""
+
+#: wp-paypal.php:508
+msgid ""
+"Error! Nonce Security Check Failed! please save the email settings again."
+msgstr ""
+
+#: wp-paypal.php:572
+#, php-format
+msgid ""
+"You can find the full list of available email tags <a target=\"_blank\" "
+"href=\"%s\">here</a>."
+msgstr ""
+
+#: wp-paypal.php:587
+msgid "Email Sender Options"
+msgstr ""
+
+#: wp-paypal.php:591
+msgid "From Name"
+msgstr ""
+
+#: wp-paypal.php:593
+msgid ""
+"The sender name that appears in outgoing emails. Leave empty to use the "
+"default."
+msgstr ""
+
+#: wp-paypal.php:596
+msgid "From Email Address"
+msgstr ""
+
+#: wp-paypal.php:598
+msgid ""
+"The sender email that appears in outgoing emails. Leave empty to use the "
+"default."
+msgstr ""
+
+#: wp-paypal.php:602
+msgid "Purchase Receipt Email"
+msgstr ""
+
+#: wp-paypal.php:603
+msgid ""
+"A purchase receipt email is sent to the customer after completion of a "
+"successful purchase"
+msgstr ""
+
+#: wp-paypal.php:607 wp-paypal.php:640
+msgid "Enable/Disable"
+msgstr ""
+
+#: wp-paypal.php:610 wp-paypal.php:643
+msgid "Enable this email notification"
+msgstr ""
+
+#: wp-paypal.php:614 wp-paypal.php:652
+msgid "Subject"
+msgstr ""
+
+#: wp-paypal.php:616
+msgid "The subject line for the purchase receipt email."
+msgstr ""
+
+#: wp-paypal.php:619 wp-paypal.php:657
+msgid "Email Type"
+msgstr ""
+
+#: wp-paypal.php:622 wp-paypal.php:660
+msgid "Plain Text"
+msgstr ""
+
+#: wp-paypal.php:623 wp-paypal.php:661
+msgid "HTML"
+msgstr ""
+
+#: wp-paypal.php:625
+msgid "The content type of the purchase receipt email."
+msgstr ""
+
+#: wp-paypal.php:629 wp-paypal.php:667
+msgid "Email Body"
+msgstr ""
+
+#: wp-paypal.php:631
+msgid "The main content of the purchase receipt email."
+msgstr ""
+
+#: wp-paypal.php:635
+msgid "Sale Notification Email"
+msgstr ""
+
+#: wp-paypal.php:636
+msgid ""
+"A sale notification email is sent to the chosen recipient after completion "
+"of a successful purchase"
+msgstr ""
+
+#: wp-paypal.php:647
+msgid "Recipient"
+msgstr ""
+
+#: wp-paypal.php:649
+msgid ""
+"The email address that should receive a notification anytime a sale is made. "
+"Multiple recipients can be specified by separating the addresses with a "
+"comma."
+msgstr ""
+
+#: wp-paypal.php:654
+msgid "The subject line for the sale notification email."
+msgstr ""
+
+#: wp-paypal.php:663
+msgid "The content type of the sale notification email."
+msgstr ""
+
+#: wp-paypal.php:669
+msgid "The main content of the sale notification email."
+msgstr ""
+
+#: wp-paypal.php:672
+msgid "Append Purchase Email"
+msgstr ""
+
+#: wp-paypal.php:675
+msgid ""
+"When enabled, the body of the purchase receipt email will be appended to the "
+"sale notification email body"
+msgstr ""
+
+#: wp-paypal.php:708
+msgid "WP PayPal Debug Log"
+msgstr ""
+
+#: wp-paypal.php:726
+msgid "Debug log file has been reset"
+msgstr ""
+
+#: wp-paypal.php:728
+msgid "Debug log file could not be reset"
+msgstr ""
+
+#: wp-paypal.php:744
+msgid "Enable Debug"
+msgstr ""
+
+#: wp-paypal.php:747
+msgid "Check this option if you want to enable debug"
+msgstr ""
+
+#: wp-paypal.php:758
+msgid "Reset Log"
+msgstr ""
+
+#: wp-paypal.php:804
+msgid "Please enter a correct button type"
+msgstr ""
+
+#: wp-paypal.php:1106
+msgid "Amount cannot be empty"
+msgstr ""
+
+#: wp-paypal.php:1384
+msgid "Please enter a trial period duration p1"
+msgstr ""
+
+#: wp-paypal.php:1392
+msgid "Please enter a trial period units of duration t1"
+msgstr ""
+
+#: wp-paypal.php:1404
+msgid "Please enter a trial period 2 duration p2"
+msgstr ""
+
+#: wp-paypal.php:1412
+msgid "Please enter a trial period 2 units of duration t1"
+msgstr ""
+
+#: wp-paypal.php:1427
+msgid "Please enter a regular subscription price a3"
+msgstr ""
+
+#: wp-paypal.php:1436
+msgid "Please enter a subscription duration p3"
+msgstr ""
+
+#: wp-paypal.php:1444
+msgid "Please enter a subscription units of duration t3"
+msgstr ""
+
+#: wp-paypal.php:1556
+msgid "Purchase Receipt"
+msgstr ""
+
+#: wp-paypal.php:1557
+msgid "Dear"
+msgstr ""
+
+#: wp-paypal.php:1558
+msgid ""
+"Thank you for your purchase. Your purchase details are shown below for your "
+"reference:"
+msgstr ""
+
+#: wp-paypal.php:1559
+msgid "Transaction ID:"
+msgstr ""
+
+#: wp-paypal.php:1560
+msgid "Product(s):"
+msgstr ""
+
+#: wp-paypal.php:1561 wp-paypal.php:1570
+msgid "Total:"
+msgstr ""
+
+#: wp-paypal.php:1564
+msgid "New Customer Order"
+msgstr ""
+
+#: wp-paypal.php:1566
+msgid "Hello"
+msgstr ""
+
+#: wp-paypal.php:1567
+msgid "A purchase has been made."
+msgstr ""
+
+#: wp-paypal.php:1568
+msgid "Purchased by:"
+msgstr ""
+
+#: wp-paypal.php:1569
+msgid "Product(s) sold:"
+msgstr ""
+
+#: wp-paypal.php:1571
+msgid "Thank you"
 msgstr ""

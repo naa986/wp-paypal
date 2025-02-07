@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, email
 Requires at least: 5.3
 Tested up to: 6.7
-Stable tag: 1.2.3.36
+Stable tag: 1.2.3.37
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -130,8 +130,6 @@ For more information check the [PayPal Checkout](https://wphowto.net/wordpress-p
 
 === How to Create a PayPal Payments Standard Button ===
 
-https://www.youtube.com/watch?v=lYVRUDp8c9s&rel=0
-
 In order to create a PayPal Payments Standard button insert the shortcode like the following.
 
 = PayPal Buy Now =
@@ -199,7 +197,7 @@ For detailed documentation please check out the [Payment Button for PayPal](http
 
 === Translation ===
 
-If you are a non-English speaker please help [translate Payment Button for PayPal](https://translate.wordpress.org/projects/wp-plugins/wp-paypal) into your language.
+If you are a non-English speaker please help translate the plugin into your language.
 
 === Additional PayPal Documentation ===
 
@@ -264,6 +262,10 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.37 =
+* File naming changes.
+* Language file updated.
 
 = 1.2.3.36 =
 * Some improvements in security reported by Wordfence.

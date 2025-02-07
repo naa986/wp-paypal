@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.36
+  Version: 1.2.3.37
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')){
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.36';
+    var $plugin_version = '1.2.3.37';
     var $db_version = '1.0.2';
     var $plugin_url;
     var $plugin_path;
@@ -211,7 +211,7 @@ class WP_PAYPAL {
     }
     
     function add_plugin_action_links($links, $file) {
-        if ($file == plugin_basename(dirname(__FILE__) . '/main.php')) {
+        if ($file == plugin_basename(dirname(__FILE__) . '/wp-paypal.php')) {
             $links[] = '<a href="'.esc_url(admin_url('edit.php?post_type=wp_paypal_order&page=wp-paypal-settings')).'">'.__('Settings', 'wp-paypal').'</a>';
         }
         return $links;
