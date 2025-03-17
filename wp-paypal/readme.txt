@@ -130,6 +130,8 @@ For more information check the [PayPal Checkout](https://wphowto.net/wordpress-p
 
 === How to Create a PayPal Payments Standard Button ===
 
+https://www.youtube.com/watch?v=lYVRUDp8c9s&rel=0
+
 In order to create a PayPal Payments Standard button insert the shortcode like the following.
 
 = PayPal Buy Now =
