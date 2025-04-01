@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, donation, email
 Requires at least: 5.3
 Tested up to: 6.7
-Stable tag: 1.2.3.37
+Stable tag: 1.2.3.38
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -129,8 +129,6 @@ You can use additional parameters to customize your PayPal Checkout buttons.
 For more information check the [PayPal Checkout](https://wphowto.net/wordpress-paypal-plugin-732) documentation page.
 
 === How to Create a PayPal Payments Standard Button ===
-
-https://www.youtube.com/watch?v=lYVRUDp8c9s&rel=0
 
 In order to create a PayPal Payments Standard button insert the shortcode like the following.
 
@@ -264,6 +262,9 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.38 =
+* Fixed broken parameters in the return URL.
 
 = 1.2.3.37 =
 * File naming changes.
