@@ -1,10 +1,10 @@
 === Payment Button for PayPal ===
 Contributors: naa986
 Donate link: https://wphowto.net/
-Tags: paypal, cart, checkout, donation, email
+Tags: paypal, cart, checkout, payment, ecommerce
 Requires at least: 5.3
 Tested up to: 6.8
-Stable tag: 1.2.3.38
+Stable tag: 1.2.3.39
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,7 @@ Payment Button for PayPal supports PayPal Sandbox. PayPal Sandbox is a simulatio
 * [Variable Quantity](https://wphowto.net/how-to-add-a-quantity-field-to-a-paypal-button-6428)
 * [Variable Subscription](https://wphowto.net/how-to-add-a-recurring-price-field-to-a-paypal-subscription-button-6450)
 * [Custom Donations](https://wphowto.net/custom-donations-for-wordpress-paypal-donate-buttons-6778)
+* [Order Export](https://wphowto.net/wp-paypal-order-export-7347)
 
 === Payment Button for PayPal Features ===
 
@@ -262,6 +263,9 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.39 =
+* Added an option to edit order data shown in the table.
 
 = 1.2.3.38 =
 * Fixed broken parameters in the return URL.

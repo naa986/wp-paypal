@@ -32,60 +32,68 @@ function wp_paypal_display_addons_menu()
     array_push($addons_data, $addon_3);
     
     $addon_4 = array(
+        'name' => 'Order Export',
+        'thumbnail' => WP_PAYPAL_URL.'/addons/images/wp-paypal-order-export.png',
+        'description' => 'Export WP PayPal orders',
+        'page_url' => 'https://wphowto.net/wp-paypal-order-export-7347',
+    );
+    array_push($addons_data, $addon_4);
+    
+    $addon_5 = array(
         'name' => 'Variable Quantity',
         'thumbnail' => WP_PAYPAL_URL.'/addons/images/wp-paypal-variable-quantity.png',
         'description' => 'Allow buyers to enter a quantity for your WP PayPal Buy Now buttons',
         'page_url' => 'https://wphowto.net/how-to-add-a-quantity-field-to-a-paypal-button-6428',
     );
-    array_push($addons_data, $addon_4);
+    array_push($addons_data, $addon_5);
     
-    $addon_5 = array(
+    $addon_6 = array(
         'name' => 'Variable Subscription',
         'thumbnail' => WP_PAYPAL_URL.'/addons/images/wp-paypal-variable-subscription.png',
         'description' => 'Let buyers set the amount they will pay for your PayPal Subscribe buttons',
         'page_url' => 'https://wphowto.net/how-to-add-a-recurring-price-field-to-a-paypal-subscription-button-6450',
     );
-    array_push($addons_data, $addon_5);
+    array_push($addons_data, $addon_6);
     
-    $addon_6 = array(
+    $addon_7 = array(
         'name' => 'Mailchimp Integration',
         'thumbnail' => WP_PAYPAL_URL.'/addons/images/wp-paypal-mailchimp-integration.png',
         'description' => "Automatically add the buyer's email address to your Mailchimp Audience / List after a payment",
         'page_url' => 'https://wphowto.net/wp-paypal-mailchimp-integration-6559',
     );
-    array_push($addons_data, $addon_6);
+    array_push($addons_data, $addon_7);
     
-    $addon_7 = array(
+    $addon_8 = array(
         'name' => 'Contact Form 7 Integration',
         'thumbnail' => WP_PAYPAL_URL.'/addons/images/wp-paypal-contact-form-7-integration.png',
         'description' => "Show a pre-configured WP PayPal button after a Contact Form 7 submission",
         'page_url' => 'https://wphowto.net/wp-paypal-button-integration-with-contact-form-7-6710',
     );
-    array_push($addons_data, $addon_7);
+    array_push($addons_data, $addon_8);
     
-    $addon_8 = array(
+    $addon_9 = array(
         'name' => 'Custom Donations',
         'thumbnail' => WP_PAYPAL_URL.'/addons/images/wp-paypal-custom-donations.png',
         'description' => "Allow visitors to set a donation amount for your PayPal Donate buttons",
         'page_url' => 'https://wphowto.net/custom-donations-for-wordpress-paypal-donate-buttons-6778',
     );
-    array_push($addons_data, $addon_8);
+    array_push($addons_data, $addon_9);
     
-    $addon_9 = array(
+    $addon_10 = array(
         'name' => 'Buy Now Custom Amount',
         'thumbnail' => WP_PAYPAL_URL.'/addons/images/wp-paypal-buy-now-custom-amount.png',
         'description' => 'Allow buyers to enter a custom price amount for your WP PayPal Buy Now buttons',
         'page_url' => 'https://wphowto.net/how-to-add-a-custom-price-field-to-a-paypal-buy-now-button-6800',
     );
-    array_push($addons_data, $addon_9);
+    array_push($addons_data, $addon_10);
 
-    $addon_10 = array(
+    $addon_11 = array(
         'name' => 'Buy Now Discount',
         'thumbnail' => WP_PAYPAL_URL.'/addons/images/wp-paypal-buy-now-discount.png',
         'description' => 'Set up automatic discounts for your WP PayPal Buy Now buttons',
         'page_url' => 'https://wphowto.net/applying-discount-to-a-paypal-buy-button-in-wordpress-834',
     );
-    array_push($addons_data, $addon_10);
+    array_push($addons_data, $addon_11);
     
     //Display the list
     foreach ($addons_data as $addon) {

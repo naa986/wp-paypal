@@ -74,38 +74,6 @@ function wp_paypal_order_columns($columns) {
     return array_merge($columns, $edited_columns);
 }
 
-//meta boxes
-function wp_paypal_order_meta_box($post) {
-    $payment_status = get_post_meta($post->ID, '_payment_status', true);
-    $payment_type = get_post_meta($post->ID, '_payment_type', true);
-    $txn_id = get_post_meta($post->ID, '_txn_id', true);
-    // Add an nonce field so we can check for it later.
-    wp_nonce_field('wppaypal_meta_box', 'wppaypal_meta_box_nonce');
-    ?>
-    <table class="form-table">
-        <tbody>
-            <tr valign="top">
-                <th scope="row"><label for="_payment_status"><?php _e('Payment Status', 'wp-paypal'); ?></label></th>
-                <td><input name="_payment_status" type="text" id="_payment_status" value="<?php echo esc_attr($payment_status); ?>" class="regular-text">
-                    <p class="description">Payment Status</p></td>
-            </tr>
-            <tr valign="top">
-                <th scope="row"><label for="_payment_type"><?php _e('Payment Type', 'wp-paypal'); ?></label></th>
-                <td><input name="_payment_type" type="text" id="_payment_type" value="<?php echo esc_attr($payment_type); ?>" class="regular-text">
-                    <p class="description">Payment Type</p></td>
-            </tr>
-            <tr valign="top">
-                <th scope="row"><label for="_txn_id"><?php _e('Transaction ID', 'wp-paypal'); ?></label></th>
-                <td><input name="_txn_id" type="text" id="_txn_id" value="<?php echo esc_attr($txn_id); ?>" class="regular-text">
-                    <p class="description">Transaction ID</p></td>
-            </tr>
-        </tbody>
-
-    </table>
-
-    <?php
-}
-
 function wp_paypal_custom_column($column, $post_id) {
     switch ($column) {
         case 'title' :
@@ -135,39 +103,129 @@ function wp_paypal_custom_column($column, $post_id) {
     }
 }
 
-function wp_paypal_save_meta_box_data($post_id) {
-    /*
-     * We need to verify this came from our screen and with proper authorization,
-     * because the save_post action can be triggered at other times.
-     */
-    // Check if our nonce is set.
-    if (!isset($_POST['wppaypal_meta_box_nonce'])) {
+function wppaypal_order_meta_boxes($post){
+    $post_type = 'wp_paypal_order';
+    /** Product Data **/
+    add_meta_box('wppaypal_order_data', __('Order Data'),  'wppaypal_render_order_data_meta_box', $post_type, 'normal', 'high');
+}
+
+function wppaypal_render_order_data_meta_box($post){
+    $post_id = $post->ID;
+    $transaction_id = get_post_meta($post_id, '_txn_id', true);
+    if(!isset($transaction_id) || empty($transaction_id)){
+        $transaction_id = '';
+    }
+    $customer_first_name = get_post_meta($post_id, '_first_name', true);
+    if(!isset($customer_first_name) || empty($customer_first_name)){
+        $customer_first_name = '';
+    }
+    $customer_last_name = get_post_meta($post_id, '_last_name', true);
+    if(!isset($customer_last_name) || empty($customer_last_name)){
+        $customer_last_name = '';
+    }
+    $payer_email = get_post_meta($post_id, '_payer_email', true);
+    if(!isset($payer_email) || empty($payer_email)){
+        $payer_email = '';
+    }
+    $total_amount = get_post_meta($post_id, '_mc_gross', true);
+    if(!isset($total_amount) || !is_numeric($total_amount)){
+        $total_amount = '';
+    }
+    $payment_status = get_post_meta($post_id, '_payment_status', true);
+    if(!isset($payment_status) || empty($payment_status)){
+        $payment_status = '';
+    }
+    $custom = get_post_meta($post_id, '_custom', true);
+    if(!isset($custom) || empty($custom)){
+        $custom = '';
+    }
+    ?>
+    <table>
+        <tbody>
+            <tr>
+                <td valign="top">
+                    <table class="form-table">
+                        <tbody>
+                            <tr valign="top">
+                                <th scope="row"><label for="_wppaypal_order_txn_id"><?php _e('Transaction ID', 'wp-paypal');?></label></th>
+                                <td><input name="_wppaypal_order_txn_id" type="text" id="_wppaypal_order_txn_id" value="<?php echo esc_attr($transaction_id); ?>" class="regular-text"></td>
+                            </tr>
+                            <tr valign="top">
+                                <th scope="row"><label for="_wppaypal_order_first_name"><?php _e('First Name', 'wp-paypal');?></label></th>
+                                <td><input name="_wppaypal_order_first_name" type="text" id="_wppaypal_order_first_name" value="<?php echo esc_attr($customer_first_name); ?>" class="regular-text"></td>
+                            </tr>
+                            <tr valign="top">
+                                <th scope="row"><label for="_wppaypal_order_last_name"><?php _e('Last Name', 'wp-paypal');?></label></th>
+                                <td><input name="_wppaypal_order_last_name" type="text" id="_wppaypal_order_last_name" value="<?php echo esc_attr($customer_last_name); ?>" class="regular-text"></td>
+                            </tr>
+                            <tr valign="top">
+                                <th scope="row"><label for="_wppaypal_order_payer_email"><?php _e('Payer Email', 'wp-paypal');?></label></th>
+                                <td><input name="_wppaypal_order_payer_email" type="text" id="_wppaypal_order_payer_email" value="<?php echo esc_attr($payer_email); ?>" class="regular-text"></td>
+                            </tr>
+                            <tr valign="top">
+                                <th scope="row"><label for="_wppaypal_order_mc_gross"><?php _e('Total Amount', 'wp-paypal');?></label></th>
+                                <td><input name="_wppaypal_order_mc_gross" type="text" id="_wppaypal_order_mc_gross" value="<?php echo esc_attr($total_amount); ?>" class="regular-text"></td>
+                            </tr>
+                            <tr valign="top">
+                                <th scope="row"><label for="_wppaypal_order_payment_status"><?php _e('Payment Status', 'wp-paypal');?></label></th>
+                                <td><input name="_wppaypal_order_payment_status" type="text" id="_wppaypal_order_payment_status" value="<?php echo esc_attr($payment_status); ?>" class="regular-text"></td>
+                            </tr>
+                            <tr valign="top">
+                                <th scope="row"><label for="_wppaypal_order_custom"><?php _e('Custom Data', 'wp-paypal');?></label></th>
+                                <td><input name="_wppaypal_order_custom" type="text" id="_wppaypal_order_custom" value="<?php echo esc_attr($custom); ?>" class="regular-text"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody> 
+    </table>
+    <?php
+    wp_nonce_field(basename(__FILE__), 'wppaypal_order_data_meta_box_nonce');
+}
+
+function wppaypal_order_data_meta_box_save($post_id, $post){
+    if(!isset($_POST['wppaypal_order_data_meta_box_nonce']) || !wp_verify_nonce($_POST['wppaypal_order_data_meta_box_nonce'], basename(__FILE__))){
         return;
     }
-    // Verify that the nonce is valid.
-    if (!wp_verify_nonce($_POST['wppaypal_meta_box_nonce'], 'wppaypal_meta_box')) {
+    if((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || (defined('DOING_AJAX') && DOING_AJAX) || isset($_REQUEST['bulk_edit'])){
         return;
     }
-    // If this is an autosave, our form has not been submitted, so we don't want to do anything.
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+    if(isset($post->post_type) && 'revision' == $post->post_type){
         return;
     }
-    // Check the user's permissions.
-    if (isset($_POST['post_type']) && 'page' == $_POST['post_type']) {
-        if (!current_user_can('edit_page', $post_id)) {
-            return;
-        }
-    } else {
-        if (!current_user_can('edit_post', $post_id)) {
-            return;
-        }
+    if(!current_user_can('manage_options')){
+        return;
     }
-    /* OK, it's safe for us to save the data now. */
-    // Make sure that it is set.
-    if (isset($_POST['_payment_status'])) {
-        $payment_status = sanitize_text_field($_POST['_payment_status']);
+    //update the values
+    if(isset($_POST['_wppaypal_order_txn_id'])){
+        $transaction_id = sanitize_text_field($_POST['_wppaypal_order_txn_id']);
+        update_post_meta($post_id, '_txn_id', $transaction_id);
+    }
+    if(isset($_POST['_wppaypal_order_first_name'])){
+        $customer_first_name = sanitize_text_field($_POST['_wppaypal_order_first_name']);
+        update_post_meta($post_id, '_first_name', $customer_first_name);
+    }
+    if(isset($_POST['_wppaypal_order_last_name'])){
+        $customer_last_name = sanitize_text_field($_POST['_wppaypal_order_last_name']);
+        update_post_meta($post_id, '_last_name', $customer_last_name);
+    }
+    if(isset($_POST['_wppaypal_order_payer_email'])){
+        $payer_email = sanitize_text_field($_POST['_wppaypal_order_payer_email']);
+        update_post_meta($post_id, '_payer_email', $payer_email);
+    }
+    if(isset($_POST['_wppaypal_order_mc_gross']) && is_numeric($_POST['_wppaypal_order_mc_gross'])){
+        $total_amount = sanitize_text_field($_POST['_wppaypal_order_mc_gross']);
+        update_post_meta($post_id, '_mc_gross', $total_amount);
+    }
+    if(isset($_POST['_wppaypal_order_payment_status'])){
+        $payment_status = sanitize_text_field($_POST['_wppaypal_order_payment_status']);
         update_post_meta($post_id, '_payment_status', $payment_status);
+    }
+    if(isset($_POST['_wppaypal_order_custom'])){
+        $custom = sanitize_text_field($_POST['_wppaypal_order_custom']);
+        update_post_meta($post_id, '_custom', $custom);
     }
 }
 
-add_action('save_post', 'wp_paypal_save_meta_box_data');
+add_action('save_post_wp_paypal_order', 'wppaypal_order_data_meta_box_save', 10, 2 );

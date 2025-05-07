@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.38
+  Version: 1.2.3.39
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')){
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.38';
+    var $plugin_version = '1.2.3.39';
     var $db_version = '1.0.2';
     var $plugin_url;
     var $plugin_path;
@@ -62,7 +62,7 @@ class WP_PAYPAL {
         add_action('wp_enqueue_scripts', array($this, 'plugin_scripts'));
         add_action('admin_menu', array($this, 'add_options_menu'));
         add_action('init', array($this, 'plugin_init'));
-        add_action('add_meta_boxes', array($this, 'add_meta_boxes'));
+        add_action('add_meta_boxes_wp_paypal_order', 'wppaypal_order_meta_boxes');
         add_filter('manage_wp_paypal_order_posts_columns', 'wp_paypal_order_columns');
         add_action('manage_wp_paypal_order_posts_custom_column', 'wp_paypal_custom_column', 10, 2);
         add_shortcode('wp_paypal', 'wp_paypal_button_handler');
@@ -116,10 +116,6 @@ class WP_PAYPAL {
         wp_paypal_order_page();
         //process PayPal IPN
         wp_paypal_process_ipn();
-    }
-
-    function add_meta_boxes() {
-        //add_meta_box('wp-paypal-order-box', __('Edit PayPal Order', 'wp-paypal'), 'wp_paypal_order_meta_box', 'wp_paypal_order', 'normal', 'high');
     }
 
     function enqueue_admin_scripts($hook) {
