@@ -277,6 +277,7 @@ function wp_paypal_process_ipn() {
             update_post_meta($post_id, '_payment_status', $payment_status);
             update_post_meta($post_id, '_custom', $payment_data['custom']);
             update_post_meta($post_id, '_ipn_data', $ipn_response);
+            update_post_meta($post_id, '_payment_data', $payment_data);
             wp_paypal_debug_log("Order information updated", true);
             
             $email_options = wp_paypal_get_email_option();
