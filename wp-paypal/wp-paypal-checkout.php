@@ -145,7 +145,7 @@ EOT;
             purchase_units[0].amount = {};
    
             function validate(event) {
-                if(event.value.length === 0){
+                if(event.required && event.value.length === 0){
                     return false;
                 }
                 if(event.name == "amount"){
@@ -154,7 +154,9 @@ EOT;
                     }
                 }
                 if(event.name == "custom"){
-                    checkoutvar.custom = event.value;  
+                    if(event.value.length !== 0){
+                        checkoutvar.custom = event.value;  
+                    }
                 }
                 if(event.name == "variation"){
                     var variation_arr = event.value.split("_");

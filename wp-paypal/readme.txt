@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, payment, ecommerce
 Requires at least: 5.3
 Tested up to: 6.8
-Stable tag: 1.2.3.40
+Stable tag: 1.2.3.41
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -263,6 +263,9 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.41 =
+* Added support for optional custom input.
 
 = 1.2.3.40 =
 * Made changes to save payment data.
