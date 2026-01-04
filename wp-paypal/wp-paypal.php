@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.41
+  Version: 1.2.3.42
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')){
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.41';
+    var $plugin_version = '1.2.3.42';
     var $db_version = '1.0.2';
     var $plugin_url;
     var $plugin_path;
@@ -47,6 +47,7 @@ class WP_PAYPAL {
 
     function plugin_includes() {
         include_once('wp-paypal-order.php');
+        include_once('wp-paypal-checkout-api.php');
         include_once('wp-paypal-checkout.php');
         include_once('paypal-ipn.php');
         if(is_admin()){
@@ -66,9 +67,6 @@ class WP_PAYPAL {
         add_filter('manage_wp_paypal_order_posts_columns', 'wp_paypal_order_columns');
         add_action('manage_wp_paypal_order_posts_custom_column', 'wp_paypal_custom_column', 10, 2);
         add_shortcode('wp_paypal', 'wp_paypal_button_handler');
-        add_action('wp_ajax_wppaypalcheckout_ajax_process_order', 'wp_paypal_checkout_ajax_process_order');
-        add_action('wp_ajax_nopriv_wppaypalcheckout_ajax_process_order', 'wp_paypal_checkout_ajax_process_order');
-        add_action('wp_paypal_checkout_process_order', 'wp_paypal_checkout_process_order_handler');
         add_shortcode('wp_paypal_checkout', 'wp_paypal_checkout_button_handler');
     }
 
@@ -81,15 +79,23 @@ class WP_PAYPAL {
     }
 
     function admin_notice() {
+        $message = '';
         if (WP_PAYPAL_DEBUG) {  //debug is enabled. Check to make sure log file is writable
             $log_file = WP_PAYPAL_DEBUG_LOG_PATH;
-            if(!file_exists($log_file)){
-                return;
-            }
-            if (!is_writeable($log_file)) {
-                echo '<div class="updated"><p>' . __('WP PayPal Debug log file is not writable. Please check to make sure that it has the correct file permission (ideally 644). Otherwise the plugin will not be able to write to the log file. The log file can be found in the root directory of the plugin - ', 'wp-paypal') . '<code>' . WP_PAYPAL_URL . '</code></p></div>';
+            if(file_exists($log_file) && !is_writeable($log_file)){
+                $message .= '<div class="updated"><p>' . __('WP PayPal Debug log file is not writable. Please check to make sure that it has the correct file permission (ideally 644). Otherwise the plugin will not be able to write to the log file. The log file can be found in the root directory of the plugin - ', 'wp-paypal') . '<code>' . WP_PAYPAL_URL . '</code></p></div>';
             }
         }
+        $options = wp_paypal_checkout_get_option();
+        if(isset($options['app_client_id']) && !empty($options['app_client_id'])){
+            if(!isset($options['app_secret_key']) || empty($options['app_secret_key'])){
+                $message .= '<div class="error"><p>' . __('To use Checkout, WP PayPal plugin requires your Client ID and Secret Key in the settings. Once you have updated the settings, click a PayPal checkout button on your site to ensure everything is working.', 'wp-paypal').'</p></div>';
+            }
+        }
+        if(empty($message)){
+            return;
+        }
+        echo $message;
     }
 
     function activate_handler() {
@@ -158,8 +164,20 @@ class WP_PAYPAL {
         if(!is_wp_paypal_checkout_configured()){
             return;
         }
+        $client_id = '';
+        if(isset($options['app_client_id']) && !empty($options['app_client_id'])){
+            $client_id = $options['app_client_id'];
+        }
+        if(isset($options['test_mode']) && $options['test_mode'] == "1"){
+            if(isset($options['app_sandbox_client_id']) && !empty($options['app_sandbox_client_id'])){
+                $client_id = $options['app_sandbox_client_id'];
+            }
+        }
+        if(!isset($client_id) || empty($client_id)){
+            return;
+        }
         $args = array(
-            'client-id' => $options['app_client_id'],
+            'client-id' => $client_id,
             'currency' => $options['currency_code'],                 
         );
         if(isset($options['enable_funding']) && !empty($options['enable_funding'])){
@@ -292,10 +310,31 @@ class WP_PAYPAL {
                 wp_die('Error! Nonce Security Check Failed! please save the settings again.');
             }
             //
+            $checkout_api_key_present_msg = 'Saved. Enter only if you need to update.';
+            $checkout_test_mode = (isset($_POST['checkout_test_mode']) && $_POST['checkout_test_mode'] == '1') ? '1' : '';
+            $checkout_app_sandbox_client_id = '';
+            if(isset($_POST['checkout_app_sandbox_client_id']) && !empty($_POST['checkout_app_sandbox_client_id'])){
+                $checkout_app_sandbox_client_id = sanitize_text_field($_POST['checkout_app_sandbox_client_id']);
+            }
+            $checkout_app_sandbox_secret_key = '';
+            $update_checkout_app_sandbox_secret_key = false;
+            if(isset($_POST['checkout_app_sandbox_secret_key']) && !empty($_POST['checkout_app_sandbox_secret_key']) && $_POST['checkout_app_sandbox_secret_key'] != $checkout_api_key_present_msg){
+                $checkout_app_sandbox_secret_key = sanitize_text_field($_POST['checkout_app_sandbox_secret_key']);
+                $checkout_app_sandbox_secret_key = base64_encode($checkout_app_sandbox_secret_key);
+                $update_checkout_app_sandbox_secret_key = true;
+            }
             $checkout_app_client_id = '';
             if(isset($_POST['checkout_app_client_id']) && !empty($_POST['checkout_app_client_id'])){
                 $checkout_app_client_id = sanitize_text_field($_POST['checkout_app_client_id']);
             }
+            $checkout_app_secret_key = '';
+            $update_checkout_app_secret_key = false;
+            if(isset($_POST['checkout_app_secret_key']) && !empty($_POST['checkout_app_secret_key']) && $_POST['checkout_app_secret_key'] != $checkout_api_key_present_msg){
+                $checkout_app_secret_key = sanitize_text_field($_POST['checkout_app_secret_key']);
+                $checkout_app_secret_key = base64_encode($checkout_app_secret_key);
+                $update_checkout_app_secret_key = true;
+            }
+            //
             $checkout_currency_code = '';
             if(isset($_POST['checkout_currency_code']) && !empty($_POST['checkout_currency_code'])){
                 $checkout_currency_code = sanitize_text_field($_POST['checkout_currency_code']);
@@ -317,7 +356,15 @@ class WP_PAYPAL {
                 $checkout_disable_funding = sanitize_text_field($_POST['checkout_disable_funding']);
             }
             $paypal_checkout_options = array();
+            $paypal_checkout_options['test_mode'] = $checkout_test_mode;
+            $paypal_checkout_options['app_sandbox_client_id'] = $checkout_app_sandbox_client_id;
+            if($update_checkout_app_sandbox_secret_key){
+                $paypal_checkout_options['app_sandbox_secret_key'] = $checkout_app_sandbox_secret_key;
+            }
             $paypal_checkout_options['app_client_id'] = $checkout_app_client_id;
+            if($update_checkout_app_secret_key){
+                $paypal_checkout_options['app_secret_key'] = $checkout_app_secret_key;
+            }
             $paypal_checkout_options['currency_code'] = $checkout_currency_code;
             $paypal_checkout_options['return_url'] = $checkout_return_url;
             $paypal_checkout_options['cancel_url'] = $checkout_cancel_url;
@@ -339,6 +386,19 @@ class WP_PAYPAL {
         }
         $paypal_checkout_options = wp_paypal_checkout_get_option();
         //these options may not be set as they were added later
+        $checkout_test_mode = '';
+        if(isset($paypal_checkout_options['test_mode']) && !empty($paypal_checkout_options['test_mode'])){
+            $checkout_test_mode = $paypal_checkout_options['test_mode'];
+        }
+        $checkout_app_sandbox_client_id = (isset($paypal_checkout_options['app_sandbox_client_id']) && !empty($paypal_checkout_options['app_sandbox_client_id'])) ? $paypal_checkout_options['app_sandbox_client_id'] : '';
+        $checkout_app_sandbox_secret_key_msg = '';
+        if(isset($paypal_checkout_options['app_sandbox_secret_key']) && !empty($paypal_checkout_options['app_sandbox_secret_key'])){
+            $checkout_app_sandbox_secret_key_msg = 'Saved. Enter only if you need to update.';
+        }
+        $checkout_app_secret_key_msg = '';
+        if(isset($paypal_checkout_options['app_secret_key']) && !empty($paypal_checkout_options['app_secret_key'])){
+            $checkout_app_secret_key_msg = 'Saved. Enter only if you need to update.';
+        }
         if(!isset($paypal_checkout_options['enable_funding']) || empty($paypal_checkout_options['enable_funding'])){
             $paypal_checkout_options['enable_funding'] = '';
         }
@@ -371,11 +431,37 @@ class WP_PAYPAL {
                             <table class="form-table">
 
                                 <tbody>
+                                    
+                                    <tr valign="top">
+                                        <th scope="row"><?php _e('Test mode', 'wp-paypal');?></th>
+                                        <td> <fieldset><legend class="screen-reader-text"><span>Test mode</span></legend><label for="test_mode">
+                                                    <input name="checkout_test_mode" type="checkbox" id="checkout_test_mode" <?php if ($checkout_test_mode == '1') echo ' checked="checked"'; ?> value="1">
+                                                    <?php _e("Check this option to run transactions in test mode with your PayPal sandbox API credentials.", 'wp-paypal');?></label>
+                                            </fieldset></td>
+                                    </tr>
 
                                     <tr valign="top">
-                                        <th scope="row"><label for="checkout_app_client_id"><?php _e('Client ID', 'wp-paypal');?></label></th>
+                                        <th scope="row"><label for="checkout_app_sandbox_client_id"><?php _e('Sandbox Client ID', 'wp-paypal');?></label></th>
+                                        <td><input name="checkout_app_sandbox_client_id" type="text" id="checkout_app_sandbox_client_id" value="<?php echo esc_attr($checkout_app_sandbox_client_id); ?>" class="regular-text">
+                                            <p class="description"><?php _e('The sandbox client ID for your PayPal REST API app', 'wp-paypal');?></p></td>
+                                    </tr>
+
+                                    <tr valign="top">
+                                        <th scope="row"><label for="checkout_app_sandbox_secret_key"><?php _e('Sandbox Secret Key', 'wp-paypal');?></label></th>
+                                        <td><input name="checkout_app_sandbox_secret_key" type="text" id="checkout_app_sandbox_secret_key" value="<?php echo esc_attr($checkout_app_sandbox_secret_key_msg); ?>" class="regular-text">
+                                            <p class="description"><?php _e('The sandbox secret key for your PayPal REST API app', 'wp-paypal');?></p></td>
+                                    </tr>
+
+                                    <tr valign="top">
+                                        <th scope="row"><label for="checkout_app_client_id"><?php _e('Live Client ID', 'wp-paypal');?></label></th>
                                         <td><input name="checkout_app_client_id" type="text" id="checkout_app_client_id" value="<?php echo esc_attr($paypal_checkout_options['app_client_id']); ?>" class="regular-text">
                                             <p class="description"><?php _e('The client ID for your PayPal REST API app', 'wp-paypal');?></p></td>
+                                    </tr>
+
+                                    <tr valign="top">
+                                        <th scope="row"><label for="checkout_app_secret_key"><?php _e('Live Secret Key', 'wp-paypal');?></label></th>
+                                        <td><input name="checkout_app_secret_key" type="text" id="checkout_app_secret_key" value="<?php echo esc_attr($checkout_app_secret_key_msg); ?>" class="regular-text">
+                                            <p class="description"><?php _e('The secret key for your PayPal REST API app', 'wp-paypal');?></p></td>
                                     </tr>
 
                                     <tr valign="top">
