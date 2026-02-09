@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, cart, checkout, payment, ecommerce
 Requires at least: 5.3
 Tested up to: 6.9
-Stable tag: 1.2.3.43
+Stable tag: 1.2.3.44
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -263,6 +263,9 @@ No.
 none
 
 == Changelog ==
+
+= 1.2.3.44 =
+* Changes to URL parameters.
 
 = 1.2.3.43 =
 * Changed order menu icon.

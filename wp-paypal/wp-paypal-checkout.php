@@ -24,7 +24,7 @@ function wp_paypal_checkout_button_handler($atts) {
     if(!empty($return_url)){
         //$return_output = 'window.location.replace("'.esc_js(esc_url($return_url)).'");';
         $return_output = "let temp_return_url = '".esc_js(esc_url($return_url))."';";
-	$return_output .= "let return_url = temp_return_url.replace('&#038;', '&');";
+	$return_output .= "let return_url = temp_return_url.replace(/&#038;/g, '&');";
         $return_output .= "window.location.replace(return_url);";
     }
     $cancel_url = (isset($options['cancel_url']) && !empty($options['cancel_url'])) ? $options['cancel_url'] : '';
@@ -35,7 +35,7 @@ function wp_paypal_checkout_button_handler($atts) {
     if(!empty($cancel_url)){
         //$cancel_output = 'window.location.replace("'.esc_js(esc_url($cancel_url)).'");';
         $cancel_output = "let temp_cancel_url = '".esc_js(esc_url($cancel_url))."';";
-	$cancel_output .= "let cancel_url = temp_cancel_url.replace('&#038;', '&');";
+	$cancel_output .= "let cancel_url = temp_cancel_url.replace(/&#038;/g, '&');";
         $cancel_output .= "window.location.replace(cancel_url);";
     }
     $shipping_preference = 'GET_FROM_FILE';
