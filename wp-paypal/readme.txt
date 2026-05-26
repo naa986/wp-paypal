@@ -120,6 +120,8 @@ In order to create a PayPal Checkout button insert the shortcode like the follow
 
 `[wp_paypal_checkout description="test checkout product" amount="3.99"]`
 
+Note: The content of the button (e.g. name, price) is rendered in HTML and can be altered before checkout.
+
 = PayPal Checkout Shortcode Parameters =
 
 You can use additional parameters to customize your PayPal Checkout buttons.
@@ -132,6 +134,8 @@ For more information check the [PayPal Checkout](https://wphowto.net/wordpress-p
 === How to Create a PayPal Payments Standard Button ===
 
 In order to create a PayPal Payments Standard button insert the shortcode like the following.
+
+Note: The content of the button (e.g. name, price) is rendered in HTML and can be altered before checkout.
 
 = PayPal Buy Now =
 
