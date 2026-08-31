@@ -9,13 +9,6 @@ function wp_paypal_checkout_pp_api_create_order(){
     //The data will be in JSON format string (not actual JSON object). By using json_decode it can be converted to a json object or array.
     $json_order_data = isset($_POST['data']) ? stripslashes_deep($_POST['data']) : '{}';
     $order_data_array = json_decode($json_order_data, true);
-    $encoded_item_description = isset($order_data_array['purchase_units'][0]['description']) ? $order_data_array['purchase_units'][0]['description'] : '';
-    $decoded_item_description = html_entity_decode($encoded_item_description);
-    wp_paypal_debug_log("Checkout - Create-order request received for item: ".$decoded_item_description, true);
-
-    //Set this decoded item name back to the order data.
-    $order_data_array['purchase_units'][0]['description'] = $decoded_item_description;
-    wp_paypal_debug_log_array($order_data_array, true);
     if(empty($json_order_data)){
         wp_send_json(
             array(
@@ -24,12 +17,66 @@ function wp_paypal_checkout_pp_api_create_order(){
             )
         );
     }
+    $custom_id = isset($order_data_array['purchase_units'][0]['custom_id']) ? $order_data_array['purchase_units'][0]['custom_id'] : '';
+    $product_id = isset($custom_id) ? sanitize_text_field($custom_id) : '';
+    if(empty($product_id)){
+        wp_send_json(
+            array(
+                'success' => false,
+                'err_msg' => __('Empty product id received.', 'wp-paypal'),
+            )
+        );
+    }
+    wp_paypal_debug_log("Checkout - Create-order request received for product id: ".$product_id, true);
+    // Retrieve product details from database
+    $product = wppaypal_get_product($product_id);
+    if(!$product){
+        wp_paypal_debug_log("Checkout - Product not found", false);
+        wp_send_json(
+            array(
+                'success' => false,
+                'err_msg' => __('Product not found.', 'wp-paypal'),
+            )
+        );
+    }
+    $product_name = $product['title'];
+    if(!isset($product_name) || empty($product_name)){
+        wp_paypal_debug_log("Checkout - Product name not found", false);
+        wp_send_json(
+            array(
+                'success' => false,
+                'err_msg' => __('Product name not found.', 'wp-paypal'),
+            )
+        );
+    }
+    $product_price = $product['price'];
+    $total_amount = 0;
+    if(isset($product_price) && is_numeric($product_price) && $product_price > 0){
+        $product_price = number_format($product_price, 2, '.', '');
+        $total_amount = $product_price;
+    }
+    else{
+        wp_paypal_debug_log("Checkout - Product price not valid", false);
+        wp_send_json(
+            array(
+                'success' => false,
+                'err_msg' => __('Product price not valid.', 'wp-paypal'),
+            )
+        );
+    }
+    $has_shipping = false;
+    $shipping = isset($product['shipping']) ? $product['shipping'] : 0;
+    if(is_numeric($shipping) && $shipping > 0){
+        $shipping = number_format($shipping, 2, '.', '');
+        $total_amount = $total_amount + $shipping;
+        $total_amount = number_format($total_amount, 2, '.', '');
+        $has_shipping = true;
+    }
     $options = wp_paypal_checkout_get_option();
     $currency_code = $options['currency_code'];
-    $description = $order_data_array['purchase_units'][0]['description'];
-    $amount = $order_data_array['purchase_units'][0]['amount']['value'];
-    $total_amount = $amount;   
+    
     wp_paypal_debug_log("Checkout - Creating order data to send to PayPal: ", true);
+
     $pp_api_order_data = [
         "intent" => "CAPTURE",
         "payment_source" => [
@@ -41,40 +88,45 @@ function wp_paypal_checkout_pp_api_create_order(){
         ], 			
         "purchase_units" => [
             [
-                "description" => $description,
+                "description" => $product_name,
+                "custom_id" => $product['id'],
                 "amount" => [
                     "value" => (string) $total_amount,
                     "currency_code" => $currency_code,
+                    "breakdown" => [
+                        "item_total" => [
+                            "currency_code" => $currency_code,
+                            "value" => (string) $product_price,
+                        ]
+                    ]
                 ],
+                "items" => [
+                    [
+                        "name" => substr($product_name, 0, 127),
+                        "quantity" => "1",
+                        "unit_amount" => [
+                            "value" => (string) $product_price,
+                            "currency_code" => $currency_code,
+                        ]
+                    ]
+                ]
             ]
         ]
     ];
-    //
-    $shipping_preference = '';
-    if(isset($order_data_array['payment_source']['paypal']['experience_context']['shipping_preference'])
-            && !empty($order_data_array['payment_source']['paypal']['experience_context']['shipping_preference'])){       
-        $shipping_preference = $order_data_array['payment_source']['paypal']['experience_context']['shipping_preference'];
-        $pp_api_order_data['payment_source']['paypal']['experience_context']['shipping_preference'] = $shipping_preference;
+    // Add shipping to breakdown if it exists
+    if ($has_shipping) {
+        $pp_api_order_data['purchase_units'][0]['amount']['breakdown']['shipping'] = [
+            'currency_code' => $currency_code,
+            'value' => (string) $shipping
+        ];
+    }  
+    /*
+    $shipping_preference = 'NO_SHIPPING';
+    if ($has_shipping) {       
+        $shipping_preference = 'GET_FROM_FILE';
     }
-    //
-    $amount_breakdown = false;
-    //shipping
-    if(isset($order_data_array['purchase_units'][0]['amount']['breakdown']['shipping']['value']) 
-            && is_numeric($order_data_array['purchase_units'][0]['amount']['breakdown']['shipping']['value']) 
-                && $order_data_array['purchase_units'][0]['amount']['breakdown']['shipping']['value'] > 0){
-        $shipping = $order_data_array['purchase_units'][0]['amount']['breakdown']['shipping']['value'];
-        $pp_api_order_data['purchase_units'][0]['amount']['breakdown']['shipping']['currency_code'] = $currency_code;
-        $pp_api_order_data['purchase_units'][0]['amount']['breakdown']['shipping']['value'] = (string) $shipping;
-        $total_amount = $amount + $shipping;
-        $amount_breakdown = true;
-    }
-    //break down amount when needed
-    if($amount_breakdown){
-        $pp_api_order_data['purchase_units'][0]['amount']['breakdown']['item_total']['currency_code'] = $currency_code;
-        $pp_api_order_data['purchase_units'][0]['amount']['breakdown']['item_total']['value'] = (string) $amount;
-        $pp_api_order_data['purchase_units'][0]['amount']['value'] = (string) $total_amount;
-    }
-    //
+    $pp_api_order_data['payment_source']['paypal']['experience_context']['shipping_preference'] = $shipping_preference;
+    */
     $json_encoded_pp_api_order_data = wp_json_encode($pp_api_order_data);   
     wp_paypal_debug_log_array($json_encoded_pp_api_order_data, true);  
     $access_token = wp_paypal_checkout_get_paypal_access_token();
@@ -428,15 +480,27 @@ function wp_paypal_checkout_process_order_handler($order_details_data, $checkout
     if (isset($payer['email_address'])) {
         $payment_data['payer_email'] = sanitize_email($payer['email_address']);
     }
+    //
+    $payment_data['product_id'] = '';
+    if (isset($purchase_units['custom_id'])) {
+        $payment_data['product_id'] = sanitize_text_field($purchase_units['custom_id']);
+    }
+    $payment_data['product_name'] = '';
+    //
     $payment_data['item_names'] = '';
     $payment_data['description'] = '';
     if (isset($purchase_units['description'])) {
         $payment_data['description'] = sanitize_text_field($purchase_units['description']);
         $payment_data['item_names'] = $payment_data['description'];
+        $payment_data['product_name'] = $payment_data['description'];
     }
     $payment_data['mc_gross'] = '';
     if (isset($purchase_units['amount']['value'])) {
         $payment_data['mc_gross'] = sanitize_text_field($purchase_units['amount']['value']);
+    }
+    $payment_data['shipping'] = '';
+    if (isset($purchase_units['amount']['breakdown']['shipping']['value'])) {
+        $payment_data['shipping'] = sanitize_text_field($purchase_units['amount']['breakdown']['shipping']['value']);
     }
     $payment_data['currency_code'] = '';
     if (isset($purchase_units['amount']['currency_code'])) {
@@ -497,8 +561,8 @@ function wp_paypal_checkout_process_order_handler($order_details_data, $checkout
     $post_updated = false;
     if ($post_id > 0) {
         $post_content = '';
-        if(!empty($payment_data['description'])){
-            $post_content .= '<strong>Description:</strong> '.$payment_data['description'].'<br />';
+        if(!empty($payment_data['product_name'])){
+            $post_content .= '<strong>Product:</strong> '.$payment_data['product_name'].'<br />';
         }
         if(isset($payment_data['custom']) && !empty($payment_data['custom'])){
             $post_content .= '<strong>Custom:</strong> '.$payment_data['custom'].'<br />';

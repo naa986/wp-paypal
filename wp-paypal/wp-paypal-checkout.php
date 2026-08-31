@@ -1,24 +1,93 @@
 <?php
 
+function wp_paypal_product_button_handler($atts){
+    if(!is_wp_paypal_checkout_configured()){
+        return __('You need to configure checkout options in the settings', 'wp-paypal');
+    }
+    $atts = is_array($atts) ? array_map('sanitize_text_field', $atts) : array();
+    $product_id = isset($atts['id']) ? sanitize_text_field($atts['id']) : '';
+    if (empty($product_id)) {
+        return __('You need to provide a product ID.', 'wp-paypal');
+    }
+    $product = function_exists('wppaypal_get_product') ? wppaypal_get_product($product_id) : null;
+    if (!$product) {
+        return __('Product not found.', 'wp-paypal');
+    }
+    $options = wp_paypal_checkout_get_option();
+    $action_url = $options['checkout_page_url'];
+    $button_text = 'Buy Now';
+    if(isset($product['button_text']) && !empty($product['button_text'])){
+        $button_text = $product['button_text'];
+    }
+    $button_code = '';
+    $method = 'post';
+    $target = '';
+    if(isset($atts['target']) && !empty($atts['target'])) {
+        $target = 'target="'.esc_attr($atts['target']).'" ';
+    }
+    $form_class = '';
+    if(isset($atts['form_class']) && !empty($atts['form_class'])) {
+        $form_class = 'class="'.esc_attr($atts['form_class']).'" ';
+    }
+    $button_code .= '<form '.$form_class.$target.'action="'.esc_url($action_url).'" method="'.$method.'" >';
+    $button_code .= '<input type="hidden" name="wppp_prod_id" value="'.esc_attr($product_id).'">';
+    $button_code .= '<input type="submit" value="'.esc_attr($button_text).'" />';
+    $button_code .= '</form>';
+    return $button_code;        
+}
+
 function wp_paypal_checkout_button_handler($atts) {
     if(!is_wp_paypal_checkout_configured()){
         return __('You need to configure checkout options in the settings', 'wp-paypal');
     }
-    $atts = array_map('sanitize_text_field', $atts);
-    if(!isset($atts['description']) || empty($atts['description'])){
-        return __('You need to provide a valid description', 'wp-paypal');
-    }
-    $description = $atts['description'];
+    $atts = is_array($atts) ? array_map('sanitize_text_field', $atts) : array();
     $options = wp_paypal_checkout_get_option();
-    $currency = $options['currency_code'];
-    /* There seems to be a bug where currency override doesn't work on a per button basis
-    if(isset($atts['currency']) && !empty($atts['currency'])){
-        $currency = $atts['currency'];
+
+    // Product ID is required in URL query parameters
+    $product_id = '';
+    if(isset($_POST['wppp_prod_id'])){
+        $product_id = sanitize_text_field($_POST['wppp_prod_id']);
     }
-    */
-    $return_url = (isset($options['return_url']) && !empty($options['return_url'])) ? $options['return_url'] : '';
-    if(isset($atts['return_url']) && !empty($atts['return_url'])){
-        $return_url = $atts['return_url'];
+    else{
+        return '';
+    }
+    //
+    if (empty($product_id)) {
+        return __('You need to provide a valid product ID', 'wp-paypal');
+    }
+
+    $product = function_exists('wppaypal_get_product') ? wppaypal_get_product($product_id) : null;
+    if (!$product) {
+        return __('Product not found', 'wp-paypal');
+    }
+    //
+    if (!isset($product['title']) || empty($product['title'])) {
+        return __('Product title not found', 'wp-paypal');
+    }
+    //
+    $product_price = 0;
+    if (isset($product['price']) && is_numeric($product['price']) && $product['price'] > 0 ) {
+        $product_price = number_format($product['price'], 2, '.', '');
+    }
+    else{
+        return __('Product price is not valid', 'wp-paypal');
+    }
+    //
+    $shipping = 0;
+    $has_shipping = false;
+    if (isset($product['shipping']) && is_numeric($product['shipping']) && $product['shipping'] > 0 ) {
+        $shipping = number_format($product['shipping'], 2, '.', '');
+        $has_shipping = true;
+    }
+    //
+    $currency = $options['currency_code'];
+    if (!isset($currency) || empty($currency)) {
+        return __('Currency not found', 'wp-paypal');
+    }
+    //
+    $return_url = $options['return_url'];
+    if (!isset($return_url) || empty($return_url)) {
+        return __('Return URL not found', 'wp-paypal');
     }
     $return_output = '';
     if(!empty($return_url)){
@@ -27,9 +96,10 @@ function wp_paypal_checkout_button_handler($atts) {
 	$return_output .= "let return_url = temp_return_url.replace(/&#038;/g, '&');";
         $return_output .= "window.location.replace(return_url);";
     }
-    $cancel_url = (isset($options['cancel_url']) && !empty($options['cancel_url'])) ? $options['cancel_url'] : '';
-    if(isset($atts['cancel_url']) && !empty($atts['cancel_url'])){
-        $cancel_url = $atts['cancel_url'];
+    //
+    $cancel_url = $options['cancel_url'];
+    if (!isset($cancel_url) || empty($cancel_url)) {
+        return __('Cancel URL not found', 'wp-paypal');
     }
     $cancel_output = '';
     if(!empty($cancel_url)){
@@ -37,10 +107,6 @@ function wp_paypal_checkout_button_handler($atts) {
         $cancel_output = "let temp_cancel_url = '".esc_js(esc_url($cancel_url))."';";
 	$cancel_output .= "let cancel_url = temp_cancel_url.replace(/&#038;/g, '&');";
         $cancel_output .= "window.location.replace(cancel_url);";
-    }
-    $shipping_preference = 'GET_FROM_FILE';
-    if(isset($atts['shipping_preference']) && $atts['shipping_preference'] == 'NO_SHIPPING'){
-        $shipping_preference = 'NO_SHIPPING';
     }
     $width = '300';
     if(isset($atts['width']) && !empty($atts['width'])){
@@ -80,53 +146,25 @@ function wp_paypal_checkout_button_handler($atts) {
     $id = uniqid();
     $atts['id'] = $id;
     $button_code = '';
-    if(!isset($atts['amount']) || !is_numeric($atts['amount'])){
-        return __('You need to provide a valid price amount', 'wp-paypal');
-    }
-    $amount = $atts['amount'];
-    $break_down_amount = 'false';
-    $shipping = '';
-    if(isset($atts['shipping']) && is_numeric($atts['shipping'])){
-        $shipping = $atts['shipping'];
-        $break_down_amount = 'true';
-    }
     $esc_js = 'esc_js';
-    $additional_el = '';
     $button_id = 'wppaypalcheckout-button-'.$id;
     $button_container_id = 'wppaypalcheckout-button-container-'.$id;
-    $button_code = '<div id="'.esc_attr($button_container_id).'" style="'.esc_attr('max-width: '.$width.'px;').'">';
-    //
-    $description_code = '<input class="wppaypal_checkout_description_input" type="hidden" name="description" value="'.esc_attr($description).'" required>';
-    $description_queryselector = "document.querySelector('#{$button_container_id} .wppaypal_checkout_description_input')";
-    $button_code .= $description_code;
-    $amount_code = '<input class="wppaypal_checkout_amount_input" type="hidden" name="amount" value="'.esc_attr($amount).'" required>';
-    $amount_queryselector = "document.querySelector('#{$button_container_id} .wppaypal_checkout_amount_input')";
-    $variable_price_code = '';
-    $variable_price_code = apply_filters('wppaypal_checkout_variable_price', $variable_price_code, $button_code, $atts);
-    if(!empty($variable_price_code)){
-        $amount_code = $variable_price_code;
-        $amount_queryselector = "document.querySelector('#{$button_container_id} .wppaypal_checkout_variable_price_input')";
+
+    // Optional order summary box when product info is loaded
+    if ($product && (!isset($atts['show_summary']) || $atts['show_summary'] !== '0')) {
+        $button_code .= '<div class="wppaypal-order-summary" style="margin-bottom: 15px; padding: 12px 16px; border: 1px solid #e0e0e0; border-radius: 6px; background-color: #f9f9f9; max-width: ' . esc_attr($width) . 'px;">';
+        $button_code .= '<h4 style="margin: 0 0 8px 0; font-size: 16px; color: #333;">' . esc_html($product['title']) . '</h4>';
+        $button_code .= '<div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 14px; color: #555;"><span>' . __('Price:', 'wp-paypal') . '</span><span>' . esc_html($product_price . ' ' . $currency) . '</span></div>';
+        if ($has_shipping) {
+            $button_code .= '<div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 14px; color: #555;"><span>' . __('Shipping:', 'wp-paypal') . '</span><span>' . esc_html($shipping . ' ' . $currency) . '</span></div>';
+            $total_amount = $product_price + $shipping;
+            $total_amount = number_format($total_amount, 2, '.', '');
+            $button_code .= '<div style="display: flex; justify-content: space-between; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #ccc; font-weight: bold; font-size: 14px; color: #222;"><span>' . __('Total:', 'wp-paypal') . '</span><span>' . esc_html($total_amount . ' ' . $currency) . '</span></div>';
+        }
+        $button_code .= '</div>';
     }
-    $button_code .= $amount_code;
-    //
-    $variation_code = '';
-    $variation_queryselector = '""';
-    $variation_code = apply_filters('wppaypal_checkout_variations', $variation_code, $button_code, $atts);
-    if(!empty($variation_code)){
-        $variation_queryselector = "document.querySelector('#{$button_container_id} .variation_select')";
-        $additional_el .= ', variation';
-        $button_code .= $variation_code;
-    }
-    //
-    $custom_input_code = '';
-    $custom_queryselector = '""';
-    $custom_input_code = apply_filters('wppaypal_checkout_custom_input', $custom_input_code, $button_code, $atts);
-    if(!empty($custom_input_code)){
-        $custom_queryselector = "document.querySelector('#{$button_container_id} .wppaypal_checkout_custom_input')";
-        $additional_el .= ', custom';
-        $button_code .= $custom_input_code;
-    }
-    //
+
+    $button_code .= '<div id="'.esc_attr($button_container_id).'" style="'.esc_attr('max-width: '.$width.'px;').'">';
     $button_code .= '<div id="'.esc_attr($button_id).'" style="'.esc_attr('max-width: '.$width.'px;').'"></div>';
     $button_code .= '</div>';
     $ajax_url = admin_url('admin-ajax.php');
@@ -140,44 +178,12 @@ function wp_paypal_checkout_button_handler($atts) {
     jQuery(document).ready(function() {
             
         function initPayPalButton{$id}() {
-            var description = {$description_queryselector};
-            var amount = {$amount_queryselector};
-            var totalamount = 0;
-            var shipping = "{$esc_js($shipping)}";
-            var currency = "{$esc_js($currency)}";
-            var break_down_amount = {$esc_js($break_down_amount)};
             var checkoutvar = {};
-            var custom = {$custom_queryselector};
-            var variation = {$variation_queryselector};
-            var elArr = [description, amount{$additional_el}];
 
             var purchase_units = [];
             purchase_units[0] = {};
-            purchase_units[0].amount = {};
    
             function validate(event) {
-                if(event.required && event.value.length === 0){
-                    return false;
-                }
-                if(event.name == "amount"){
-                    if(!isNaN(Number(event.value)) && Number(event.value) < 0.1){
-                        return false;
-                    }
-                }
-                if(event.name == "custom"){
-                    if(event.value.length !== 0){
-                        checkoutvar.custom = event.value;  
-                    }
-                }
-                if(event.name == "variation"){
-                    var variation_arr = event.value.split("_");
-                    if(typeof variation_arr[0] !== 'undefined'){
-                        checkoutvar.variation = variation_arr[0];
-                    }
-                    if(typeof variation_arr[1] !== 'undefined'){
-                        amount.value = variation_arr[1];
-                    }  
-                }
                 return true;
             }
             paypal.Buttons({
@@ -188,46 +194,11 @@ function wp_paypal_checkout_button_handler($atts) {
                     label: '{$esc_js($label)}'
                 },
                 onInit: function (data, actions) {
-                    actions.disable();
-                    var validated = true;
-                    elArr.forEach(function (item) {
-                        if(!validate(item)){
-                            validated = false;    
-                        }
-                        item.addEventListener('change', function (event) {
-                            var result = elArr.every(validate);
-                            if (result) {
-                                actions.enable();
-                            } else {
-                                actions.disable();
-                            }
-                        });
-                    });
-                    if(validated){
-                        actions.enable();
-                    }
+
                 },  
                 
                 onClick: function () {
-                    purchase_units[0].description = description.value;
-                    purchase_units[0].amount.value = amount.value;
-                    if(break_down_amount){
-                        purchase_units[0].amount.breakdown = {};
-                        purchase_units[0].amount.breakdown.item_total = {};
-                        purchase_units[0].amount.breakdown.item_total.currency_code = currency;
-                        purchase_units[0].amount.breakdown.item_total.value = amount;
-                    }
-                    if(shipping.length !== 0){
-                        if(!isNaN(shipping)){
-                            purchase_units[0].amount.breakdown.shipping = {};
-                            purchase_units[0].amount.breakdown.shipping.currency_code = currency;
-                            purchase_units[0].amount.breakdown.shipping.value = shipping;
-                            totalamount = parseFloat(amount)+parseFloat(shipping);
-                        }
-                    }
-                    if(totalamount > 0){
-                        purchase_units[0].amount.value = String(totalamount);
-                    }
+                    purchase_units[0].custom_id = '{$esc_js($product_id)}';
                 },    
                     
                 createOrder: async function(data, actions) {
@@ -237,7 +208,6 @@ function wp_paypal_checkout_button_handler($atts) {
                             paypal: {
                                 experience_context: {
                                     payment_method_preference: 'IMMEDIATE_PAYMENT_REQUIRED',
-                                    shipping_preference: '{$esc_js($shipping_preference)}',
                                 }
                             }
                         },
@@ -351,6 +321,7 @@ function wp_paypal_checkout_get_empty_options_array(){
     $options['currency_code'] = '';
     $options['return_url'] = '';
     $options['cancel_url'] = '';
+    $options['checkout_page_url'] = '';
     $options['enable_funding'] = '';
     $options['disable_funding'] = '';
     return $options;
@@ -376,6 +347,9 @@ function is_wp_paypal_checkout_configured(){
         }
     }
     if(!isset($options['currency_code']) || empty($options['currency_code'])){
+        $configured = false;
+    }
+    if(!isset($options['checkout_page_url']) || empty($options['checkout_page_url'])){
         $configured = false;
     }
     return $configured;

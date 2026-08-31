@@ -1,5 +1,5 @@
 <?php
-
+/*
 function wp_paypal_process_ipn() {
     if (!empty($_GET['wp_paypal_ipn']) && $_GET['wp_paypal_ipn'] == '1') {
         $ipn_response = !empty($_POST) ? array_map('sanitize_text_field', $_POST) : false;
@@ -362,17 +362,19 @@ function wp_paypal_process_ipn() {
         wp_paypal_debug_log("IPN processing completed", true, true);
     }
 }
-
+*/
 function wp_paypal_do_email_tags($payment_data, $content){
     $search = array(
         '{first_name}', 
         '{last_name}', 
         '{txn_id}',
+        '{product_name}',
         '{item_names}',
         '{mc_currency}',
         '{mc_gross}',
         '{payer_email}',
         '{custom}',
+        '{shipping}',
         '{shipping_address}',
         '{variation}'
     );
@@ -380,11 +382,13 @@ function wp_paypal_do_email_tags($payment_data, $content){
         $payment_data['first_name'], 
         $payment_data['last_name'],
         $payment_data['txn_id'],
+        $payment_data['product_name'],
         $payment_data['item_names'],
         $payment_data['mc_currency'],
         $payment_data['mc_gross'],
         $payment_data['payer_email'],
         $payment_data['custom'],
+        $payment_data['shipping'],
         $payment_data['shipping_address'],
         $payment_data['variation']    
     );

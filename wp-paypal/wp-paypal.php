@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.44
+  Version: 1.2.3.45
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')){
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.44';
+    var $plugin_version = '1.2.3.45';
     var $db_version = '1.0.2';
     var $plugin_url;
     var $plugin_path;
@@ -47,6 +47,7 @@ class WP_PAYPAL {
 
     function plugin_includes() {
         include_once('wp-paypal-order.php');
+        include_once('wp-paypal-product.php');
         include_once('wp-paypal-checkout-api.php');
         include_once('wp-paypal-checkout.php');
         include_once('paypal-ipn.php');
@@ -66,7 +67,11 @@ class WP_PAYPAL {
         add_action('add_meta_boxes_wp_paypal_order', 'wppaypal_order_meta_boxes');
         add_filter('manage_wp_paypal_order_posts_columns', 'wp_paypal_order_columns');
         add_action('manage_wp_paypal_order_posts_custom_column', 'wp_paypal_custom_column', 10, 2);
-        add_shortcode('wp_paypal', 'wp_paypal_button_handler');
+        add_action('add_meta_boxes_wp_paypal_product', 'wppaypal_product_meta_boxes');
+        add_filter('manage_wp_paypal_product_posts_columns', 'wp_paypal_product_columns');
+        add_action('manage_wp_paypal_product_posts_custom_column', 'wp_paypal_product_custom_column', 10, 2);
+        //add_shortcode('wp_paypal', 'wp_paypal_button_handler');
+        add_shortcode('wp_paypal_product', 'wp_paypal_product_button_handler');
         add_shortcode('wp_paypal_checkout', 'wp_paypal_checkout_button_handler');
     }
 
@@ -120,8 +125,10 @@ class WP_PAYPAL {
     function plugin_init() {
         //register orders
         wp_paypal_order_page();
+        //register products
+        wp_paypal_product_page();
         //process PayPal IPN
-        wp_paypal_process_ipn();
+        //wp_paypal_process_ipn();
     }
 
     function enqueue_admin_scripts($hook) {
@@ -236,6 +243,8 @@ class WP_PAYPAL {
             add_submenu_page('edit.php?post_type=wp_paypal_order', __('Settings', 'wp-paypal'), __('Settings', 'wp-paypal'), 'manage_options', 'wp-paypal-settings', array($this, 'options_page'));
             add_submenu_page('edit.php?post_type=wp_paypal_order', __('Debug', 'wp-paypal'), __('Debug', 'wp-paypal'), 'manage_options', 'wp-paypal-debug', array($this, 'debug_page'));
             add_submenu_page('edit.php?post_type=wp_paypal_order', __('Add-ons', 'wp-paypal'), __('Add-ons', 'wp-paypal'), 'manage_options', 'wp-paypal-addons', 'wp_paypal_display_addons_menu');
+            global $submenu;
+            unset($submenu['edit.php?post_type=wp_paypal_order'][10]);
         }
     }
 
@@ -347,6 +356,10 @@ class WP_PAYPAL {
             if(isset($_POST['checkout_cancel_url']) && !empty($_POST['checkout_cancel_url'])){
                 $checkout_cancel_url = esc_url_raw($_POST['checkout_cancel_url']);
             }
+            $checkout_page_url = '';
+            if(isset($_POST['checkout_page_url']) && !empty($_POST['checkout_page_url'])){
+                $checkout_page_url = esc_url_raw($_POST['checkout_page_url']);
+            }
             $checkout_enable_funding = '';
             if(isset($_POST['checkout_enable_funding'])){
                 $checkout_enable_funding = sanitize_text_field($_POST['checkout_enable_funding']);
@@ -368,6 +381,7 @@ class WP_PAYPAL {
             $paypal_checkout_options['currency_code'] = $checkout_currency_code;
             $paypal_checkout_options['return_url'] = $checkout_return_url;
             $paypal_checkout_options['cancel_url'] = $checkout_cancel_url;
+            $paypal_checkout_options['checkout_page_url'] = $checkout_page_url;
             $paypal_checkout_options['enable_funding'] = $checkout_enable_funding;
             $paypal_checkout_options['disable_funding'] = $checkout_disable_funding;
             $checkout_load_scripts_globally = (isset($_POST['checkout_load_scripts_globally']) && $_POST['checkout_load_scripts_globally'] == '1') ? '1' : '';
@@ -443,55 +457,61 @@ class WP_PAYPAL {
                                     <tr valign="top">
                                         <th scope="row"><label for="checkout_app_sandbox_client_id"><?php _e('Sandbox Client ID', 'wp-paypal');?></label></th>
                                         <td><input name="checkout_app_sandbox_client_id" type="text" id="checkout_app_sandbox_client_id" value="<?php echo esc_attr($checkout_app_sandbox_client_id); ?>" class="regular-text">
-                                            <p class="description"><?php _e('The sandbox client ID for your PayPal REST API app', 'wp-paypal');?></p></td>
+                                            <p class="description"><?php _e('The sandbox client ID for your PayPal REST API app (required)', 'wp-paypal');?></p></td>
                                     </tr>
 
                                     <tr valign="top">
                                         <th scope="row"><label for="checkout_app_sandbox_secret_key"><?php _e('Sandbox Secret Key', 'wp-paypal');?></label></th>
                                         <td><input name="checkout_app_sandbox_secret_key" type="text" id="checkout_app_sandbox_secret_key" value="<?php echo esc_attr($checkout_app_sandbox_secret_key_msg); ?>" class="regular-text">
-                                            <p class="description"><?php _e('The sandbox secret key for your PayPal REST API app', 'wp-paypal');?></p></td>
+                                            <p class="description"><?php _e('The sandbox secret key for your PayPal REST API app (required)', 'wp-paypal');?></p></td>
                                     </tr>
 
                                     <tr valign="top">
                                         <th scope="row"><label for="checkout_app_client_id"><?php _e('Live Client ID', 'wp-paypal');?></label></th>
                                         <td><input name="checkout_app_client_id" type="text" id="checkout_app_client_id" value="<?php echo esc_attr($paypal_checkout_options['app_client_id']); ?>" class="regular-text">
-                                            <p class="description"><?php _e('The client ID for your PayPal REST API app', 'wp-paypal');?></p></td>
+                                            <p class="description"><?php _e('The client ID for your PayPal REST API app (required)', 'wp-paypal');?></p></td>
                                     </tr>
 
                                     <tr valign="top">
                                         <th scope="row"><label for="checkout_app_secret_key"><?php _e('Live Secret Key', 'wp-paypal');?></label></th>
                                         <td><input name="checkout_app_secret_key" type="text" id="checkout_app_secret_key" value="<?php echo esc_attr($checkout_app_secret_key_msg); ?>" class="regular-text">
-                                            <p class="description"><?php _e('The secret key for your PayPal REST API app', 'wp-paypal');?></p></td>
+                                            <p class="description"><?php _e('The secret key for your PayPal REST API app (required)', 'wp-paypal');?></p></td>
                                     </tr>
 
                                     <tr valign="top">
                                         <th scope="row"><label for="checkout_currency_code"><?php _e('Currency Code', 'wp-paypal');?></label></th>
                                         <td><input name="checkout_currency_code" type="text" id="checkout_currency_code" value="<?php echo esc_attr($paypal_checkout_options['currency_code']); ?>" class="regular-text">
-                                            <p class="description"><?php _e('The default currency of the payment', 'wp-paypal');?> (<?php _e('example', 'wp-paypal');?>: USD, CAD, GBP, EUR)</p></td>
+                                            <p class="description"><?php _e('The default currency of the payment (required)', 'wp-paypal');?> (<?php _e('example', 'wp-paypal');?>: USD, CAD, GBP, EUR)</p></td>
                                     </tr>
                                     
                                     <tr valign="top">
                                         <th scope="row"><label for="checkout_return_url"><?php _e('Return URL', 'wp-paypal');?></label></th>
                                         <td><input name="checkout_return_url" type="text" id="checkout_return_url" value="<?php echo esc_url($paypal_checkout_options['return_url']); ?>" class="regular-text">
-                                            <p class="description"><?php _e('The page URL to which the customer will be redirected after a successful payment (optional)', 'wp-paypal');?></p></td>
+                                            <p class="description"><?php _e('The page URL to which the customer will be redirected after a successful payment (required)', 'wp-paypal');?></p></td>
                                     </tr>
                                     
                                     <tr valign="top">
                                         <th scope="row"><label for="checkout_cancel_url"><?php _e('Cancel URL', 'wp-paypal');?></label></th>
                                         <td><input name="checkout_cancel_url" type="text" id="checkout_cancel_url" value="<?php echo esc_url($paypal_checkout_options['cancel_url']); ?>" class="regular-text">
-                                            <p class="description"><?php _e('The page URL to which the customer will be redirected when a payment is cancelled (optional)', 'wp-paypal');?></p></td>
+                                            <p class="description"><?php _e('The page URL to which the customer will be redirected when a payment is cancelled (required)', 'wp-paypal');?></p></td>
+                                    </tr>
+                                    
+                                    <tr valign="top">
+                                        <th scope="row"><label for="checkout_page_url"><?php _e('Checkout Page URL', 'wp-paypal');?></label></th>
+                                        <td><input name="checkout_page_url" type="text" id="checkout_page_url" value="<?php echo esc_url(isset($paypal_checkout_options['checkout_page_url']) ? $paypal_checkout_options['checkout_page_url'] : ''); ?>" class="regular-text">
+                                            <p class="description"><?php _e('The URL of your PayPal checkout page where the [wp_paypal_checkout] shortcode is placed (required)', 'wp-paypal');?></p></td>
                                     </tr>
                                     
                                     <tr valign="top">
                                         <th scope="row"><label for="checkout_enable_funding"><?php _e('Enabled Funding Sources', 'wp-paypal');?></label></th>
                                         <td><textarea name="checkout_enable_funding" id="checkout_enable_funding" class="large-text"><?php echo esc_html($paypal_checkout_options['enable_funding']); ?></textarea>
-                                            <p class="description"><?php echo __('Enabled funding sources in comma-separated format', 'wp-paypal').' ';?>(Example: <strong>venmo</strong> or <strong>venmo,credit</strong> or <strong>venmo,credit,paylater</strong>).<?php echo ' '.__('This is not required as the eligibility is determined automatically. However, this field can be used to ensure a funding source is always rendered, if eligible.', 'wp-paypal').' '.wp_kses($funding_src_link, $allowed_html_tags);?></p></td>
+                                            <p class="description"><?php echo __('Enabled funding sources in comma-separated format (optional)', 'wp-paypal').' ';?>(Example: <strong>venmo</strong> or <strong>venmo,credit</strong> or <strong>venmo,credit,paylater</strong>).<?php echo ' '.__('This is not required as the eligibility is determined automatically. However, this field can be used to ensure a funding source is always rendered, if eligible.', 'wp-paypal').' '.wp_kses($funding_src_link, $allowed_html_tags);?></p></td>
                                     </tr>
                                     
                                     <tr valign="top">
                                         <th scope="row"><label for="checkout_disable_funding"><?php _e('Disabled Funding Sources', 'wp-paypal');?></label></th>
                                         <td><textarea name="checkout_disable_funding" id="checkout_disable_funding" class="large-text"><?php echo esc_html($paypal_checkout_options['disable_funding']); ?></textarea>
-                                            <p class="description"><?php echo __('Disabled funding sources in comma-separated format', 'wp-paypal').' ';?>(Example: <strong>credit</strong> or <strong>card,credit</strong> or <strong>card,credit,paylater</strong>).<?php echo ' '.__('Any funding sources that you enter here are not displayed as buttons at checkout.', 'wp-paypal').' '.wp_kses($funding_src_link, $allowed_html_tags);?></p></td>
+                                            <p class="description"><?php echo __('Disabled funding sources in comma-separated format (optional)', 'wp-paypal').' ';?>(Example: <strong>credit</strong> or <strong>card,credit</strong> or <strong>card,credit,paylater</strong>).<?php echo ' '.__('Any funding sources that you enter here are not displayed as buttons at checkout.', 'wp-paypal').' '.wp_kses($funding_src_link, $allowed_html_tags);?></p></td>
                                     </tr>
                                     
                                     <tr valign="top">
@@ -505,6 +525,7 @@ class WP_PAYPAL {
                                 </tbody>
 
                             </table>
+                            <!--
                             <h2><?php _e('PayPal Payments Standard', 'wp-paypal');?></h2>
                             <p><?php printf(__('These settings apply to %s shortcode buttons', 'wp-paypal'), '[wp_paypal]');?></p>
                             <table class="form-table">
@@ -556,7 +577,7 @@ class WP_PAYPAL {
                                 </tbody>
 
                             </table>
-
+                            -->
                             <p class="submit"><input type="submit" name="wp_paypal_update_settings" id="wp_paypal_update_settings" class="button button-primary" value="<?php _e('Save Changes', 'wp-paypal');?>"></p></form>
                     </td>
                     <td valign="top" style="width: 300px">
