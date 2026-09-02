@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, checkout, payment, ecommerce
 Requires at least: 5.3
 Tested up to: 7.1
-Stable tag: 1.2.3.45
+Stable tag: 1.2.3.46
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,9 +52,9 @@ Once you have installed this plugin you need to go to the settings menu to confi
 * **Cancel URL**: The redirect URL when a payment is cancelled
 * **Checkout Page URL**: The URL of the page where PayPal checkout options will appear
 
-=== How to Create a PayPal Payment Button ===
+=== How to Create a Buy Now Button ===
 
-To create a PayPal Checkout button create a product first (WP PayPal -> Products). Now insert the shortcode into a page like the following:
+To create a Buy Now button create a product first (WP PayPal -> Products). Now insert the shortcode into a page like the following:
 
 `[wp_paypal_product id="1"]`
 
@@ -66,7 +66,7 @@ To create a PayPal checkout page insert the shortcode into a page like the follo
 
 `[wp_paypal_checkout]`
 
-You will also need to save the URL of the page in the settings.
+This is where payment options will appear.
 
 For more information check the [PayPal Checkout](https://wphowto.net/wordpress-paypal-plugin-732) documentation page.
 
@@ -152,6 +152,9 @@ No.
 This version disabled existing payment buttons. Please follow the updated documentation to set up.
 
 == Changelog ==
+
+= 1.2.3.46 =
+* Fixed some warning notices.
 
 = 1.2.3.45 =
 * Added a product interface.

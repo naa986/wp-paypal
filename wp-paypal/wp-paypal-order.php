@@ -11,7 +11,7 @@ function wp_paypal_order_page() {
         'new_item' => __('New Order', 'wp-paypal'),
         'edit_item' => __('Edit Order', 'wp-paypal'),
         'view_item' => __('View Order', 'wp-paypal'),
-        'all_items' => __('All Orders', 'wp-paypal'),
+        'all_items' => __('Orders', 'wp-paypal'),
         'search_items' => __('Search Orders', 'wp-paypal'),
         'parent_item_colon' => __('Parent Orders:', 'wp-paypal'),
         'not_found' => __('No Orders found.', 'wp-paypal'),

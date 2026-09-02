@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.45
+  Version: 1.2.3.46
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')){
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.45';
+    var $plugin_version = '1.2.3.46';
     var $db_version = '1.0.2';
     var $plugin_url;
     var $plugin_path;
@@ -388,12 +388,15 @@ class WP_PAYPAL {
             update_option('wp_paypal_checkout_load_scripts_globally', $checkout_load_scripts_globally);
             wp_paypal_checkout_update_option($paypal_checkout_options);
             //
+            /*
             update_option('wp_paypal_enable_testmode', (isset($_POST["enable_testmode"]) && $_POST["enable_testmode"] == '1') ? '1' : '');
             update_option('wp_paypal_merchant_id', sanitize_text_field($_POST["paypal_merchant_id"]));
             update_option('wp_paypal_email', sanitize_email($_POST["paypal_email"]));
             update_option('wp_paypal_currency_code', sanitize_text_field($_POST["currency_code"]));
             update_option('wp_paypal_enable_ipn_validation', (isset($_POST["enable_ipn_validation"]) && $_POST["enable_ipn_validation"] == '1') ? '1' : '');
             update_option('wp_paypal_enable_receiver_check', (isset($_POST["enable_receiver_check"]) && $_POST["enable_receiver_check"] == '1') ? '1' : '');
+            */
+            //
             echo '<div id="message" class="updated fade"><p><strong>';
             echo __('Settings Saved', 'wp-paypal').'!';
             echo '</strong></p></div>';
@@ -440,8 +443,7 @@ class WP_PAYPAL {
                     <td valign="top">
                         <form method="post" action="">
                             <?php wp_nonce_field('wp_paypal_general_settings'); ?>
-                            <h2><?php _e('PayPal Checkout', 'wp-paypal');?></h2>
-                            <p><?php printf(__('These settings apply to %s shortcode buttons', 'wp-paypal'), '[wp_paypal_checkout]');?></p>
+
                             <table class="form-table">
 
                                 <tbody>
