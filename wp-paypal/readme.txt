@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, checkout, payment, ecommerce
 Requires at least: 5.3
 Tested up to: 7.1
-Stable tag: 1.2.3.46
+Stable tag: 1.2.3.47
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,6 +17,13 @@ Easily accept payment in WordPress by adding a PayPal button to your website.
 Your customers will be able to pay for your products using PayPal or Credit Card. This plugin makes it easy for you to set up your online e-commerce store.
 
 Payment Button for PayPal supports PayPal Sandbox. PayPal Sandbox is a simulation environment which allows you to do test purchases between a test buyer and a seller account. This is to make sure that your store can process PayPal transactions without any issues. It also helps you get prepared before selling to real customers.
+
+=== Payment Button for PayPal Add-ons ===
+
+* [Variable Price](https://wphowto.net/wp-paypal-variable-price-6988)
+* [Contact Form 7 Integration](https://wphowto.net/wp-paypal-button-integration-with-contact-form-7-6710)
+* [Mailchimp Integration](https://wphowto.net/wp-paypal-mailchimp-integration-6559)
+* [Order Export](https://wphowto.net/wp-paypal-order-export-7347)
 
 === Payment Button for PayPal Features ===
 
@@ -152,6 +159,9 @@ No.
 This version disabled existing payment buttons. Please follow the updated documentation to set up.
 
 == Changelog ==
+
+= 1.2.3.47 =
+* Compatibility update for variable price.
 
 = 1.2.3.46 =
 * Fixed some warning notices.

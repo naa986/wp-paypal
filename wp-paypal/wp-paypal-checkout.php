@@ -31,6 +31,11 @@ function wp_paypal_product_button_handler($atts){
     }
     $button_code .= '<form '.$form_class.$target.'action="'.esc_url($action_url).'" method="'.$method.'" >';
     $button_code .= '<input type="hidden" name="wppp_prod_id" value="'.esc_attr($product_id).'">';
+    $price_input_code = '';
+    $price_input_code = apply_filters('wp_paypal_product_variable_price', $price_input_code, $button_code, $atts);
+    if(!empty($price_input_code)){
+        $button_code .= $price_input_code;
+    }
     $button_code .= '<input type="submit" value="'.esc_attr($button_text).'" />';
     $button_code .= '</form>';
     return $button_code;        
@@ -71,6 +76,18 @@ function wp_paypal_checkout_button_handler($atts) {
     }
     else{
         return __('Product price is not valid', 'wp-paypal');
+    }
+    //
+    $amount = 0;
+    if (isset($_POST['wppp_prod_price'])) {
+        if(is_numeric($_POST['wppp_prod_price']) && $_POST['wppp_prod_price'] > 0){
+            $amount = sanitize_text_field($_POST['wppp_prod_price']);
+            $amount = number_format($amount, 2, '.', '');
+            $product_price = $amount;
+        }
+        else{
+            return __('Price is not valid', 'wp-paypal');
+        }
     }
     //
     $shipping = 0;
@@ -165,6 +182,11 @@ function wp_paypal_checkout_button_handler($atts) {
     }
 
     $button_code .= '<div id="'.esc_attr($button_container_id).'" style="'.esc_attr('max-width: '.$width.'px;').'">';
+    //
+    $amount_code = '<input class="wppaypal_checkout_amount_input" type="hidden" name="amount" value="'.esc_attr($amount).'" required>';
+    $amount_queryselector = "document.querySelector('#{$button_container_id} .wppaypal_checkout_amount_input')";
+    $button_code .= $amount_code;
+    //
     $button_code .= '<div id="'.esc_attr($button_id).'" style="'.esc_attr('max-width: '.$width.'px;').'"></div>';
     $button_code .= '</div>';
     $ajax_url = admin_url('admin-ajax.php');
@@ -178,10 +200,12 @@ function wp_paypal_checkout_button_handler($atts) {
     jQuery(document).ready(function() {
             
         function initPayPalButton{$id}() {
+            var amount = {$amount_queryselector};
             var checkoutvar = {};
 
             var purchase_units = [];
             purchase_units[0] = {};
+            purchase_units[0].amount = {};
    
             function validate(event) {
                 return true;
@@ -199,6 +223,7 @@ function wp_paypal_checkout_button_handler($atts) {
                 
                 onClick: function () {
                     purchase_units[0].custom_id = '{$esc_js($product_id)}';
+                    purchase_units[0].amount.value = amount.value;
                 },    
                     
                 createOrder: async function(data, actions) {

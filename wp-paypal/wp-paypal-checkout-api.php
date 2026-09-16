@@ -64,6 +64,26 @@ function wp_paypal_checkout_pp_api_create_order(){
             )
         );
     }
+    //variable price
+    $purchase_units_amount_value = isset($order_data_array['purchase_units'][0]['amount']['value']) ? sanitize_text_field($order_data_array['purchase_units'][0]['amount']['value']) : 0;
+    $enable_variable_pricing = get_post_meta($product['id'], '_wp_paypal_product_enable_variable_pricing', true);
+    if(defined('WPPAYPAL_VARIABLE_PRICE_VERSION') && isset($enable_variable_pricing) && $enable_variable_pricing == '1'){
+        if(isset($purchase_units_amount_value) && is_numeric($purchase_units_amount_value) && $purchase_units_amount_value > 0) {
+            $product_price = sanitize_text_field($purchase_units_amount_value);
+            $product_price = number_format($product_price, 2, '.', '');
+            $total_amount = $product_price;
+        }
+        else{
+            wp_paypal_debug_log("Checkout - Price not valid", false);
+            wp_send_json(
+                array(
+                    'success' => false,
+                    'err_msg' => __('Price not valid.', 'wp-paypal'),
+                )
+            );
+        }
+    }
+    //
     $has_shipping = false;
     $shipping = isset($product['shipping']) ? $product['shipping'] : 0;
     if(is_numeric($shipping) && $shipping > 0){
