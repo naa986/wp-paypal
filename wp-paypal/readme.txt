@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, checkout, payment, ecommerce
 Requires at least: 5.3
 Tested up to: 7.1
-Stable tag: 1.2.3.47
+Stable tag: 1.2.3.48
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,6 +20,7 @@ Payment Button for PayPal supports PayPal Sandbox. PayPal Sandbox is a simulatio
 
 === Payment Button for PayPal Add-ons ===
 
+* [Custom Input](https://wphowto.net/how-to-show-a-text-box-at-wp-paypal-checkout-to-collect-custom-data-from-buyers-6517)
 * [Variable Price](https://wphowto.net/wp-paypal-variable-price-6988)
 * [Contact Form 7 Integration](https://wphowto.net/wp-paypal-button-integration-with-contact-form-7-6710)
 * [Mailchimp Integration](https://wphowto.net/wp-paypal-mailchimp-integration-6559)
@@ -159,6 +160,9 @@ No.
 This version disabled existing payment buttons. Please follow the updated documentation to set up.
 
 == Changelog ==
+
+= 1.2.3.48 =
+* Compatibility update for custom input.
 
 = 1.2.3.47 =
 * Compatibility update for variable price.

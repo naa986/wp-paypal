@@ -6,38 +6,46 @@ function wp_paypal_display_addons_menu()
     echo '<h2>' .__('WP PayPal Add-ons', 'wp-paypal') . '</h2>';
     
     $addons_data = array();
-
+    
     $addon_1 = array(
+        'name' => 'Custom Input',
+        'thumbnail' => WP_PAYPAL_URL.'/addons/images/wp-paypal-custom-input.png',
+        'description' => 'Show a text box to collect custom data from buyers',
+        'page_url' => 'https://wphowto.net/how-to-show-a-text-box-at-wp-paypal-checkout-to-collect-custom-data-from-buyers-6517',
+    );
+    array_push($addons_data, $addon_1);
+    
+    $addon_2 = array(
         'name' => 'Variable Price',
         'thumbnail' => WP_PAYPAL_URL.'/addons/images/wp-paypal-variable-price.png',
         'description' => "Let buyers set the amount they will pay for your PayPal Checkout buttons",
         'page_url' => 'https://wphowto.net/wp-paypal-variable-price-6988',
     );
-    array_push($addons_data, $addon_1);
+    array_push($addons_data, $addon_2);
     
-    $addon_2 = array(
+    $addon_3 = array(
         'name' => 'Contact Form 7 Integration',
         'thumbnail' => WP_PAYPAL_URL.'/addons/images/wp-paypal-contact-form-7-integration.png',
         'description' => "Show a pre-configured WP PayPal button after a Contact Form 7 submission",
         'page_url' => 'https://wphowto.net/wp-paypal-button-integration-with-contact-form-7-6710',
     );
-    array_push($addons_data, $addon_2);
+    array_push($addons_data, $addon_3);
     
-    $addon_3 = array(
+    $addon_4 = array(
         'name' => 'Mailchimp Integration',
         'thumbnail' => WP_PAYPAL_URL.'/addons/images/wp-paypal-mailchimp-integration.png',
         'description' => "Automatically add the buyer's email address to your Mailchimp Audience / List after a payment",
         'page_url' => 'https://wphowto.net/wp-paypal-mailchimp-integration-6559',
     );
-    array_push($addons_data, $addon_3);
+    array_push($addons_data, $addon_4);
     
-    $addon_4 = array(
+    $addon_5 = array(
         'name' => 'Order Export',
         'thumbnail' => WP_PAYPAL_URL.'/addons/images/wp-paypal-order-export.png',
         'description' => 'Export WP PayPal orders',
         'page_url' => 'https://wphowto.net/wp-paypal-order-export-7347',
     );
-    array_push($addons_data, $addon_4);
+    array_push($addons_data, $addon_5);
     
     /*
     $addon_2 = array(
@@ -47,14 +55,6 @@ function wp_paypal_display_addons_menu()
         'page_url' => 'https://wphowto.net/how-to-configure-product-variations-in-wp-paypal-6413',
     );
     array_push($addons_data, $addon_2);
-    
-    $addon_3 = array(
-        'name' => 'Custom Input',
-        'thumbnail' => WP_PAYPAL_URL.'/addons/images/wp-paypal-custom-input.png',
-        'description' => 'Show a text box at checkout to collect custom data from buyers',
-        'page_url' => 'https://wphowto.net/how-to-show-a-text-box-at-wp-paypal-checkout-to-collect-custom-data-from-buyers-6517',
-    );
-    array_push($addons_data, $addon_3);
     
     $addon_5 = array(
         'name' => 'Variable Quantity',

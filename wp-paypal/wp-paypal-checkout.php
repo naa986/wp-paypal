@@ -36,6 +36,11 @@ function wp_paypal_product_button_handler($atts){
     if(!empty($price_input_code)){
         $button_code .= $price_input_code;
     }
+    $custom_input_code = '';
+    $custom_input_code = apply_filters('wp_paypal_product_custom_input', $custom_input_code, $button_code, $atts);
+    if(!empty($custom_input_code)){
+        $button_code .= $custom_input_code;
+    }
     $button_code .= '<input type="submit" value="'.esc_attr($button_text).'" />';
     $button_code .= '</form>';
     return $button_code;        
@@ -88,6 +93,11 @@ function wp_paypal_checkout_button_handler($atts) {
         else{
             return __('Price is not valid', 'wp-paypal');
         }
+    }
+    //
+    $custom_input = '';
+    if (isset($_POST['wppp_prod_custom_input']) && !empty($_POST['wppp_prod_custom_input'])) {
+        $custom_input = sanitize_text_field($_POST['wppp_prod_custom_input']);
     }
     //
     $shipping = 0;
@@ -187,6 +197,10 @@ function wp_paypal_checkout_button_handler($atts) {
     $amount_queryselector = "document.querySelector('#{$button_container_id} .wppaypal_checkout_amount_input')";
     $button_code .= $amount_code;
     //
+    $custom_input_code = '<input class="wppaypal_checkout_custom_input" type="hidden" name="custom" value="'.esc_attr($custom_input).'" required>';
+    $custom_queryselector = "document.querySelector('#{$button_container_id} .wppaypal_checkout_custom_input')";
+    $button_code .= $custom_input_code;
+    //
     $button_code .= '<div id="'.esc_attr($button_id).'" style="'.esc_attr('max-width: '.$width.'px;').'"></div>';
     $button_code .= '</div>';
     $ajax_url = admin_url('admin-ajax.php');
@@ -202,6 +216,7 @@ function wp_paypal_checkout_button_handler($atts) {
         function initPayPalButton{$id}() {
             var amount = {$amount_queryselector};
             var checkoutvar = {};
+            var custom = {$custom_queryselector};
 
             var purchase_units = [];
             purchase_units[0] = {};
@@ -224,6 +239,7 @@ function wp_paypal_checkout_button_handler($atts) {
                 onClick: function () {
                     purchase_units[0].custom_id = '{$esc_js($product_id)}';
                     purchase_units[0].amount.value = amount.value;
+                    checkoutvar.custom = custom.value;
                 },    
                     
                 createOrder: async function(data, actions) {

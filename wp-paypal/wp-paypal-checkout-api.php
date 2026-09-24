@@ -527,8 +527,11 @@ function wp_paypal_checkout_process_order_handler($order_details_data, $checkout
         $payment_data['currency_code'] = sanitize_text_field($purchase_units['amount']['currency_code']);
     }
     $payment_data['custom'] = '';
-    if (isset($checkoutvar['custom']) && !empty($checkoutvar['custom'])) {
-        $payment_data['custom'] = sanitize_text_field($checkoutvar['custom']);
+    if (isset($checkoutvar['custom']) && !empty($checkoutvar['custom']) && is_numeric($payment_data['product_id'])) {
+        $enable_custom_input = get_post_meta($payment_data['product_id'], '_wp_paypal_product_enable_custom_input', true);
+        if(defined('WPPAYPAL_CUSTOM_INPUT_VERSION') && isset($enable_custom_input) && $enable_custom_input == '1'){       
+            $payment_data['custom'] = sanitize_text_field($checkoutvar['custom']);
+        }
     } 
     $payment_data['variation'] = '';
     if (isset($checkoutvar['variation']) && !empty($checkoutvar['variation'])) {
