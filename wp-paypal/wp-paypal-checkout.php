@@ -15,10 +15,12 @@ function wp_paypal_product_button_handler($atts){
     }
     $options = wp_paypal_checkout_get_option();
     $action_url = $options['checkout_page_url'];
+    /*
     $button_text = 'Buy Now';
     if(isset($product['button_text']) && !empty($product['button_text'])){
         $button_text = $product['button_text'];
     }
+    */
     $button_code = '';
     $method = 'post';
     $target = '';
@@ -41,7 +43,20 @@ function wp_paypal_product_button_handler($atts){
     if(!empty($custom_input_code)){
         $button_code .= $custom_input_code;
     }
-    $button_code .= '<input type="submit" value="'.esc_attr($button_text).'" />';
+    //
+    if(isset($product['button_image']) && !empty($product['button_image'])){
+        $button_image = $product['button_image'];
+        $button_code .= '<input type="image" src="'.esc_url($button_image).'" alt="Submit" />';
+    } 
+    else{      
+        $button_text = 'Buy Now';
+        if(isset($product['button_text']) && !empty($product['button_text'])){
+            $button_text = $product['button_text'];
+        }
+        $button_code .= '<input type="submit" value="'.esc_attr($button_text).'" />';
+    }
+    //
+    //$button_code .= '<input type="submit" value="'.esc_attr($button_text).'" />';
     $button_code .= '</form>';
     return $button_code;        
 }

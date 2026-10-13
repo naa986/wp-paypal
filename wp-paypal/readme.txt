@@ -4,7 +4,7 @@ Donate link: https://wphowto.net/
 Tags: paypal, checkout, payment, ecommerce
 Requires at least: 5.3
 Tested up to: 7.1
-Stable tag: 1.2.3.48
+Stable tag: 1.2.3.49
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -148,11 +148,12 @@ No.
 
 == Screenshots ==
 
-1. PayPal Checkout Button
-2. PayPal Orders
-3. PayPal Email Sender Options
-4. PayPal Purchase Receipt Email Settings
-5. PayPal Sale Notification Email Settings
+1. Buy Now Button
+2. Checkout Page
+3. Orders
+4. Email Sender Options
+5. Purchase Receipt Email Settings
+6. Sale Notification Email Settings
 
 == Upgrade Notice ==
 
@@ -160,6 +161,9 @@ No.
 This version disabled existing payment buttons. Please follow the updated documentation to set up.
 
 == Changelog ==
+
+= 1.2.3.49 =
+* Added button image option for product.
 
 = 1.2.3.48 =
 * Compatibility update for custom input.

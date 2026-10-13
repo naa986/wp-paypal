@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name: WP PayPal
-  Version: 1.2.3.48
+  Version: 1.2.3.49
   Plugin URI: https://wphowto.net/wordpress-paypal-plugin-732
   Author: naa986
   Author URI: https://wphowto.net/
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')){
 
 class WP_PAYPAL {
     
-    var $plugin_version = '1.2.3.48';
+    var $plugin_version = '1.2.3.49';
     var $db_version = '1.0.2';
     var $plugin_url;
     var $plugin_path;
@@ -132,11 +132,14 @@ class WP_PAYPAL {
     }
 
     function enqueue_admin_scripts($hook) {
-        if('wp_paypal_order_page_wp-paypal-addons' != $hook) {
-            return;
+        if('wp_paypal_order_page_wp-paypal-addons' == $hook) {
+            wp_register_style('wp-paypal-addons-menu', WP_PAYPAL_URL.'/addons/wp-paypal-addons-menu.css');
+            wp_enqueue_style('wp-paypal-addons-menu');
         }
-        wp_register_style('wp-paypal-addons-menu', WP_PAYPAL_URL.'/addons/wp-paypal-addons-menu.css');
-        wp_enqueue_style('wp-paypal-addons-menu');
+        global $post_type;
+        if(in_array($hook, ['post.php', 'post-new.php']) && $post_type === 'wp_paypal_product') {
+            wp_enqueue_media();
+        }
     }
     
     function plugin_scripts() {
